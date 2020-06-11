@@ -1,15 +1,20 @@
 package euphoria.psycho.browser.base;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +52,17 @@ public class Share {
         return sApplicationContext;
     }
 
+    public static String getDeviceIP(Context context) {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        try {
+            @SuppressLint("MissingPermission") WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            InetAddress inetAddress = intToInetAddress(wifiInfo.getIpAddress());
+            return inetAddress.getHostAddress();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Initializes the java application context.
      * <p>
@@ -61,6 +77,18 @@ public class Share {
         assert sApplicationContext == null || sApplicationContext == appContext
                 || ((ContextWrapper) sApplicationContext).getBaseContext() == appContext;
         initJavaSideApplicationContext(appContext);
+    }
+
+    public static InetAddress intToInetAddress(int hostAddress) {
+        byte[] addressBytes = {(byte) (0xff & hostAddress),
+                (byte) (0xff & (hostAddress >> 8)),
+                (byte) (0xff & (hostAddress >> 16)),
+                (byte) (0xff & (hostAddress >> 24))};
+        try {
+            return InetAddress.getByAddress(addressBytes);
+        } catch (UnknownHostException e) {
+            throw new AssertionError();
+        }
     }
 
     public static String substringAfter(String string, char delimiter) {
