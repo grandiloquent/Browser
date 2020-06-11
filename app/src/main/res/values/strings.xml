@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">Browser</string>
+  <string name="accessibility_cancel_selection">Cancel selection</string>
+  <string name="accessibility_toolbar_btn_back">Go back</string>
+  <string name="accessibility_toolbar_btn_delete_url">Clear input</string>
+  <string name="accessibility_toolbar_multi_select">%1$s selected</string>
+  <string name="accessibility_toolbar_screen_position">"%1$s selected.  Options available near top of the screen"</string>
+  <string name="app_name">Browser</string>
+  <string name="hide_info">Hide Info</string>
+  <string name="select_items">Select items</string>
+  <string name="show_info">Show Info</string>
 </resources>

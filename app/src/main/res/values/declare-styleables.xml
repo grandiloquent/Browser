@@ -1,0 +1,5 @@
+<resources>
+  <declare-styleable name="TextViewWithLeading">
+    <attr name="leading" format="reference|dimension" />
+  </declare-styleable>
+</resources>

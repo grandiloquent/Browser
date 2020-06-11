@@ -1,245 +1,60 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="colorPrimary">#008577</color>
-    <color name="default_text_color">@color/default_text_color_dark</color>
-    <color name="default_text_color_dark">@color/modern_grey_900</color>
-    <color name="modern_grey_900">#ff202124</color>
-    <color name="colorPrimaryDark">#00574B</color>
-    <color name="default_icon_color_blue">@color/modern_blue_600</color>
-    <color name="modern_blue_600">#ff1a73e8</color>
-    <color name="colorAccent">#D81B60</color>
-    <string name="accessibility_toolbar_btn_back">Go back</string>
-    <string name="accessibility_cancel_selection">Cancel selection</string>
-    <!-- SelectableListLayout dimensions -->
-    <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
-    <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
-    <dimen name="search_toolbar_modern_bg_top_bottom_inset">8dp</dimen>
-    <dimen name="search_toolbar_modern_bg_lateral_inset">8dp</dimen>
-    <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
-    <dimen name="selectable_list_search_icon_end_padding">4dp</dimen>
-    <dimen name="selectable_list_toolbar_height">56dp</dimen>
-    <string name="select_items">Select items</string>
-    <plurals name="selected_items">
-        <item quantity="other">%d selected</item>
-        <item quantity="one">1 selected</item>
-    </plurals>
-    <string name="hide_info">Hide Info</string>
-    <string name="show_info">Show Info</string>
-    <!-- Modern List Item -->
-    <integer name="list_item_level_default">0</integer>
-    <integer name="list_item_level_selected">1</integer>
-    <integer name="list_item_level_incognito">2</integer>
-    <string name="accessibility_toolbar_multi_select">%1$s selected</string>
-    <string name="accessibility_toolbar_screen_position">"%1$s selected.  Options available near top of the screen"</string>
+<resources>
     <color name="black_alpha_11">#1D000000</color>
-    <color name="toolbar_shadow_color">@color/black_alpha_11</color>
-    <color name="modern_white">@android:color/white</color>
-    <color name="default_icon_color_white">
-        @color/modern_white
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="default_primary_color">#F2F2F2</color>
+    <color xmlns:tools="http://schemas.android.com/tools" name="highlight_color_on_dark_text" tools:ignore="UnusedResources">
+        #C6DAFC
     </color>
-    <color name="default_icon_color_inverse">
-        @color/default_icon_color_white
+    <color name="modern_blue_600">#ff1a73e8</color>
+    <color name="modern_grey_700">#5F6368</color>
+    <color name="modern_grey_800">#3C4043</color>
+    <color xmlns:tools="http://schemas.android.com/tools" name="modern_grey_800_alpha_38" tools:ignore="UnusedResources">
+        #613C4043
+    </color>
+    <color name="modern_grey_900">#ff202124</color>
+    <color xmlns:tools="http://schemas.android.com/tools" name="control_highlight_color" tools:ignore="UnusedResources">
+        @color/default_control_color_highlight_light
+    </color>
+    <color name="control_normal_color">@color/default_control_color_normal_light</color>
+    <color name="default_bg_color">@color/default_bg_color_light</color>
+    <color name="default_bg_color_elev_3">
+        @color/default_bg_color_light
+    </color>
+    <color name="default_bg_color_elev_4">@color/default_bg_color_light</color>
+    <color name="default_bg_color_light">@color/modern_white</color>
+    <color name="default_control_color_active">@color/default_control_color_active_light</color>
+    <color name="default_control_color_active_light">@color/modern_blue_600</color>
+    <color xmlns:tools="http://schemas.android.com/tools" name="default_control_color_highlight_light" tools:ignore="UnusedResources">
+        @color/modern_grey_800_alpha_38
+    </color>
+    <color xmlns:tools="http://schemas.android.com/tools" name="default_control_color_normal_light" tools:ignore="UnusedResources">
+        @color/modern_grey_700
     </color>
     <color name="default_icon_color">
         @color/default_icon_color_dark
     </color>
+    <color name="default_icon_color_blue">@color/modern_blue_600</color>
     <color name="default_icon_color_dark">@color/modern_grey_800</color>
-    <color name="modern_grey_800">#3C4043</color>
-    <drawable name="ic_more_vert_24dp">@drawable/ic_more_vert_24dp_on_light_bg</drawable>
-    <dimen name="default_list_row_padding">16dp</dimen>
-    <color name="default_primary_color">#F2F2F2</color>
+    <color name="default_icon_color_inverse">
+        @color/default_icon_color_white
+    </color>
+    <color name="default_icon_color_white">
+        @color/modern_white
+    </color>
+    <color name="default_text_color">@color/default_text_color_dark</color>
+    <color name="default_text_color_dark">@color/modern_grey_900</color>
+    <color name="default_text_color_inverse">@color/default_text_color_light</color>
+    <color name="default_text_color_light">@color/modern_white</color>
+    <color name="default_text_color_link">@color/modern_blue_600</color>
+    <color name="default_text_color_secondary">@color/modern_grey_700</color>
+    <color name="modern_white">@android:color/white</color>
+    <color name="popup_bg_color">@color/default_bg_color_elev_4</color>
+    <color name="search_box_hint">@color/default_text_color_secondary</color>
+    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
     <color name="toolbar_background_primary">
         @color/default_bg_color_elev_3
     </color>
-    <color name="default_bg_color_elev_3">
-        @color/default_bg_color_light
-    </color>
-    <color name="default_bg_color_light">@color/modern_white</color>
-
-    <style name="Card">
-        <item name="android:background">@drawable/hairline_border_card_background</item>
-    </style>
-
-    <dimen name="action_bar_shadow_height">10dp</dimen>
-
-    <declare-styleable name="TextViewWithLeading">
-        <attr name="leading" format="reference|dimension" />
-    </declare-styleable>
-    <dimen name="text_size_medium_leading">20sp</dimen>
-    <dimen name="card_padding">16dp</dimen>
-
-    <style name="TextAppearance.TextMedium">
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-
-    <style name="TextAppearance.TextMedium.Secondary">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-    </style>
-
-    <style name="TextAppearance" parent="android:TextAppearance" />
-
-    <dimen name="headline_size">22sp</dimen>
-    <dimen name="text_size_large">16sp</dimen>
-    <dimen name="text_size_medium">14sp</dimen>
-    <dimen name="text_size_small">12sp</dimen>
-    <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
-    <item name="default_pressed_alpha" format="float" type="dimen">0.06</item>
-    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.06</item>
-    <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
-    <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
-    <item name="default_icon_pressed_alpha" format="float" type="dimen">
-        0.50
-    </item>
-
-    <color name="default_text_color_secondary">@color/modern_grey_700</color>
-    <color name="modern_grey_700">#5F6368</color>
-
-    <style name="TextAppearance.Headline">
-        <item name="android:fontFamily">@font/accent_font</item>
-        <item name="android:textSize">@dimen/headline_size</item>
-    </style>
-
-    <style name="TextAppearance.Headline.Primary">
-        <item name="android:textColor">@color/default_text_color_list</item>
-    </style>
-
-    <color name="default_bg_color">@color/default_bg_color_light</color>
-    <color name="default_control_color_active">@color/default_control_color_active_light</color>
-    <color name="default_control_color_active_light">@color/modern_blue_600</color>
-
-    <style name="TextAppearance.TextLarge.Primary">
-        <item name="android:textColor">@color/default_text_color_list</item>
-    </style>
-
-    <style name="TextAppearance.TextLarge">
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
-    <!-- Modern List Item -->
-    <style name="ListItemContainer">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">@dimen/list_item_min_height</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
-    </style>
-
-    <style name="ListItemStartIcon">
-        <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
-        <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:layout_marginEnd">@dimen/list_item_start_icon_right_margin</item>
-        <item name="android:scaleType">center</item>
-        <item name="android:contentDescription">@null</item>
-    </style>
-
-    <style name="ListItemEndIcon">
-        <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@null</item>
-        <item name="android:scaleType">center</item>
-    </style>
-
-    <!-- Modern List Item dimensions -->
-    <dimen name="list_item_min_height">64dp</dimen>
-    <dimen name="list_item_default_margin">16dp</dimen>
-    <dimen name="list_item_start_icon_right_margin">20dp</dimen>
-    <dimen name="list_item_start_icon_width">36dp</dimen>
-    <dimen name="list_item_end_icon_width">56dp</dimen>
-
-    <style name="TextAppearance.Headline.Primary.Inverse">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-
-    <color name="default_text_color_inverse">@color/default_text_color_light</color>
-    <color name="default_text_color_light">@color/modern_white</color>
-    <dimen name="clear_text_button_end_padding">10dp</dimen>
-    <color name="search_box_hint">@color/default_text_color_secondary</color>
-    <string name="accessibility_toolbar_btn_delete_url">Clear input</string>
-
-    <style name="Theme.Chromium.Activity.Fullscreen" parent="Theme.Chromium.Fullscreen">
-        <!-- No ActionBar -->
-        <item name="windowActionBar">false</item>
-    </style>
-
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
-
-    <style name="Base.Theme.Chromium.Fullscreen">
-        <!-- With ActionBar but not window title -->
-        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
-        <item name="windowActionBar">true</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="colorAccent">@color/default_control_color_active</item>
-    </style>
-
-    <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
-
-    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI">
-        <!-- Window Properties -->
-        <item name="android:windowBackground">@color/default_bg_color</item>
-
-        <!-- Action bar color -->
-        <item name="colorPrimary">@color/default_bg_color</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
-
-        <!-- Spinner styles -->
-        <item name="spinnerStyle">@style/SpinnerStyle</item>
-
-        <!-- Popup styles -->
-        <!-- Set android popup menu attributes for context menu styles because the context menus are
-             OS-dependent. -->
-        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
-        <item name="android:textAppearanceLargePopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:textAppearanceSmallPopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
-    </style>
-
-    <style name="Theme.BrowserUI" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Text colors -->
-        <item name="android:textColorLink">@color/default_text_color_link</item>
-        <item name="android:textColorHighlight">@color/text_highlight_color</item>
-
-        <!-- Color of checkboxes, switches, buttons, etc. -->
-        <item name="colorAccent">@color/default_control_color_active</item>
-        <item name="colorControlNormal">@color/control_normal_color</item>
-        <item name="colorControlActivated">@color/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
-    </style>
-
-    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
-    </style>
-
-    <color name="control_normal_color">@color/default_control_color_normal_light</color>
-    <color name="control_highlight_color" tools:ignore="UnusedResources">
-        @color/default_control_color_highlight_light
-    </color>
-    <dimen name="popup_bg_corner_radius">4dp</dimen>
-    <color name="popup_bg_color">@color/default_bg_color_elev_4</color>
-    <color name="default_bg_color_elev_4">@color/default_bg_color_light</color>
-    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">
-        @color/modern_grey_800_alpha_38
-    </color>
-    <color name="modern_grey_800_alpha_38" tools:ignore="UnusedResources">#613C4043</color>
-    <color name="default_control_color_normal_light" tools:ignore="UnusedResources">
-        @color/modern_grey_700
-    </color>
-    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
-    <color name="highlight_color_on_dark_text" tools:ignore="UnusedResources">#C6DAFC</color>
-    <color name="default_text_color_link">@color/modern_blue_600</color>
-
-    <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
-        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
-    </style>
+    <color name="toolbar_shadow_color">@color/black_alpha_11</color>
 </resources>
