@@ -1,6 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#008577</color>
+    <color name="default_text_color">@color/default_text_color_dark</color>
+    <color name="default_text_color_dark">@color/modern_grey_900</color>
+    <color name="modern_grey_900">#ff202124</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="default_icon_color_blue">@color/modern_blue_600</color>
+    <color name="modern_blue_600">#ff1a73e8</color>
     <color name="colorAccent">#D81B60</color>
+    <string name="accessibility_toolbar_btn_back">Go back</string>
+    <string name="accessibility_cancel_selection">Cancel selection</string>
+    <!-- SelectableListLayout dimensions -->
+    <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
+    <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
+    <dimen name="search_toolbar_modern_bg_top_bottom_inset">8dp</dimen>
+    <dimen name="search_toolbar_modern_bg_lateral_inset">8dp</dimen>
+    <dimen name="selectable_list_toolbar_nav_button_start_offset">4dp</dimen>
+    <dimen name="selectable_list_search_icon_end_padding">4dp</dimen>
+    <dimen name="selectable_list_toolbar_height">56dp</dimen>
+    <string name="select_items">Select items</string>
+    <plurals name="selected_items">
+        <item quantity="other">%d selected</item>
+        <item quantity="one">1 selected</item>
+    </plurals>
+    <string name="hide_info">Hide Info</string>
+    <string name="show_info">Show Info</string>
+    <!-- Modern List Item -->
+    <integer name="list_item_level_default">0</integer>
+    <integer name="list_item_level_selected">1</integer>
+    <integer name="list_item_level_incognito">2</integer>
+    <string name="accessibility_toolbar_multi_select">%1$s selected</string>
+    <string name="accessibility_toolbar_screen_position">"%1$s selected.  Options available near top of the screen"</string>
+    <color name="black_alpha_11">#1D000000</color>
+    <color name="toolbar_shadow_color">@color/black_alpha_11</color>
+    <color name="modern_white">@android:color/white</color>
+    <color name="default_icon_color_white">
+        @color/modern_white
+    </color>
+    <color name="default_icon_color_inverse">
+        @color/default_icon_color_white
+    </color>
+    <color name="default_icon_color">
+        @color/default_icon_color_dark
+    </color>
+    <color name="default_icon_color_dark">@color/modern_grey_800</color>
+    <color name="modern_grey_800">#3C4043</color>
+    <drawable name="ic_more_vert_24dp">@drawable/ic_more_vert_24dp_on_light_bg</drawable>
+    <dimen name="default_list_row_padding">16dp</dimen>
+    <color name="default_primary_color">#F2F2F2</color>
+    <color name="toolbar_background_primary">
+        @color/default_bg_color_elev_3
+    </color>
+    <color name="default_bg_color_elev_3">
+        @color/default_bg_color_light
+    </color>
+    <color name="default_bg_color_light">@color/modern_white</color>
+
+    <style name="Card">
+        <item name="android:background">@drawable/hairline_border_card_background</item>
+    </style>
+
+    <dimen name="action_bar_shadow_height">10dp</dimen>
+
+    <declare-styleable name="TextViewWithLeading">
+        <attr name="leading" format="reference|dimension" />
+    </declare-styleable>
+    <dimen name="text_size_medium_leading">20sp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+
+    <style name="TextAppearance.TextMedium">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance" parent="android:TextAppearance" />
+
+    <dimen name="headline_size">22sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <item name="default_disabled_alpha" format="float" type="dimen">0.38</item>
+    <item name="default_pressed_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_focused_hovered_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_focused_alpha" format="float" type="dimen">0.06</item>
+    <item name="default_hovered_alpha" format="float" type="dimen">0.04</item>
+    <item name="default_icon_pressed_alpha" format="float" type="dimen">
+        0.50
+    </item>
+
+    <color name="default_text_color_secondary">@color/modern_grey_700</color>
+    <color name="modern_grey_700">#5F6368</color>
 </resources>
