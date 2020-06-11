@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#008577</color>
     <color name="default_text_color">@color/default_text_color_dark</color>
     <color name="default_text_color_dark">@color/modern_grey_900</color>
@@ -93,4 +93,153 @@
 
     <color name="default_text_color_secondary">@color/modern_grey_700</color>
     <color name="modern_grey_700">#5F6368</color>
+
+    <style name="TextAppearance.Headline">
+        <item name="android:fontFamily">@font/accent_font</item>
+        <item name="android:textSize">@dimen/headline_size</item>
+    </style>
+
+    <style name="TextAppearance.Headline.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <color name="default_bg_color">@color/default_bg_color_light</color>
+    <color name="default_control_color_active">@color/default_control_color_active_light</color>
+    <color name="default_control_color_active_light">@color/modern_blue_600</color>
+
+    <style name="TextAppearance.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge">
+        <item name="android:textSize">@dimen/text_size_large</item>
+    </style>
+    <!-- Modern List Item -->
+    <style name="ListItemContainer">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/list_item_min_height</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
+    </style>
+
+    <style name="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginEnd">@dimen/list_item_start_icon_right_margin</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:contentDescription">@null</item>
+    </style>
+
+    <style name="ListItemEndIcon">
+        <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:scaleType">center</item>
+    </style>
+
+    <!-- Modern List Item dimensions -->
+    <dimen name="list_item_min_height">64dp</dimen>
+    <dimen name="list_item_default_margin">16dp</dimen>
+    <dimen name="list_item_start_icon_right_margin">20dp</dimen>
+    <dimen name="list_item_start_icon_width">36dp</dimen>
+    <dimen name="list_item_end_icon_width">56dp</dimen>
+
+    <style name="TextAppearance.Headline.Primary.Inverse">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
+
+    <color name="default_text_color_inverse">@color/default_text_color_light</color>
+    <color name="default_text_color_light">@color/modern_white</color>
+    <dimen name="clear_text_button_end_padding">10dp</dimen>
+    <color name="search_box_hint">@color/default_text_color_secondary</color>
+    <string name="accessibility_toolbar_btn_delete_url">Clear input</string>
+
+    <style name="Theme.Chromium.Activity.Fullscreen" parent="Theme.Chromium.Fullscreen">
+        <!-- No ActionBar -->
+        <item name="windowActionBar">false</item>
+    </style>
+
+    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
+
+    <style name="Base.Theme.Chromium.Fullscreen">
+        <!-- With ActionBar but not window title -->
+        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
+        <item name="windowActionBar">true</item>
+        <item name="colorPrimary">@color/default_control_color_active</item>
+        <item name="colorAccent">@color/default_control_color_active</item>
+    </style>
+
+    <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
+
+    <style name="Base.V17.Theme.Chromium" parent="Theme.BrowserUI">
+        <!-- Window Properties -->
+        <item name="android:windowBackground">@color/default_bg_color</item>
+
+        <!-- Action bar color -->
+        <item name="colorPrimary">@color/default_bg_color</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="colorPrimaryDark">@android:color/black</item>
+
+        <!-- Spinner styles -->
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Popup styles -->
+        <!-- Set android popup menu attributes for context menu styles because the context menus are
+             OS-dependent. -->
+        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
+        <item name="android:textAppearanceLargePopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:textAppearanceSmallPopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
+    </style>
+
+    <style name="Theme.BrowserUI" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <!-- Text colors -->
+        <item name="android:textColorLink">@color/default_text_color_link</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+
+        <!-- Color of checkboxes, switches, buttons, etc. -->
+        <item name="colorAccent">@color/default_control_color_active</item>
+        <item name="colorControlNormal">@color/control_normal_color</item>
+        <item name="colorControlActivated">@color/default_control_color_active</item>
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+    </style>
+
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+    </style>
+
+    <color name="control_normal_color">@color/default_control_color_normal_light</color>
+    <color name="control_highlight_color" tools:ignore="UnusedResources">
+        @color/default_control_color_highlight_light
+    </color>
+    <dimen name="popup_bg_corner_radius">4dp</dimen>
+    <color name="popup_bg_color">@color/default_bg_color_elev_4</color>
+    <color name="default_bg_color_elev_4">@color/default_bg_color_light</color>
+    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">
+        @color/modern_grey_800_alpha_38
+    </color>
+    <color name="modern_grey_800_alpha_38" tools:ignore="UnusedResources">#613C4043</color>
+    <color name="default_control_color_normal_light" tools:ignore="UnusedResources">
+        @color/modern_grey_700
+    </color>
+    <color name="text_highlight_color">@color/highlight_color_on_dark_text</color>
+    <color name="highlight_color_on_dark_text" tools:ignore="UnusedResources">#C6DAFC</color>
+    <color name="default_text_color_link">@color/modern_blue_600</color>
+
+    <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
+        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+    </style>
 </resources>

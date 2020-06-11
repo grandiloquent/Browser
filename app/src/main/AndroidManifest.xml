@@ -3,5 +3,14 @@
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name" />
+        android:label="@string/app_name">
+        <activity
+            android:name=".app.DownloadActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false"
+            android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
+
+
+    </application>
 </manifest>

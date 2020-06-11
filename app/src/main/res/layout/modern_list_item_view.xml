@@ -6,7 +6,7 @@
     android:id="@+id/content"
     style="@style/ListItemContainer">
 
-    <org.chromium.ui.widget.ChromeImageView
+    <euphoria.psycho.browser.ui.ChromeImageView
         android:id="@+id/start_icon"
         style="@style/ListItemStartIcon" />
 
@@ -34,7 +34,7 @@
             android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 
-    <org.chromium.ui.widget.ChromeImageButton
+    <euphoria.psycho.browser.ui.ChromeImageButton
         android:id="@+id/end_button"
         style="@style/ListItemEndIcon"
         android:visibility="gone" />
