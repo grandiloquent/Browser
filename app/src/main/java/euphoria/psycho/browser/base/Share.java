@@ -6,16 +6,25 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.WindowManager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,6 +32,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
@@ -32,10 +43,30 @@ import java.util.List;
 import java.util.Objects;
 
 import euphoria.psycho.browser.BuildConfig;
+import euphoria.psycho.browser.R;
 
 public class Share {
     private static final int BUFFER_SIZE = 8192;
+    private static final int DEFAULT_JPEG_QUALITY = 90;
+    private static final long INITIALCRC = 0xFFFFFFFFFFFFFFFFL;
+    private static final long POLY64REV = 0x95AC9329AC4BC9B5L;
+    private static final String TAG = "TAG/" + Share.class.getSimpleName();
     private static Context sApplicationContext;
+    private static long[] sCrcTable = new long[256];
+    private static float sPixelDensity = -1f;
+
+    static {
+        // http://bioinf.cs.ucl.ac.uk/downloads/crc64/crc64.c
+        long part;
+        for (int i = 0; i < 256; i++) {
+            part = i;
+            for (int j = 0; j < 8; j++) {
+                long x = ((int) part & 1) != 0 ? POLY64REV : 0;
+                part = (part >> 1) ^ x;
+            }
+            sCrcTable[i] = part;
+        }
+    }
 
     public static void closeQuietly(Closeable closeable) {
         try {
@@ -66,6 +97,16 @@ public class Share {
             c.close();
         } catch (IOException t) {
         }
+    }
+
+    public static byte[] compressToBytes(Bitmap bitmap, int quality) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(65536);
+        bitmap.compress(CompressFormat.JPEG, quality, baos);
+        return baos.toByteArray();
+    }
+
+    public static byte[] compressToBytes(Bitmap bitmap) {
+        return compressToBytes(bitmap, DEFAULT_JPEG_QUALITY);
     }
 
     public static long copy(InputStream source, OutputStream sink)
@@ -105,6 +146,14 @@ public class Share {
         copy(in, out);
         closeQuietly(in);
         closeQuietly(out);
+    }
+
+    public static final long crc64Long(byte[] buffer) {
+        long crc = INITIALCRC;
+        for (int k = 0, n = buffer.length; k < n; ++k) {
+            crc = sCrcTable[(((int) crc) ^ buffer[k]) & 0xff] ^ (crc >> 8);
+        }
+        return crc;
     }
 
     public static byte[] createChecksum(InputStream fis) throws Exception {
@@ -165,6 +214,62 @@ public class Share {
         return dir;
     }
 
+    public static Bitmap createVideoThumbnail(String filePath) {
+        // MediaMetadataRetriever is available on API Level 8
+        // but is hidden until API Level 10
+        Class<?> clazz = null;
+        Object instance = null;
+        try {
+            clazz = Class.forName("android.media.MediaMetadataRetriever");
+            instance = clazz.newInstance();
+
+            Method method = clazz.getMethod("setDataSource", String.class);
+            method.invoke(instance, filePath);
+
+            // The method name changes between API Level 9 and 10.
+            if (Build.VERSION.SDK_INT <= 9) {
+                return (Bitmap) clazz.getMethod("captureFrame").invoke(instance);
+            } else {
+                byte[] data = (byte[]) clazz.getMethod("getEmbeddedPicture").invoke(instance);
+                if (data != null) {
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                    if (bitmap != null) return bitmap;
+                }
+                return (Bitmap) clazz.getMethod("getFrameAtTime").invoke(instance);
+            }
+        } catch (IllegalArgumentException ex) {
+            // Assume this is a corrupt video file
+        } catch (RuntimeException ex) {
+            // Assume this is a corrupt video file.
+        } catch (InstantiationException e) {
+            Log.e(TAG, "createVideoThumbnail", e);
+        } catch (InvocationTargetException e) {
+            Log.e(TAG, "createVideoThumbnail", e);
+        } catch (ClassNotFoundException e) {
+            Log.e(TAG, "createVideoThumbnail", e);
+        } catch (NoSuchMethodException e) {
+            Log.e(TAG, "createVideoThumbnail", e);
+        } catch (IllegalAccessException e) {
+            Log.e(TAG, "createVideoThumbnail", e);
+        } finally {
+            try {
+                if (instance != null) {
+                    clazz.getMethod("release").invoke(instance);
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        return null;
+    }
+
+    public static float dpToPixel(float dp) {
+        return sPixelDensity * dp;
+    }
+
+    public static int dpToPixel(int dp) {
+        return Math.round(dpToPixel((float) dp));
+    }
+
     /**
      * This is used to ensure that we always use the application context to fetch the default shared
      * preferences. This avoids needless I/O for android N and above. It also makes it clear that
@@ -190,6 +295,16 @@ public class Share {
      */
     public static Context getApplicationContext() {
         return sApplicationContext;
+    }
+
+    public static byte[] getBytes(String in) {
+        byte[] result = new byte[in.length() * 2];
+        int output = 0;
+        for (char ch : in.toCharArray()) {
+            result[output++] = (byte) (ch & 0xFF);
+            result[output++] = (byte) (ch >> 8);
+        }
+        return result;
     }
 
     public static String getDeviceIP(Context context) {
@@ -235,6 +350,15 @@ public class Share {
         assert sApplicationContext == null || sApplicationContext == appContext
                 || ((ContextWrapper) sApplicationContext).getBaseContext() == appContext;
         initJavaSideApplicationContext(appContext);
+    }
+
+    public static void initialize(Context context) {
+        DisplayMetrics metrics = new DisplayMetrics();
+        WindowManager wm = (WindowManager)
+                context.getSystemService(Context.WINDOW_SERVICE);
+        wm.getDefaultDisplay().getMetrics(metrics);
+        sPixelDensity = metrics.density;
+
     }
 
     public static InetAddress intToInetAddress(int hostAddress) {
@@ -391,6 +515,7 @@ public class Share {
             return result;
         }
     }
+
 }
 
 /*
