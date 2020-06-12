@@ -11,7 +11,6 @@ cmake_minimum_required(VERSION 3.4.1)
 ###############################################################################
 
 
-
 # set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror")
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -UNDEBUG")
@@ -27,13 +26,17 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
+        dynarray.c
         native-lib.c)
 
 add_library(libmongoose
         SHARED
         mongoose.c
         )
-
+add_library(libjson
+        SHARED
+        cJSON.c
+        )
 ##　target_compile_definitions(lib_exe1 PRIVATE -DForExe1)
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -57,4 +60,5 @@ find_library( # Sets the name of the path variable.
 target_link_libraries( # Specifies the target library.
         native-lib
         libmongoose
+        libjson
         ${log-lib})

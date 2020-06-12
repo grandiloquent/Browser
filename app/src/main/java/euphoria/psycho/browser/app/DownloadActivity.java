@@ -18,6 +18,54 @@ public class DownloadActivity extends AppCompatActivity {
 
     private static final int REQUEST_PERMISSIONS_CODE = 1;
 
+    private void checkStaticFiles() {
+
+
+        String[] files = new String[]{
+                "video.css",
+                "video.js",
+                "videos.html",
+
+        };
+        Share.createDirectoryIfNotExists(Share.getExternalStoragePath("FileServer"));
+
+        for (String f : files) {
+            String fileName = Share.getExternalStoragePath("FileServer/" + f);
+
+            if (Share.isFile(fileName)) {
+                if (!fileName.endsWith(".css")
+                        && !fileName.endsWith(".js")
+                        && !fileName.endsWith(".html")) {
+                    continue;
+                }
+                try {
+                    String assetMd5 = Share.getMD5Checksum(getAssets().open("static/" + f));
+                    if (Share.getMD5Checksum(fileName).equals(assetMd5)) {
+                        continue;
+                    }
+                } catch (Exception e) {
+
+                    Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
+
+                }
+            } else {
+                try {
+                    Share.copyAssetFile(this, "static/" + f, fileName);
+                } catch (IOException e) {
+                    Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
+                }
+            }
+
+        }
+
+
+    }
+
+    private void initialize() {
+        checkStaticFiles();
+        NativeHelper.startServer(Share.getDeviceIP(this), "12345", Share.getExternalStoragePath("FileServer"));
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,49 +84,6 @@ public class DownloadActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
         initialize();
-    }
-
-    private void initialize() {
-        checkStaticFiles();
-        NativeHelper.startServer(Share.getDeviceIP(this), "12345", Share.getExternalStoragePath("FileServer"));
-    }
-
-    private void checkStaticFiles() {
-
-
-        String[] files = new String[]{
-                "video.css",
-                "video.js",
-                "videos.html",
-
-        };
-        Share.createDirectoryIfNotExists(Share.getExternalStoragePath("FileServer"));
-
-        for (String f : files) {
-            String fileName = Share.getExternalStoragePath("FileServer/" + f);
-            if (Share.isFile(fileName)) {
-                if (!fileName.endsWith(".css") && !fileName.endsWith(".js") && !fileName.endsWith(".html")) {
-                    break;
-                }
-                try {
-                    String assetMd5 = Share.getMD5Checksum(getAssets().open("static/" + f));
-                    if (Share.getMD5Checksum(fileName).equals(assetMd5)) {
-                        break;
-                    }
-                } catch (Exception e) {
-
-                    Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
-
-                }
-            }
-            try {
-                Share.copyAssetFile(this, "static/" + f, fileName);
-            } catch (IOException e) {
-                Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
-            }
-        }
-
-
     }
 
 }

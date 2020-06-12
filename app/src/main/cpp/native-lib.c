@@ -1,11 +1,124 @@
 #include "jni.h"
 #include "android/log.h"
 #include "mongoose.h"
+#include "dynarray.h"
+#include "cJSON.h"
 
 #define LOG_TAG "TAG/Native"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 static struct mg_serve_http_opts s_http_server_opts;
+
+///////////////////////////
+
+char *read_file(const char *filename, int *size);
+
+static int has_prefix(const struct mg_str *uri, const struct mg_str *prefix);
+
+static int is_equal(const struct mg_str *s1, const struct mg_str *s2);
+
+static void ev_handler(struct mg_connection *nc, int ev, void *ev_data);
+
+static void handle_api_videos(struct mg_connection *nc, const struct http_message *hm);
+
+static void handle_video(struct mg_connection *nc, const struct http_message *hm);
+
+void *start_server(const char *address);
+
+///////////////////////////
+
+int list_directory(const char *dir, strlist_t *files) {
+    char tmp[256];
+    DIR *d;
+    struct dirent *de;
+
+    d = opendir(dir);
+    if (d == 0) {
+        return -1;
+    }
+    while ((de = readdir(d)) != 0) {
+        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))continue;
+        struct stat s;
+        int err;
+        snprintf(tmp, sizeof(tmp), "%s/%s", dir, de->d_name);
+        err = stat(tmp, &s);
+        if (err < 0) {
+            closedir(d);
+            return -1;
+        }
+        if (S_ISREG(s.st_mode)) {
+            strlist_append_dup(files, tmp);
+        }
+        if (S_ISDIR(s.st_mode)) {
+            list_directory(tmp, files);
+        }
+    }
+
+    closedir(d);
+    return 0;
+}
+
+void dirname(char *buf, const char *path) {
+    strcpy(buf, path);
+    char *s = buf;
+    size_t idx = 0;
+    size_t c = 0;
+    while (*s++) {
+        idx++;
+        if (*s == '/')
+            c = idx;
+        printf("%c\n", *s);
+    }
+    buf[c] = 0;
+}
+
+static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
+    static const struct mg_str api_index = MG_MK_STR("/");
+    static const struct mg_str api_videos = MG_MK_STR("/api/videos/");
+    static const struct mg_str video = MG_MK_STR("/video");
+    struct http_message *hm = (struct http_message *) ev_data;
+    if (ev == MG_EV_HTTP_REQUEST) {
+        if (is_equal(&hm->uri, &api_videos)) {
+            handle_api_videos(nc, hm);
+        } else if (is_equal(&hm->uri, &video)) {
+            LOGE("%s\n", "/video");
+            handle_video(nc, hm);
+        } else {
+            LOGE("ev_handler: %s\n", s_http_server_opts.document_root);
+            mg_serve_http(nc, hm, s_http_server_opts);
+        }
+    }
+}
+
+static void handle_api_videos(struct mg_connection *nc, const struct http_message *hm) {
+    char path_buf[PATH_MAX];
+    dirname(path_buf, s_http_server_opts.document_root);
+    strcat(path_buf, "/Videos");
+    strlist_t files = STRLIST_INITIALIZER;
+
+    int ret = list_directory(path_buf, &files);
+
+    STRLIST_FOREACH(&files, filename, {
+        LOGE("%s\n", filename);
+    });
+}
+
+static void handle_video(struct mg_connection *nc, const struct http_message *hm) {
+    const char *filename = "videos.html";
+    char path_buf[PATH_MAX];
+    strcpy(path_buf, s_http_server_opts.document_root);
+    strcat(path_buf, "/");
+    strcat(path_buf, filename);
+    int size = 0;
+    char *buf = read_file(path_buf, &size);
+    if (buf == NULL) {
+        mg_send_head(nc, 500, 0, NULL);
+        return;
+    }
+    mg_send_head(nc, 200, size, "Content-Type: text/html");
+    mg_send(nc, buf, size);
+    free(buf);
+}
 
 static int has_prefix(const struct mg_str *uri, const struct mg_str *prefix) {
     return uri->len > prefix->len && memcmp(uri->p, prefix->p, prefix->len) == 0;
@@ -49,46 +162,6 @@ char *read_file(const char *filename, int *size) {
         return NULL;
     }
     return buf;
-}
-
-static void handle_video(struct mg_connection *nc, const struct http_message *hm) {
-    const char *filename = "videos.html";
-
-    char path_buf[PATH_MAX];
-
-    strcpy(path_buf, s_http_server_opts.document_root);
-    strcat(path_buf, "/");
-    strcat(path_buf, filename);
-    int size = 0;
-
-    char *buf = read_file(path_buf, &size);
-    if (buf == NULL) {
-        mg_send_head(nc, 500, 0, NULL);
-        return;
-    }
-    mg_send_head(nc, 200, size, "Content-Type: text/html");
-    mg_send(nc, buf, size);
-    free(buf);
-}
-
-static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
-    static const struct mg_str api_index = MG_MK_STR("/");
-    static const struct mg_str api_get = MG_MK_STR("/api/get/");
-    static const struct mg_str video = MG_MK_STR("/video");
-    struct http_message *hm = (struct http_message *) ev_data;
-    if (ev == MG_EV_HTTP_REQUEST) {
-        if (is_equal(&hm->uri, &api_index)) {
-            // index(nc, hm);
-        } else if (has_prefix(&hm->uri, &api_get)) {
-            //GetJSON(nc, hm, atoi(hm->uri.p + api_get.len));
-        } else if (is_equal(&hm->uri, &video)) {
-            LOGE("%s\n", "/video");
-            handle_video(nc, hm);
-        } else {
-            LOGE("ev_handler: %s\n", s_http_server_opts.document_root);
-            mg_serve_http(nc, hm, s_http_server_opts);
-        }
-    }
 }
 
 void *start_server(const char *address) {
