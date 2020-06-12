@@ -5,16 +5,27 @@ import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +34,136 @@ import java.util.Objects;
 import euphoria.psycho.browser.BuildConfig;
 
 public class Share {
+    private static final int BUFFER_SIZE = 8192;
     private static Context sApplicationContext;
+
+    public static void closeQuietly(Closeable closeable) {
+        try {
+            if (closeable != null)
+                closeable.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void closeSilently(ParcelFileDescriptor fd) {
+        try {
+            if (fd != null) fd.close();
+        } catch (Throwable t) {
+        }
+    }
+
+    public static void closeSilently(Cursor cursor) {
+        try {
+            if (cursor != null) cursor.close();
+        } catch (Throwable t) {
+        }
+    }
+
+    public static void closeSilently(Closeable c) {
+        if (c == null) return;
+        try {
+            c.close();
+        } catch (IOException t) {
+        }
+    }
+
+    public static long copy(InputStream source, OutputStream sink)
+            throws IOException {
+        long nread = 0L;
+        byte[] buf = new byte[BUFFER_SIZE];
+        int n;
+        while ((n = source.read(buf)) > 0) {
+            sink.write(buf, 0, n);
+            nread += n;
+        }
+        return nread;
+    }
+
+    public static long copy(String source, OutputStream out) {
+        InputStream in = null;
+        try {
+            in = new FileInputStream(source);
+            return copy(in, out);
+        } catch (IOException e) {
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return 0;
+    }
+
+    public static void copyAssetFile(Context context, String src, String dst) throws IOException {
+        AssetManager manager = context.getAssets();
+        InputStream in = manager.open(src);
+        FileOutputStream out = new FileOutputStream(dst);
+        copy(in, out);
+        closeQuietly(in);
+        closeQuietly(out);
+    }
+
+    public static byte[] createChecksum(InputStream fis) throws Exception {
+
+        byte[] buffer = new byte[1024];
+        MessageDigest complete = MessageDigest.getInstance("MD5");
+        int numRead;
+
+        do {
+            numRead = fis.read(buffer);
+            if (numRead > 0) {
+                complete.update(buffer, 0, numRead);
+            }
+        } while (numRead != -1);
+
+        fis.close();
+        return complete.digest();
+    }
+
+    public static File createDirectoryIfNotExists(String dirPath) {
+        return createDirectoryIfNotExists(new File(dirPath));
+    }
+
+    public static File createDirectoryIfNotExists(File dir) {
+         /*
+         Tests whether the file denoted by this abstract pathname is a
+         directory.
+         Where it is required to distinguish an I/O exception from the case
+         that the file is not a directory, or where several attributes of the
+         same file are required at the same time, then the java.nio.file.Files#readAttributes(Path,Class,LinkOption[])
+         Files.readAttributes method may be used.
+         @return true if and only if the file denoted by this
+         abstract pathname exists and is a directory;
+         false otherwise
+         @throws  SecurityException
+         If a security manager exists and its java.lang.SecurityManager#checkRead(java.lang.String)
+         method denies read access to the file
+         */
+        if (!dir.isDirectory()) {
+         /*
+         Creates the directory named by this abstract pathname, including any
+         necessary but nonexistent parent directories.  Note that if this
+         operation fails it may have succeeded in creating some of the necessary
+         parent directories.
+         @return  true if and only if the directory was created,
+         along with all necessary parent directories; false
+         otherwise
+         @throws  SecurityException
+         If a security manager exists and its java.lang.SecurityManager#checkRead(java.lang.String)
+         method does not permit verification of the existence of the
+         named directory and all necessary parent directories; or if
+         the java.lang.SecurityManager#checkWrite(java.lang.String)
+         method does not permit the named directory and all necessary
+         parent directories to be created
+         */
+            dir.mkdirs();
+        }
+        return dir;
+    }
 
     /**
      * This is used to ensure that we always use the application context to fetch the default shared
@@ -63,6 +203,24 @@ public class Share {
         }
     }
 
+    public static String getExternalStoragePath(String fileName) {
+        return Environment.getExternalStorageDirectory() + "/" + fileName;
+    }
+
+    public static String getMD5Checksum(InputStream fis) throws Exception {
+        byte[] b = createChecksum(fis);
+        StringBuilder result = new StringBuilder();
+
+        for (byte value : b) {
+            result.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));
+        }
+        return result.toString();
+    }
+
+    public static String getMD5Checksum(String filename) throws Exception {
+        return getMD5Checksum(new FileInputStream(filename));
+    }
+
     /**
      * Initializes the java application context.
      * <p>
@@ -89,6 +247,10 @@ public class Share {
         } catch (UnknownHostException e) {
             throw new AssertionError();
         }
+    }
+
+    public static boolean isFile(String path) {
+        return new File(path).isFile();
     }
 
     public static String substringAfter(String string, char delimiter) {

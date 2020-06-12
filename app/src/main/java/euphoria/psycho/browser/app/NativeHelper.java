@@ -6,5 +6,5 @@ public class NativeHelper {
         System.loadLibrary("native-lib");
     }
 
-    public static native void startServer(String host, String port);
+    public static native void startServer(String host, String port, String rootDirectory);
 }

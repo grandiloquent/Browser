@@ -12,9 +12,9 @@ cmake_minimum_required(VERSION 3.4.1)
 
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror")
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -Wall -Werror")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -UNDEBUG")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++1z -Wall -UNDEBUG")
 # -lstdc++fs
 
 # Creates and names a library, sets it as either STATIC
@@ -27,10 +27,12 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
-        mongoose.c
         native-lib.c)
 
-
+add_library(libmongoose
+        SHARED
+        mongoose.c
+        )
 
 ##　target_compile_definitions(lib_exe1 PRIVATE -DForExe1)
 
@@ -54,4 +56,5 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
         native-lib
+        libmongoose
         ${log-lib})
