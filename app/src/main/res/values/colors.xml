@@ -57,4 +57,13 @@
         @color/default_bg_color_elev_3
     </color>
     <color name="toolbar_shadow_color">@color/black_alpha_11</color>
+    <color name="toolbar_text_box_background">@color/modern_grey_100</color>
+    <color name="modern_grey_100">#F1F3F4</color>
+    <color name="white_alpha_70">#B3FFFFFF</color>
+    <color name="default_bg_color_secondary">@color/default_bg_color_secondary_light</color>
+    <color name="default_bg_color_secondary_light">@color/modern_grey_100</color>
+    <color name="hairline_stroke_color_dark">@color/modern_grey_700</color>
+    <color name="hairline_stroke_color">@color/hairline_stroke_color_light</color>
+    <color name="hairline_stroke_color_light">@color/modern_grey_300</color>
+    <color name="modern_grey_300">#DADCE0</color>
 </resources>

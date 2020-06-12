@@ -27,12 +27,6 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
-
-        llist.c
-        mime.c
-        hashtable.c
-        cache.c
-        net.c
         native-lib.c)
 
 

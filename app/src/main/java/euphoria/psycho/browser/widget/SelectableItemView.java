@@ -3,17 +3,17 @@ package euphoria.psycho.browser.widget;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import android.support.graphics.drawable.AnimatedVectorDrawableCompat;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.AppCompatImageButton;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.ApiCompatibilityUtils;
 

@@ -13,8 +13,9 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
+import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.ui.BakedBezierInterpolator;
 
-import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
 import java.text.NumberFormat;
 

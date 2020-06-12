@@ -55,7 +55,7 @@ public class Share {
     public static String getDeviceIP(Context context) {
         WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         try {
-            @SuppressLint("MissingPermission") WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
             InetAddress inetAddress = intToInetAddress(wifiInfo.getIpAddress());
             return inetAddress.getHostAddress();
         } catch (Exception e) {
