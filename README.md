@@ -19,7 +19,7 @@
 
 ## `IPELINE_ERROR_DECODE: Failed to send audio packet for decoding`
 
-注释到 `mongoose.c`
+注释掉 `mongoose.c`中的：
 
 ```c
 #if _FILE_OFFSET_BITS == 64 || _POSIX_C_SOURCE >= 200112L || \

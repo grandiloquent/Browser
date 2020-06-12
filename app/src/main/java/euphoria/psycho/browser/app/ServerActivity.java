@@ -1,22 +1,28 @@
 package euphoria.psycho.browser.app;
 
-import android.Manifest;
-import android.Manifest.permission;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.net.ServerSocket;
+import java.util.concurrent.CompletableFuture;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.base.ThreadUtils;
 
-public class DownloadActivity extends AppCompatActivity {
-
-    private static final int REQUEST_PERMISSIONS_CODE = 1;
+public class ServerActivity extends Activity {
+    private TextView mTextView;
+    private Handler mHandler;
+    private ProgressBar mProgressBar;
 
     private void checkStaticFiles() {
 
@@ -45,14 +51,11 @@ public class DownloadActivity extends AppCompatActivity {
                     }
                 } catch (Exception e) {
 
-                    Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
-
                 }
             } else {
                 try {
                     Share.copyAssetFile(this, "static/" + f, fileName);
                 } catch (IOException e) {
-                    Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
                 }
             }
 
@@ -62,27 +65,35 @@ public class DownloadActivity extends AppCompatActivity {
     }
 
     private void initialize() {
-        checkStaticFiles();
+        mHandler = new Handler();
+        new Thread(() -> {
+            String ip = Share.getDeviceIP(ServerActivity.this);
+            checkStaticFiles();
+            Intent serverService = new Intent(this, ServerService.class);
+            startService(serverService);
+            mHandler.post(() -> {
+                mProgressBar.setVisibility(View.GONE);
+                mTextView.setText(String.format("http://%s:%s", ip, "12345"));
+                mTextView.setVisibility(View.VISIBLE);
+            });
+        }).start();
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_download);
 
-        requestPermissions(new String[]{
-                permission.WRITE_EXTERNAL_STORAGE
-        }, REQUEST_PERMISSIONS_CODE);
-
-
-        //
-
+        setContentView(R.layout.activity_server);
+        mTextView = findViewById(R.id.title);
+        mProgressBar = findViewById(R.id.progress_circular);
+        this.initialize();
     }
+
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    protected void onResume() {
+        super.onResume();
 
-        initialize();
+
     }
-
 }

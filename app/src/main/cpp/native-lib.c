@@ -82,60 +82,10 @@ void dirname(char *buf, const char *path) {
 }
 
 static void handle_watch(struct mg_connection *nc, struct http_message *hm) {
-//    int len = (int) hm->query_string.len;
-//    char *qs = malloc(len + 1);
-//    memcpy(qs, hm->query_string.p, hm->query_string.len);
-//    qs[len+1]=0;
-//    char filename[PATH_MAX];
-//    len = mg_url_decode(qs + 2, strlen(qs) - 2, filename, PATH_MAX, 1);
-//
-//    filename[len] = 0;
-//    LOGE("%s", filename);
     char filename[PATH_MAX];
-    mg_get_http_var(&hm->query_string, "v", filename,PATH_MAX);
+    mg_get_http_var(&hm->query_string, "v", filename, PATH_MAX);
     static const struct mg_str video = MG_MK_STR("video/mp4");
-    mg_http_serve_file(nc, hm, filename, video, mg_mk_str("Cache-Control: public,max-age=14400,public"));
-    /* long a = 0;
-
-     struct mg_str *range_hdr = mg_get_http_header(hm, "Range");
-     if (range_hdr) {
-         char *p = (char *) malloc(range_hdr->len + 1);
-
-         memcpy(p, range_hdr->p, range_hdr->len);
-         p[range_hdr->len] = '\0';
-         a = parse_range(p);
-         LOGE("%s %d\n", p, a);
-         free(p);
-     }
-
-     FILE *f = fopen(filename, "rb");
-     if (!f) {
-         mg_send_head(nc, 500, 0, NULL);
-         return;
-     }
-     fseek(f, 0, SEEK_END);
-     long size = ftell(f);
-     rewind(f);
-     int BUF_SIZE = 80920;
-     char buf[BUF_SIZE];
-
-     char header[1024];
-     if (a != 0)
-         fseek(f, a, SEEK_SET);
-     snprintf(header, 1024,
-              "Accept-Ranges: bytes\r\nContent-Type: video/mp4\r\nContent-Range: bytes %ld-%ld/%ld",
-              a,
-              size - 1, size);
-     mg_send_head(nc, 206, size - a, header);
-     size_t i = 0;
-     do {
-         i = fread(buf, 1, BUF_SIZE, f);
-        //mg_send()
-     } while (i > 0);
-     fclose(f);
-
-
-     LOGE("%s %d", filename, size);*/
+    mg_http_serve_file(nc, hm, filename, video, mg_mk_str(""));
 }
 
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
