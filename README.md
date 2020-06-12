@@ -14,3 +14,16 @@
 ## 参考
 
 - https://www.man7.org/linux/man-pages/man3/getaddrinfo.3.html
+
+## 错误
+
+## `IPELINE_ERROR_DECODE: Failed to send audio packet for decoding`
+
+注释到 `mongoose.c`
+
+```c
+#if _FILE_OFFSET_BITS == 64 || _POSIX_C_SOURCE >= 200112L || \
+    _XOPEN_SOURCE >= 600
+                fseeko(pd->file.fp, r1, SEEK_SET);
+```
+
