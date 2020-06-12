@@ -9,6 +9,7 @@
 - https://github.com/cesanta/mongoose
 - https://github.com/tronkko/dirent
 - https://github.com/EZLippi/Tinyhttpd
+- https://github.com/SheetJS/js-crc32
 
 
 ## 参考

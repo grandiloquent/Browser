@@ -12,12 +12,11 @@ import android.util.Property;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.text.NumberFormat;
+
 import androidx.annotation.VisibleForTesting;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.ui.BakedBezierInterpolator;
-
-
-import java.text.NumberFormat;
 
 /**
  * View that shows an integer number. It provides a smooth roll animation on changing the

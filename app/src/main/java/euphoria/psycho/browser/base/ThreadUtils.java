@@ -8,12 +8,11 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
 
-import androidx.annotation.VisibleForTesting;
-
-
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
+
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Helper methods to deal with threading related tasks.

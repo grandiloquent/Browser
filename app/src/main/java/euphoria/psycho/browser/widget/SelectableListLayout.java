@@ -14,6 +14,8 @@ import android.view.ViewStub;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.util.List;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
@@ -27,9 +29,6 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.ApiCompatibilityUtils;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
 import euphoria.psycho.browser.widget.UiConfig.DisplayStyle;
-
-
-import java.util.List;
 
 /**
  * Contains UI elements common to selectable list views: a loading view, empty view, selection

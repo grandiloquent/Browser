@@ -2,22 +2,26 @@ package euphoria.psycho.browser.app;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
+import android.system.ErrnoException;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import java.io.File;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.concurrent.CompletableFuture;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
-import euphoria.psycho.browser.base.ThreadUtils;
 
 public class ServerActivity extends Activity {
     private TextView mTextView;
@@ -52,12 +56,12 @@ public class ServerActivity extends Activity {
                 } catch (Exception e) {
 
                 }
-            } else {
-                try {
-                    Share.copyAssetFile(this, "static/" + f, fileName);
-                } catch (IOException e) {
-                }
             }
+            try {
+                Share.copyAssetFile(this, "static/" + f, fileName);
+            } catch (IOException e) {
+            }
+
 
         }
 
@@ -87,13 +91,58 @@ public class ServerActivity extends Activity {
         mTextView = findViewById(R.id.title);
         mProgressBar = findViewById(R.id.progress_circular);
         this.initialize();
+
+        File videoDirectory = new File(Environment.getExternalStorageDirectory(), "Videos");
+
+        if (!videoDirectory.isDirectory()) {
+            return;
+        }
+
+        List<File> files = listFilesRecursive(videoDirectory);
+        File imagesDirectory = new File(Share.getExternalStoragePath("FileServer"), "images");
+        if (!imagesDirectory.isDirectory()) {
+            imagesDirectory.mkdirs();
+        }
+        for (File file : files) {
+            if (file.getName().endsWith(".mp4")) {
+                try {
+
+                    String filename = Share.md5(file.getAbsolutePath());
+
+                    File target = new File(imagesDirectory, filename + ".jpg");
+                    if (!target.isFile()) {
+                        Bitmap bitmap = Share.createVideoThumbnail(file.getAbsolutePath());
+                        Share.writeAllBytes(target.getAbsolutePath(), Share.compressToBytes(bitmap));
+                    }
+                } catch (Exception e) {
+
+                }
+
+            }
+        }
     }
 
+    static List<File> listFilesRecursive(File startDir) {
+        final ArrayList<File> files = new ArrayList<>();
+        final LinkedList<File> dirs = new LinkedList<File>();
+        dirs.add(startDir);
+        while (!dirs.isEmpty()) {
+            final File dir = dirs.removeFirst();
+            final File[] children = dir.listFiles();
+            if (children == null) continue;
+            for (File child : children) {
+                if (child.isDirectory()) {
+                    dirs.add(child);
+                } else if (child.isFile()) {
+                    files.add(child);
+                }
+            }
+        }
+        return files;
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-
     }
 }

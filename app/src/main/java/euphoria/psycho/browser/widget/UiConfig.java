@@ -9,12 +9,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.VisibleForTesting;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Exposes general configuration info about the display style for a given reference View.

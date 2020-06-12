@@ -52,4 +52,24 @@ char *read_file(const char *filename, int *size) {
     return buf;
 }
 
+void base64enc(char *out, const char *in) {
+    const char code[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+    int i = 0, x = 0, l = 0;
+
+    for (; *in; in++) {
+        x = x << 8 | *in;
+        for (l += 8; l >= 6; l -= 6) {
+            out[i++] = code[(x >> (l - 6)) & 0x3f];
+        }
+    }
+    if (l > 0) {
+        x <<= 6 - l;
+        out[i++] = code[x & 0x3f];
+    }
+    for (; i % 4;) {
+        out[i++] = '=';
+    }
+    out[i] = '\0';
+}
+
 #endif

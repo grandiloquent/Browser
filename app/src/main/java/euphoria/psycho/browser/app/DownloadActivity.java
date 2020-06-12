@@ -1,12 +1,10 @@
 package euphoria.psycho.browser.app;
 
-import android.Manifest;
 import android.Manifest.permission;
 import android.os.Bundle;
 import android.util.Log;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

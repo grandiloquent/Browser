@@ -27,6 +27,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.List;
+
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -41,12 +45,6 @@ import euphoria.psycho.browser.ui.ColorUtils;
 import euphoria.psycho.browser.ui.KeyboardVisibilityDelegate;
 import euphoria.psycho.browser.ui.UiUtils;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
-
-
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.List;
 
 /**
  * A toolbar that changes its view depending on whether a selection is established. The toolbar

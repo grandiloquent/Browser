@@ -1,12 +1,10 @@
 package euphoria.psycho.browser.base;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -28,6 +26,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,9 +40,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-
-import euphoria.psycho.browser.BuildConfig;
-import euphoria.psycho.browser.R;
 
 public class Share {
     private static final int BUFFER_SIZE = 8192;
@@ -296,7 +292,19 @@ public class Share {
     public static Context getApplicationContext() {
         return sApplicationContext;
     }
-
+    public static String md5(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
+    }
     public static byte[] getBytes(String in) {
         byte[] result = new byte[in.length() * 2];
         int output = 0;
@@ -389,6 +397,12 @@ public class Share {
         return string;
     }
 
+    public static void writeAllBytes(String path, byte[] bytes) throws IOException {
+        FileOutputStream fs = new FileOutputStream(path);
+        fs.write(bytes, 0, bytes.length);
+        fs.close();
+    }
+
     public static String substringAfterLast(String string, char delimiter) {
         int index = string.lastIndexOf(delimiter);
         if (index != -1) return string.substring(index + 1);
@@ -405,6 +419,39 @@ public class Share {
         int index = string.indexOf(delimiter);
         if (index != -1) return string.substring(0, index);
         return string;
+    }
+
+    /**
+     * Return list of all normal files under the given directory, traversing
+     * directories recursively.
+     *
+     * @param exclude ignore dirs with this name, or {@code null} to ignore.
+     * @param uid     only return files owned by this UID, or {@code -1} to ignore.
+     */
+    public static List<ConcreteFile> listFilesRecursive(File startDir, String exclude, int uid) {
+        final ArrayList<ConcreteFile> files = new ArrayList<>();
+        final LinkedList<File> dirs = new LinkedList<File>();
+        dirs.add(startDir);
+        while (!dirs.isEmpty()) {
+            final File dir = dirs.removeFirst();
+            if (Objects.equals(dir.getName(), exclude)) continue;
+            final File[] children = dir.listFiles();
+            if (children == null) continue;
+            for (File child : children) {
+                if (child.isDirectory()) {
+                    dirs.add(child);
+                } else if (child.isFile()) {
+                    try {
+                        final ConcreteFile file = new ConcreteFile(child);
+                        if (uid == -1 || file.stat.st_uid == uid) {
+                            files.add(file);
+                        }
+                    } catch (ErrnoException ignored) {
+                    }
+                }
+            }
+        }
+        return files;
     }
 
     public static String substringBefore(String string, String delimiter) {
@@ -443,39 +490,6 @@ public class Share {
         sApplicationContext = appContext;
     }
 
-    /**
-     * Return list of all normal files under the given directory, traversing
-     * directories recursively.
-     *
-     * @param exclude ignore dirs with this name, or {@code null} to ignore.
-     * @param uid     only return files owned by this UID, or {@code -1} to ignore.
-     */
-    static List<ConcreteFile> listFilesRecursive(File startDir, String exclude, int uid) {
-        final ArrayList<ConcreteFile> files = new ArrayList<>();
-
-        final LinkedList<File> dirs = new LinkedList<File>();
-        dirs.add(startDir);
-        while (!dirs.isEmpty()) {
-            final File dir = dirs.removeFirst();
-            if (Objects.equals(dir.getName(), exclude)) continue;
-            final File[] children = dir.listFiles();
-            if (children == null) continue;
-            for (File child : children) {
-                if (child.isDirectory()) {
-                    dirs.add(child);
-                } else if (child.isFile()) {
-                    try {
-                        final ConcreteFile file = new ConcreteFile(child);
-                        if (uid == -1 || file.stat.st_uid == uid) {
-                            files.add(file);
-                        }
-                    } catch (ErrnoException ignored) {
-                    }
-                }
-            }
-        }
-        return files;
-    }
 
     /**
      * Initialization-on-demand holder. This exists for thread-safe lazy initialization.

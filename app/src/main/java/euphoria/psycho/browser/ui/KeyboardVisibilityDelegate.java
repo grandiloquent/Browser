@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.WindowInsets;
 import android.view.inputmethod.InputMethodManager;
 
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 import euphoria.psycho.browser.base.ObserverList;
