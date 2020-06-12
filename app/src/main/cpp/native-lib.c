@@ -10,6 +10,15 @@
 static struct mg_serve_http_opts s_http_server_opts;
 
 ///////////////////////////
+bool ends_with(const char *s1, const char *s2) {
+    size_t s1_length = strlen(s1);
+    size_t s2_length = strlen(s2);
+    if (s2_length > s1_length) {
+        return false;
+    }
+    const char *start = s1 + (s1_length - s2_length);
+    return strncmp(start, s2, s2_length) == 0;
+}
 
 char *read_file(const char *filename, int *size);
 
@@ -37,7 +46,9 @@ int list_directory(const char *dir, strlist_t *files) {
         return -1;
     }
     while ((de = readdir(d)) != 0) {
-        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))continue;
+        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")
+                )
+            continue;
         struct stat s;
         int err;
         snprintf(tmp, sizeof(tmp), "%s/%s", dir, de->d_name);
@@ -46,7 +57,7 @@ int list_directory(const char *dir, strlist_t *files) {
             closedir(d);
             return -1;
         }
-        if (S_ISREG(s.st_mode)) {
+        if (S_ISREG(s.st_mode) && ends_with(de->d_name, ".mp4")) {
             strlist_append_dup(files, tmp);
         }
         if (S_ISDIR(s.st_mode)) {
@@ -74,14 +85,15 @@ void dirname(char *buf, const char *path) {
 
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
     static const struct mg_str api_index = MG_MK_STR("/");
-    static const struct mg_str api_videos = MG_MK_STR("/api/videos/");
+    static const struct mg_str api_videos = MG_MK_STR("/api/videos");
     static const struct mg_str video = MG_MK_STR("/video");
     struct http_message *hm = (struct http_message *) ev_data;
     if (ev == MG_EV_HTTP_REQUEST) {
         if (is_equal(&hm->uri, &api_videos)) {
+            LOGE("%s\n", "/api/videos");
             handle_api_videos(nc, hm);
         } else if (is_equal(&hm->uri, &video)) {
-            LOGE("%s\n", "/video");
+
             handle_video(nc, hm);
         } else {
             LOGE("ev_handler: %s\n", s_http_server_opts.document_root);
@@ -95,12 +107,39 @@ static void handle_api_videos(struct mg_connection *nc, const struct http_messag
     dirname(path_buf, s_http_server_opts.document_root);
     strcat(path_buf, "/Videos");
     strlist_t files = STRLIST_INITIALIZER;
+    LOGE("list_directory(): %s\n", path_buf);
 
     int ret = list_directory(path_buf, &files);
+    if (ret == -1) {
+        LOGE("list_directory(): %s\n", path_buf);
+        goto err;
+    }
+    cJSON *items = cJSON_CreateArray();
+    if (items == NULL) {
+        goto err;
+    }
+    cJSON *item;
 
     STRLIST_FOREACH(&files, filename, {
-        LOGE("%s\n", filename);
+        item = cJSON_CreateString(filename);
+        if (item == NULL) {
+            goto err;
+        }
+        cJSON_AddItemToArray(items, item);
     });
+    char *buf = cJSON_Print(items);
+    mg_send_head(nc, 200, strlen(buf), "Content-Type: application/json");
+    mg_send(nc, buf, strlen(buf));
+    cJSON_Delete(items);
+    strlist_done(&files);
+    free(buf);
+    return;
+    err:
+    cJSON_Delete(items);
+    strlist_done(&files);
+    mg_send_head(nc, 500, 0, NULL);
+    return;
+
 }
 
 static void handle_video(struct mg_connection *nc, const struct http_message *hm) {
