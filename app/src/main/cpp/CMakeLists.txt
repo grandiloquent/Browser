@@ -27,6 +27,7 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
+        mongoose.c
         native-lib.c)
 
 
