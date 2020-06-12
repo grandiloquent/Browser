@@ -29,6 +29,10 @@ add_library( # Sets the name of the library.
         dynarray.c
         native-lib.c)
 
+#add_definitions(-DMG_DISABLE_HTTP_KEEP_ALIVE)
+
+add_definitions(-DMG_MAX_HTTP_SEND_MBUF=8092)
+
 add_library(libmongoose
         SHARED
         mongoose.c

@@ -47,7 +47,7 @@ class Player {
         });
 
         this.video = document.querySelector('.html5-main-video');
-//        this.video.src = 'trailer.mp4';
+        //        this.video.src = 'trailer.mp4';
         // this.video.src =
         // 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4';
 
@@ -61,9 +61,22 @@ class Player {
         // setTimeout(() => {
         //     this.playerControlsContent.setAttribute('hidden', '');
         // }, 3000);
-        
-        const items=["/storage/emulated/0/Videos/Favourite/1290552_720x406_500k.mp4", "/storage/emulated/0/Videos/Favourite/1504904_720x406_500k.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_2e24bb6c985d85283c723cdfbc60b346.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_de83eb9e2b5a6efe83cac236b8e5efd1.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_76267c500ea70c9faa719e4ffec41913-1.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_3d25242aa6e08f7d90f03aac205f26d0.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_b6f97024f1d1d9729df66703ef437193-1.mp4", "/storage/emulated/0/Videos/Favourite/Teenage Fantasies Part II (1981).mp4", "/storage/emulated/0/Videos/Favourite/Entrecuisses (1977).mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_a3dd793b1eb8d830dd2ee86481ed60af-1.mp4", "/storage/emulated/0/Videos/Favourite/3138364_720x406_500k.mp4", "/storage/emulated/0/Videos/Favourite/xvideos.com_a5739bee1ce3c66bf4b0f4facf66e67b.mp4", "/storage/emulated/0/Videos/Favourite/美女 (007).mp4", "/storage/emulated/0/Videos/视频/按摩 (4).mp4", "/storage/emulated/0/Videos/视频/迷奸 (3).mp4", "/storage/emulated/0/Videos/视频/癖好 (004).mp4", "/storage/emulated/0/Videos/视频/按摩 (001).mp4", "/storage/emulated/0/Videos/视频/加藤鹰的指爱视频教程.mp4", "/storage/emulated/0/Videos/视频/癖好 (012).mp4", "/storage/emulated/0/Videos/视频/男生必看！男对女口爱毫米级视频教程（高清）.mp4", "/storage/emulated/0/Videos/视频/美女 (11).mp4", "/storage/emulated/0/Videos/视频/癖好 (035).mp4", "/storage/emulated/0/Videos/视频/癖好 (013).mp4", "/storage/emulated/0/Videos/视频/迷奸 (004).mp4", "/storage/emulated/0/Videos/视频/癖好 (019).mp4", "/storage/emulated/0/Videos/视频/按摩 (3).mp4", "/storage/emulated/0/Videos/视频/癖好 (005).mp4", "/storage/emulated/0/Videos/视频/癖好 (021).mp4", "/storage/emulated/0/Videos/视频/足 (016).mp4", "/storage/emulated/0/Videos/视频/强迫 (002).mp4", "/storage/emulated/0/Videos/视频/美女 (20).mp4", "/storage/emulated/0/Videos/视频/美女 (12).mp4", "/storage/emulated/0/Videos/视频/癖好 (022).mp4", "/storage/emulated/0/Videos/视频/美女 (15).mp4", "/storage/emulated/0/Videos/视频/癖好 (025).mp4", "/storage/emulated/0/Videos/视频/美女 (033).mp4", "/storage/emulated/0/Videos/视频/按摩 (002).mp4", "/storage/emulated/0/Videos/视频/美女 (017).mp4", "/storage/emulated/0/Videos/视频/癖好 (017).mp4", "/storage/emulated/0/Videos/视频/癖好 (014).mp4", "/storage/emulated/0/Videos/视频/美女 (030).mp4", "/storage/emulated/0/Videos/视频/美女 (21).mp4", "/storage/emulated/0/Videos/视频/美女 (006).mp4", "/storage/emulated/0/Videos/视频/癖好 (006).mp4", "/storage/emulated/0/Videos/视频/美女 (24).mp4", "/storage/emulated/0/Videos/视频/癖好 (030).mp4", "/storage/emulated/0/Videos/视频/美女 (13).mp4", "/storage/emulated/0/Videos/视频/癖好 (003).mp4", "/storage/emulated/0/Videos/视频/足 (009).mp4", "/storage/emulated/0/Videos/视频/美女 (10).mp4", "/storage/emulated/0/Videos/视频/迷奸 (008).mp4", "/storage/emulated/0/Videos/视频/强迫 (004).mp4", "/storage/emulated/0/Videos/视频/按摩 (1).mp4", "/storage/emulated/0/Videos/视频/足 (005).mp4", "/storage/emulated/0/Videos/视频/迷奸 (010).mp4", "/storage/emulated/0/Videos/视频/癖好 (015).mp4", "/storage/emulated/0/Videos/视频/癖好 (007).mp4", "/storage/emulated/0/Videos/视频/美女 (22).mp4", "/storage/emulated/0/Videos/视频/癖好 (032).mp4", "/storage/emulated/0/Videos/视频/美女 (038).mp4", "/storage/emulated/0/Videos/视频/足 (013).mp4", "/storage/emulated/0/Videos/视频/美女 (032).mp4", "/storage/emulated/0/Videos/视频/美女 (27).mp4", "/storage/emulated/0/Videos/视频/美女 (23).mp4", "/storage/emulated/0/Videos/视频/癖好 (008).mp4", "/storage/emulated/0/Videos/视频/癖好.mp4", "/storage/emulated/0/Videos/视频/足 (019).mp4", "/storage/emulated/0/Videos/视频/美女 (039).mp4", "/storage/emulated/0/Videos/视频/足 (020).mp4", "/storage/emulated/0/Videos/视频/足 (012).mp4", "/storage/emulated/0/Videos/视频/淫 (007).mp4", "/storage/emulated/0/Videos/视频/按摩 (2).mp4", "/storage/emulated/0/Videos/视频/迷奸 (006).mp4", "/storage/emulated/0/Videos/视频/足 (015).mp4", "/storage/emulated/0/Videos/视频/按摩.mp4", "/storage/emulated/0/Videos/视频/按摩 (5).mp4", "/storage/emulated/0/Videos/视频/迷奸 (001).mp4", "/storage/emulated/0/Videos/视频/美女 (020).mp4", "/storage/emulated/0/Videos/视频/美女 (3).mp4", "/storage/emulated/0/Videos/视频/癖好 (020).mp4", "/storage/emulated/0/Videos/视频/美女 (6).mp4", "/storage/emulated/0/Videos/视频/美女 (14).mp4", "/storage/emulated/0/Videos/视频/美女 (012).mp4", "/storage/emulated/0/Videos/视频/美女 (17).mp4", "/storage/emulated/0/Videos/视频/迷奸.mp4", "/storage/emulated/0/Videos/视频/癖好 (018).mp4", "/storage/emulated/0/Videos/视频/癖好 (034).mp4", "/storage/emulated/0/Videos/1388328_720x406_500k.mp4", "/storage/emulated/0/Videos/video.mp4", "/storage/emulated/0/Videos/0twky9F2xrQi7iIQ.mp4", "/storage/emulated/0/Videos/990FV1QVYIAOYCPKO2GNF.mp4", "/storage/emulated/0/Videos/1948166_720x406_500k.mp4", "/storage/emulated/0/Videos/62f355012c1366f7ef9e1b0c0f9545c8-1080p.mp4", "/storage/emulated/0/Videos/8798e09efeca6cc6f44f66ab0b11cba4-1080p.mp4", "/storage/emulated/0/Videos/xvideos.com_c36b8c0eeb32c4fd7777f7cfaeaa365b.mp4", "/storage/emulated/0/Videos/1524784_720x406_500k.mp4", "/storage/emulated/0/Videos/156916_720x406_500k.mp4", "/storage/emulated/0/Videos/xvideos.com_fb647c43b556cee856b76cc852ac4817.mp4", "/storage/emulated/0/Videos/2192234_720x406_500k.mp4", "/storage/emulated/0/Videos/1995286_720x406_500k.mp4", "/storage/emulated/0/Videos/2043514_720x406_500k.mp4", "/storage/emulated/0/Videos/2186840_720x406_500k.mp4", "/storage/emulated/0/Videos/231.mp4", "/storage/emulated/0/Videos/2323850_720x406_500k.mp4", "/storage/emulated/0/Videos/2376650_720x406_500k.mp4", "/storage/emulated/0/Videos/xvideos.com_1073bfb268204326d5aeace64dd8c4c3.mp4", "/storage/emulated/0/Videos/730668_720x406_500k.mp4", "/storage/emulated/0/Videos/1902196_720x406_500k.mp4", "/storage/emulated/0/Videos/xvideos.com_a6e328abf31eec51f22dc6fff6765feb.mp4", "/storage/emulated/0/Videos/xvideos.com_da16be03672e1e228f526cd27fca10ea.mp4", "/storage/emulated/0/Videos/xvideos.com_1c1ef13328309e0db89ed478ecb1bda6.mp4", "/storage/emulated/0/Videos/xvideos.com_ddfbfb41bd0c75355d2d0338bc09d04f.mp4", "/storage/emulated/0/Videos/xvideos.com_46bcf22bd7caa324c13a0b957cdb25c7.mp4", "/storage/emulated/0/Videos/xvideos.com_b089cfccc348b7e7b7be46a1b21d44bb-1.mp4", "/storage/emulated/0/Videos/xvideos.com_2f3a8d0bd17805acdb43bddb64d8148b-1.mp4", "/storage/emulated/0/Videos/xvideos.com_1c3e29291792b56acbd1a9068e577eb2-1.mp4", "/storage/emulated/0/Videos/1992734_720x406_500k.mp4", "/storage/emulated/0/Videos/2447312_720x406_500k.mp4", "/storage/emulated/0/Videos/2195750_720x406_500k.mp4", "/storage/emulated/0/Videos/2336168_720x406_500k.mp4", "/storage/emulated/0/Videos/2186332_720x406_500k.mp4", "/storage/emulated/0/Videos/3138362_720x406_500k.mp4", "/storage/emulated/0/Videos/2057170_720x406_500k.mp4", "/storage/emulated/0/Videos/xvideos.com_a404fc581f4559ec4fc22bf6c281fc8a.mp4", "/storage/emulated/0/Videos/xvideos.com_e25785460777ce2545194ad27588706b-1.mp4"];
-        
+
+
+
+        this.singleColumn = document.querySelector('.single-column');
+        fetch('/api/videos')
+            .then(res => res.json())
+            .then(items => {
+                items.forEach(i => {
+                    const object = {};
+                    object["title"] = i.substr(i.lastIndexOf('/') + 1);
+                    object["href"] = encodeURIComponent(i);
+                    const element = this.createItem(object);
+                    this.singleColumn.appendChild(element);
+                });
+            })
+
     }
 
     static formatTime(seconds) {
@@ -140,6 +153,62 @@ class Player {
         // this.dumpVideoStatus();
     }
 
+    createItem(object) {
+        const item = document.createElement('div');
+        item.className = 'item';
+
+        const compactMediaItem = document.createElement('div');
+        compactMediaItem.className = 'compact-media-item';
+        item.appendChild(compactMediaItem);
+        const compactMediaItemImage = document.createElement('a');
+        compactMediaItemImage.className = 'compact-media-item-image';
+        compactMediaItemImage.setAttribute('aria-hidden', 'true');
+        compactMediaItemImage.setAttribute('href', '/watch?v=' + object["href"]);
+        compactMediaItem.appendChild(compactMediaItemImage);
+        const videoThumbnailContainerCompact = document.createElement('div');
+        videoThumbnailContainerCompact.className = 'video-thumbnail-container-compact center';
+        compactMediaItemImage.appendChild(videoThumbnailContainerCompact);
+        const cover = document.createElement('div');
+        cover.className = 'cover video-thumbnail-img video-thumbnail-bg';
+        videoThumbnailContainerCompact.appendChild(cover);
+        const coverImage = document.createElement('img');
+        coverImage.className = 'cover video-thumbnail-img';
+        coverImage.setAttribute('alt', '');
+        coverImage.setAttribute('src', '');
+        videoThumbnailContainerCompact.appendChild(coverImage);
+        const videoThumbnailOverlayBottomGroup = document.createElement('div');
+        videoThumbnailOverlayBottomGroup.className = 'video-thumbnail-overlay-bottom-group';
+        videoThumbnailContainerCompact.appendChild(videoThumbnailOverlayBottomGroup);
+        const thumbnailOverlayTimeStatusRenderer = document.createElement('div');
+        thumbnailOverlayTimeStatusRenderer.className = 'thumbnail-overlay-time-status-renderer';
+        thumbnailOverlayTimeStatusRenderer.setAttribute('data-style', 'DEFAULT');
+        videoThumbnailOverlayBottomGroup.appendChild(thumbnailOverlayTimeStatusRenderer);
+        const span = document.createElement('span');
+        span.setAttribute('role', 'text');
+        thumbnailOverlayTimeStatusRenderer.appendChild(span);
+        const compactMediaItemMetadata = document.createElement('div');
+        compactMediaItemMetadata.className = 'compact-media-item-metadata';
+        compactMediaItemMetadata.setAttribute('data-has-badges', 'false');
+        compactMediaItem.appendChild(compactMediaItemMetadata);
+        const compactMediaItemMetadataContent = document.createElement('a');
+        compactMediaItemMetadataContent.className = 'compact-media-item-metadata-content';
+        compactMediaItemMetadataContent.setAttribute('href', '/watch?v=' + object["href"]);
+        compactMediaItemMetadata.appendChild(compactMediaItemMetadataContent);
+        compactMediaItemMetadataContent.addEventListener('click', event => {
+            event.preventDefault();
+            this.video.src = event.currentTarget.getAttribute('href');
+        })
+
+        const compactMediaItemHeadline = document.createElement('h4');
+        compactMediaItemHeadline.className = 'compact-media-item-headline';
+        compactMediaItemMetadataContent.appendChild(compactMediaItemHeadline);
+        const spanTitle = document.createElement('span');
+        spanTitle.setAttribute('role', 'text');
+        compactMediaItemHeadline.appendChild(spanTitle);
+        spanTitle.appendChild(document.createTextNode(object["title"]));
+        return item;
+
+    }
     initializeTimeHead() {
         this.progressBarLine = document.querySelector('.progress-bar-line');
         this.progressBarLine.addEventListener('click', event => {

@@ -7301,12 +7301,13 @@ void mg_http_serve_file_internal(struct mg_connection *nc,
                          "Content-Range: bytes %" INT64_FMT "-%" INT64_FMT
                          "/%" INT64_FMT "\r\n",
                          r1, r1 + cl - 1, (int64_t) st.st_size);
-#if _FILE_OFFSET_BITS == 64 || _POSIX_C_SOURCE >= 200112L || \
-    _XOPEN_SOURCE >= 600
-                fseeko(pd->file.fp, r1, SEEK_SET);
-#else
-                fseek(pd->file.fp, (long) r1, SEEK_SET);
-#endif
+//#if _FILE_OFFSET_BITS == 64 || _POSIX_C_SOURCE >= 200112L || \
+//    _XOPEN_SOURCE >= 600
+//                fseeko(pd->file.fp, r1, SEEK_SET);
+//#else
+//                fseek(pd->file.fp, (long) r1, SEEK_SET);
+//#endif
+      fseek(pd->file.fp, (long) r1, SEEK_SET);
             }
         }
 

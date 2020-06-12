@@ -3,10 +3,9 @@
 #include "mongoose.h"
 #include "dynarray.h"
 #include "cJSON.h"
+#include "helper.h"
 
-#define LOG_TAG "TAG/Native"
-#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
-#define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
 static struct mg_serve_http_opts s_http_server_opts;
 
 ///////////////////////////
@@ -20,7 +19,6 @@ bool ends_with(const char *s1, const char *s2) {
     return strncmp(start, s2, s2_length) == 0;
 }
 
-char *read_file(const char *filename, int *size);
 
 static int has_prefix(const struct mg_str *uri, const struct mg_str *prefix);
 
@@ -83,15 +81,76 @@ void dirname(char *buf, const char *path) {
     buf[c] = 0;
 }
 
+static void handle_watch(struct mg_connection *nc, struct http_message *hm) {
+//    int len = (int) hm->query_string.len;
+//    char *qs = malloc(len + 1);
+//    memcpy(qs, hm->query_string.p, hm->query_string.len);
+//    qs[len+1]=0;
+//    char filename[PATH_MAX];
+//    len = mg_url_decode(qs + 2, strlen(qs) - 2, filename, PATH_MAX, 1);
+//
+//    filename[len] = 0;
+//    LOGE("%s", filename);
+    char filename[PATH_MAX];
+    mg_get_http_var(&hm->query_string, "v", filename,PATH_MAX);
+    static const struct mg_str video = MG_MK_STR("video/mp4");
+    mg_http_serve_file(nc, hm, filename, video, mg_mk_str("Cache-Control: public,max-age=14400,public"));
+    /* long a = 0;
+
+     struct mg_str *range_hdr = mg_get_http_header(hm, "Range");
+     if (range_hdr) {
+         char *p = (char *) malloc(range_hdr->len + 1);
+
+         memcpy(p, range_hdr->p, range_hdr->len);
+         p[range_hdr->len] = '\0';
+         a = parse_range(p);
+         LOGE("%s %d\n", p, a);
+         free(p);
+     }
+
+     FILE *f = fopen(filename, "rb");
+     if (!f) {
+         mg_send_head(nc, 500, 0, NULL);
+         return;
+     }
+     fseek(f, 0, SEEK_END);
+     long size = ftell(f);
+     rewind(f);
+     int BUF_SIZE = 80920;
+     char buf[BUF_SIZE];
+
+     char header[1024];
+     if (a != 0)
+         fseek(f, a, SEEK_SET);
+     snprintf(header, 1024,
+              "Accept-Ranges: bytes\r\nContent-Type: video/mp4\r\nContent-Range: bytes %ld-%ld/%ld",
+              a,
+              size - 1, size);
+     mg_send_head(nc, 206, size - a, header);
+     size_t i = 0;
+     do {
+         i = fread(buf, 1, BUF_SIZE, f);
+        //mg_send()
+     } while (i > 0);
+     fclose(f);
+
+
+     LOGE("%s %d", filename, size);*/
+}
+
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
     static const struct mg_str api_index = MG_MK_STR("/");
     static const struct mg_str api_videos = MG_MK_STR("/api/videos");
+    static const struct mg_str watch = MG_MK_STR("/watch");
     static const struct mg_str video = MG_MK_STR("/video");
     struct http_message *hm = (struct http_message *) ev_data;
     if (ev == MG_EV_HTTP_REQUEST) {
         if (is_equal(&hm->uri, &api_videos)) {
             LOGE("%s\n", "/api/videos");
             handle_api_videos(nc, hm);
+        }
+        if (is_equal(&hm->uri, &watch)) {
+            handle_watch(nc, hm);
         } else if (is_equal(&hm->uri, &video)) {
 
             handle_video(nc, hm);
@@ -167,42 +226,6 @@ static int is_equal(const struct mg_str *s1, const struct mg_str *s2) {
     return s1->len == s2->len && memcmp(s1->p, s2->p, s2->len) == 0;
 }
 
-char *read_file(const char *filename, int *size) {
-    FILE *f = fopen(filename, "rb");
-    char *buf;
-    int i;
-    if (!f) {
-        perror("Error opening input file");
-        return NULL;
-    }
-    fseek(f, 0, SEEK_END);
-    *size = ftell(f);
-    rewind(f);
-    if ((*size > 0x100000) || (*size < 0)) {
-        if (*size < 0)
-            perror("ftell failed");
-        else
-            fprintf(stderr, "File seems unreasonably large\n");
-        fclose(f);
-        return NULL;
-    }
-    buf = (char *) malloc(*size);
-    if (!buf) {
-        fprintf(stderr, "Unable to allocate buffer.\n");
-        fclose(f);
-        return NULL;
-    }
-    printf("Reading %d bytes from %s...\n", *size, filename);
-    i = fread(buf, 1, *size, f);
-    fclose(f);
-    if (i != *size) {
-        perror("Error reading file");
-        free(buf);
-        return NULL;
-    }
-    return buf;
-}
-
 void *start_server(const char *address) {
     struct mg_mgr mgr;
     struct mg_connection *nc;
@@ -228,8 +251,8 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     strcpy(dir, rootDirectory);
     s_http_server_opts.document_root = dir;
 
-    char *url = malloc(sizeof(host) + sizeof(port) + 2);
-    memset(url, 0, sizeof(url));
+    char *url = malloc(strlen(host) + strlen(port) + 2);
+    memset(url, 0, strlen(host) + strlen(port) + 2);
     sprintf(url, "%s:%s", host, port);
     LOGE("%s", url);
 
