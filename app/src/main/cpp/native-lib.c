@@ -137,7 +137,8 @@ static void handle_api_videos(struct mg_connection *nc, const struct http_messag
         cJSON_AddItemToArray(items, item);
     });
     char *buf = cJSON_Print(items);
-    mg_send_head(nc, 200, strlen(buf), "Content-Type: application/json");
+    mg_send_head(nc, 200, strlen(buf),
+                 "Content-Type: application/json\r\nAccess-Control-Allow-Origin: *");
     mg_send(nc, buf, strlen(buf));
     cJSON_Delete(items);
     strlist_done(&files);
