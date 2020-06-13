@@ -32,6 +32,8 @@ public class ServerActivity extends Activity {
 
 
         String[] files = new String[]{
+                "share.js",
+
                 "video.css",
                 "video.js",
                 "videos.html",
