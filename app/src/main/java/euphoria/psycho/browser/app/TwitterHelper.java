@@ -139,7 +139,13 @@ public class TwitterHelper {
         }
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setItems(items, (dialog1, which) -> {
-                    Share.setClipboardString(twitterVideos.get(which).url);
+                    String url = twitterVideos.get(which).url;
+                    Share.setClipboardString(url);
+                    FileHelper.downloadFromUrl(context,
+                            url,
+                            Share.substringAfterLast(url, "/"),
+                            Share.substringAfterLast(url, "/")
+                            );
                 })
                 .create();
         dialog.show();

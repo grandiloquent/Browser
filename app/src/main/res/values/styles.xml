@@ -140,4 +140,11 @@
         <item name="windowActionBarOverlay">true</item>
         <item name="android:background">@color/default_bg_color</item>
     </style>
+
+    <style name="AppTheme" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowMinWidthMinor">85%</item>
+        <item name="android:windowMinWidthMajor">55%</item>
+    </style>
+
 </resources>

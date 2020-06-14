@@ -60,19 +60,6 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return mSelectableListLayout;
     }
 
-    private void extractYouTubeVideo() {
-        new YouTubeExtractor(mActivity) {
-            @Override
-            public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
-//                if (ytFiles != null) {
-//                    int itag = 22;
-//                    String downloadUrl = ytFiles.get(itag).getUrl();
-//
-//                }
-
-            }
-        }.extract(Share.getClipboardString().toString(), true, true);
-    }
 
     @Override
     public void onEndSearch() {
@@ -96,7 +83,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                                         FileHelper.extractTwitterVideo(mActivity);
                                         break;
                                     case R.drawable.ic_youtube:
-                                        extractYouTubeVideo();
+                                        FileHelper.startYouTube(mActivity);
                                         break;
                                     case R.drawable.ic_film:
                                         FileHelper.startVideoServer(mActivity);
