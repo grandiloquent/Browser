@@ -20,4 +20,8 @@
     <string name="show_menu">Show Menu</string>
     <string name="video_server">Video Server</string>
     <string name="error_no_yt_link">Not a valid YouTube link!</string>
+    <string name="accessibility_list_menu_button">%1$s Options</string>
+    <item type="id" name="view_model" />
+    <item type="id" name="view_type" />
+    <item type="id" name="view_mcp" />
 </resources>

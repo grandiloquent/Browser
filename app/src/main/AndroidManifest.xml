@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".app.FileActivity"
+            android:name=".file.FileActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">

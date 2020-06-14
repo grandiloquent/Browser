@@ -66,4 +66,7 @@
     <color name="hairline_stroke_color">@color/hairline_stroke_color_light</color>
     <color name="hairline_stroke_color_light">@color/modern_grey_300</color>
     <color name="modern_grey_300">#DADCE0</color>
+    <color name="default_icon_color_secondary" >@color/default_icon_color_secondary_dark</color>
+    <color name="default_icon_color_secondary_dark">@color/modern_grey_600</color>
+    <color name="modern_grey_600">#80868B</color>
 </resources>

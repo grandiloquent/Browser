@@ -1,4 +1,4 @@
-package euphoria.psycho.browser.app;
+package euphoria.psycho.browser.file;
 
 import android.app.Activity;
 import android.app.DownloadManager;
@@ -9,6 +9,9 @@ import android.os.Environment;
 
 import java.util.List;
 
+import euphoria.psycho.browser.app.SampleDownloadActivity;
+import euphoria.psycho.browser.app.ServerActivity;
+import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 

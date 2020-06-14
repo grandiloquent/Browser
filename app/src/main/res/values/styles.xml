@@ -146,5 +146,18 @@
         <item name="android:windowMinWidthMinor">85%</item>
         <item name="android:windowMinWidthMajor">55%</item>
     </style>
+    <style name="ListMenuItemStyle">
+        <item name="android:paddingStart">@dimen/default_list_row_padding</item>
+        <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
+    </style>
+
+    <style name="OverflowMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/menu_enter</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit</item>
+    </style>
+    <style name="OverflowMenuAnimBottom">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
+    </style>
 
 </resources>

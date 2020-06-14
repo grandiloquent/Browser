@@ -1,7 +1,6 @@
-package euphoria.psycho.browser.app;
+package euphoria.psycho.browser.file;
 
 import android.app.Activity;
-import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -12,12 +11,9 @@ import java.util.List;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.RecyclerView;
-import at.huber.youtubeExtractor.VideoMeta;
-import at.huber.youtubeExtractor.YouTubeExtractor;
-import at.huber.youtubeExtractor.YtFile;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
-import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.widget.SelectableListLayout;
 import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;

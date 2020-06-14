@@ -1,5 +1,11 @@
 <resources>
-  <declare-styleable name="TextViewWithLeading">
-    <attr name="leading" format="reference|dimension" />
-  </declare-styleable>
+    <declare-styleable name="TextViewWithLeading">
+        <attr name="leading" format="reference|dimension" />
+    </declare-styleable>
+    <declare-styleable name="ListMenuButton">
+        <attr name="menuMaxWidth" format="reference|dimension" />
+        <attr name="menuVerticalOverlapAnchor" format="boolean" />
+        <attr name="menuHorizontalOverlapAnchor" format="boolean" />
+        <attr name="menuBackground" format="reference" />
+    </declare-styleable>
 </resources>

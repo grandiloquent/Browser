@@ -1,4 +1,4 @@
-package euphoria.psycho.browser.app;
+package euphoria.psycho.browser.file;
 
 import android.os.Bundle;
 

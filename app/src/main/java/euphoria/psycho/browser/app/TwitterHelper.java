@@ -1,10 +1,7 @@
 package euphoria.psycho.browser.app;
 
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -31,6 +28,7 @@ import java.util.zip.GZIPInputStream;
 
 import androidx.annotation.NonNull;
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.file.FileHelper;
 
 public class TwitterHelper {
 

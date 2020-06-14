@@ -1,9 +1,8 @@
-package euphoria.psycho.browser.app;
+package euphoria.psycho.browser.file;
 
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import euphoria.psycho.browser.widget.SelectionDelegate;

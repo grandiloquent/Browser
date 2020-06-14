@@ -5,7 +5,9 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.StrictMode;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -53,7 +55,26 @@ public class ApiCompatibilityUtils {
         }
         window.setStatusBarColor(statusBarColor);
     }
-
+    public static Drawable getDrawable(Resources res, int id) throws NotFoundException {
+        return getDrawableForDensity(res, id, 0);
+    }
+    public static Drawable getDrawableForDensity(Resources res, int id, int density) {
+        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (density == 0) {
+                    return res.getDrawable(id, null);
+                }
+                return res.getDrawableForDensity(id, density, null);
+            } else if (density == 0) {
+                // On newer OS versions, this check is done within getDrawableForDensity().
+                return res.getDrawable(id);
+            }
+            return res.getDrawableForDensity(id, density);
+        } finally {
+            StrictMode.setThreadPolicy(oldPolicy);
+        }
+    }
     public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         if (useDarkIcons) {

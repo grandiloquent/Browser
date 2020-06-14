@@ -24,5 +24,10 @@
     <dimen name="default_rounded_corner_radius">8dp</dimen>
     <dimen name="modern_toolbar_background_size">40dp</dimen>
     <dimen name="modern_toolbar_background_corner_radius">24dp</dimen>
+    <dimen name="menu_negative_software_vertical_offset">0dp</dimen>
+    <dimen name="menu_divider_padding">8dp</dimen>
+    <dimen name="menu_padding_start">16dp</dimen>
+    <item type="fraction" format="fraction" name="menu_animation_pivot_x">95%</item>
+    <dimen name="list_menu_width">180dp</dimen>
 
 </resources>
