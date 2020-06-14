@@ -30,7 +30,7 @@ public class FileItemView extends SelectableItemView<FileItem> {
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
         ListMenu.Delegate delegate = item -> {
-           
+
         };
         return new BasicListMenu(getContext(), listItems, delegate);
     }

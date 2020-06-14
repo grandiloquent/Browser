@@ -29,5 +29,5 @@
     <dimen name="menu_padding_start">16dp</dimen>
     <item type="fraction" format="fraction" name="menu_animation_pivot_x">95%</item>
     <dimen name="list_menu_width">180dp</dimen>
-
+    <dimen name="divider_height">1dp</dimen>
 </resources>
