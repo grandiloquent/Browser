@@ -1,10 +1,14 @@
 package euphoria.psycho.browser.base;
 
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.Application;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.database.Cursor;
@@ -23,6 +27,7 @@ import android.system.StructStat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -59,6 +64,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import euphoria.psycho.browser.R;
+
 public class Share {
     private static final int BUFFER_SIZE = 8192;
     private static final int DEFAULT_JPEG_QUALITY = 90;
@@ -81,6 +88,33 @@ public class Share {
             }
             sCrcTable[i] = part;
         }
+    }
+
+
+    public static void showExceptionDialog(Context context, Exception e) {
+        TextView textView = new TextView(context);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("## Message")
+                .append("\n\n")
+                .append(e.getMessage())
+                .append("\n\n")
+                .append("## StackTrace");
+
+        for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+            stringBuilder.append(stackTraceElement.toString())
+                    .append("\n\n");
+        }
+        String content = stringBuilder.toString();
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(textView)
+                .setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Share.setClipboardString(content);
+                        dialog.dismiss();
+                    }
+                })
+                .create();
     }
 
     public static void closeQuietly(Closeable closeable) {
@@ -283,6 +317,20 @@ public class Share {
 
     public static int dpToPixel(int dp) {
         return Math.round(dpToPixel((float) dp));
+    }
+
+    // Returns a (localized) string for the given duration (in seconds).
+    public static String formatDuration(final Context context, int duration) {
+        int h = duration / 3600;
+        int m = (duration - h * 3600) / 60;
+        int s = duration - (h * 3600 + m * 60);
+        String durationValue;
+        if (h == 0) {
+            durationValue = String.format("%02d:%02d", m, s);
+        } else {
+            durationValue = String.format("%02d:%02d:%02d", h, m, s);
+        }
+        return durationValue;
     }
 
     public static String formatFileSize(long number) {

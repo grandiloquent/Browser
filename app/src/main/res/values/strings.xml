@@ -9,4 +9,6 @@
     <string name="select_items">Select items</string>
     <string name="show_info">Show Info</string>
     <string name="server_running">The Local Web Server is running.</string>
+    <string name="twitter">Twitter</string>
+    <string name="youtube">YouTube</string>
 </resources>

@@ -16,5 +16,6 @@ if (location.href.startsWith("https://m.youtube.com")) {
     ['.slim-owner-subscribe-button',
      ['.scwnr-content', '.GoogleActiveViewElement'],
      ['.scwnr-content', '.clarification-container'],
+     ['.scwnr-content', '.companion-ad-container'],
     ].forEach(i => hidden(i));
 }
