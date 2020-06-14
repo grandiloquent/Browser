@@ -11,12 +11,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.base.ApiCompatibilityUtils;
+import euphoria.psycho.browser.widget.PropertyModel.ReadableIntPropertyKey;
 
-import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.components.browser_ui.widget.R;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 
 /**
  * Class responsible for binding the model of the ListMenuItem and the view.

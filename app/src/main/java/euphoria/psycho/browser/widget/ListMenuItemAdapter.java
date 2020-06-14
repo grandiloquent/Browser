@@ -8,8 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.ListMenuItemType;
-import org.chromium.ui.modelutil.ModelListAdapter;
+import euphoria.psycho.browser.widget.BasicListMenu.ListMenuItemType;
+
 
 /**
  * Default adapter for use with {@link ListMenu}.

@@ -5,8 +5,8 @@
 package euphoria.psycho.browser.widget;
 
 import androidx.annotation.Nullable;
+import euphoria.psycho.browser.base.ObserverList;
 
-import org.chromium.base.ObserverList;
 
 /**
  * Helper class for implementations of {@link ListObservable}, with some convenience methods for

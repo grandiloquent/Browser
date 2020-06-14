@@ -4,9 +4,9 @@
 
 package euphoria.psycho.browser.widget;
 
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
+
+import euphoria.psycho.browser.widget.PropertyModel.WritableBooleanPropertyKey;
+import euphoria.psycho.browser.widget.PropertyModel.WritableIntPropertyKey;
 
 /**
  * The properties controlling the state of the list menu items. Any given list item can have either
