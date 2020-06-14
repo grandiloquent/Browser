@@ -1,6 +1,8 @@
 package euphoria.psycho.browser.base;
 
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.SharedPreferences;
@@ -22,6 +24,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
@@ -30,16 +33,31 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.security.KeyManagementException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 
 public class Share {
     private static final int BUFFER_SIZE = 8192;
@@ -48,6 +66,7 @@ public class Share {
     private static final long POLY64REV = 0x95AC9329AC4BC9B5L;
     private static final String TAG = "TAG/" + Share.class.getSimpleName();
     private static Context sApplicationContext;
+    private static ClipboardManager sClipboardManager;
     private static long[] sCrcTable = new long[256];
     private static float sPixelDensity = -1f;
 
@@ -266,6 +285,42 @@ public class Share {
         return Math.round(dpToPixel((float) dp));
     }
 
+    public static String formatFileSize(long number) {
+        float result = number;
+        String suffix = "";
+        if (result > 900) {
+            suffix = " KB";
+            result = result / 1024;
+        }
+        if (result > 900) {
+            suffix = " MB";
+            result = result / 1024;
+        }
+        if (result > 900) {
+            suffix = " GB";
+            result = result / 1024;
+        }
+        if (result > 900) {
+            suffix = " TB";
+            result = result / 1024;
+        }
+        if (result > 900) {
+            suffix = " PB";
+            result = result / 1024;
+        }
+        String value;
+        if (result < 1) {
+            value = String.format("%.2f", result);
+        } else if (result < 10) {
+            value = String.format("%.1f", result);
+        } else if (result < 100) {
+            value = String.format("%.0f", result);
+        } else {
+            value = String.format("%.0f", result);
+        }
+        return value + suffix;
+    }
+
     /**
      * This is used to ensure that we always use the application context to fetch the default shared
      * preferences. This avoids needless I/O for android N and above. It also makes it clear that
@@ -292,19 +347,7 @@ public class Share {
     public static Context getApplicationContext() {
         return sApplicationContext;
     }
-    public static String md5(String md5) {
-        try {
-            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
-            byte[] array = md.digest(md5.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
-            }
-            return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
-        }
-        return null;
-    }
+
     public static byte[] getBytes(String in) {
         byte[] result = new byte[in.length() * 2];
         int output = 0;
@@ -313,6 +356,22 @@ public class Share {
             result[output++] = (byte) (ch >> 8);
         }
         return result;
+    }
+
+    public static CharSequence getClipboardString() {
+        if (sClipboardManager == null)
+            sClipboardManager = (ClipboardManager) sApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = sClipboardManager.getPrimaryClip();
+        if (clip != null && clip.getItemCount() > 0) {
+            return clip.getItemAt(0).getText();
+        }
+        return null;
+    }
+
+    public static void setClipboardString(String string) {
+        if (sClipboardManager == null)
+            sClipboardManager = (ClipboardManager) sApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+        sClipboardManager.setPrimaryClip(ClipData.newPlainText(null, string));
     }
 
     public static String getDeviceIP(Context context) {
@@ -381,44 +440,15 @@ public class Share {
         }
     }
 
+    public static boolean isDigits(String numbers) {
+        for (int i = 0; i < numbers.length(); i++) {
+            if (!Character.isDigit(numbers.charAt(i))) return false;
+        }
+        return true;
+    }
+
     public static boolean isFile(String path) {
         return new File(path).isFile();
-    }
-
-    public static String substringAfter(String string, char delimiter) {
-        int index = string.indexOf(delimiter);
-        if (index != -1) return string.substring(index + 1);
-        return string;
-    }
-
-    public static String substringAfter(String string, String delimiter) {
-        int index = string.indexOf(delimiter);
-        if (index != -1) return string.substring(index + delimiter.length());
-        return string;
-    }
-
-    public static void writeAllBytes(String path, byte[] bytes) throws IOException {
-        FileOutputStream fs = new FileOutputStream(path);
-        fs.write(bytes, 0, bytes.length);
-        fs.close();
-    }
-
-    public static String substringAfterLast(String string, char delimiter) {
-        int index = string.lastIndexOf(delimiter);
-        if (index != -1) return string.substring(index + 1);
-        return string;
-    }
-
-    public static String substringAfterLast(String string, String delimiter) {
-        int index = string.lastIndexOf(delimiter);
-        if (index != -1) return string.substring(index + delimiter.length());
-        return string;
-    }
-
-    public static String substringBefore(String string, char delimiter) {
-        int index = string.indexOf(delimiter);
-        if (index != -1) return string.substring(0, index);
-        return string;
     }
 
     /**
@@ -454,6 +484,50 @@ public class Share {
         return files;
     }
 
+    public static String md5(String md5) {
+        try {
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] array = md.digest(md5.getBytes());
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < array.length; ++i) {
+                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+            }
+            return sb.toString();
+        } catch (java.security.NoSuchAlgorithmException e) {
+        }
+        return null;
+    }
+
+    public static String substringAfter(String string, char delimiter) {
+        int index = string.indexOf(delimiter);
+        if (index != -1) return string.substring(index + 1);
+        return string;
+    }
+
+    public static String substringAfter(String string, String delimiter) {
+        int index = string.indexOf(delimiter);
+        if (index != -1) return string.substring(index + delimiter.length());
+        return string;
+    }
+
+    public static String substringAfterLast(String string, char delimiter) {
+        int index = string.lastIndexOf(delimiter);
+        if (index != -1) return string.substring(index + 1);
+        return string;
+    }
+
+    public static String substringAfterLast(String string, String delimiter) {
+        int index = string.lastIndexOf(delimiter);
+        if (index != -1) return string.substring(index + delimiter.length());
+        return string;
+    }
+
+    public static String substringBefore(String string, char delimiter) {
+        int index = string.indexOf(delimiter);
+        if (index != -1) return string.substring(0, index);
+        return string;
+    }
+
     public static String substringBefore(String string, String delimiter) {
         int index = string.indexOf(delimiter);
         if (index != -1) return string.substring(0, index + delimiter.length());
@@ -470,6 +544,134 @@ public class Share {
         int index = string.lastIndexOf(delimiter);
         if (index != -1) return string.substring(0, index + delimiter.length());
         return string;
+    }
+
+    public static String toString(InputStream stream) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "utf-8"));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line).append("\r\n");
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    public static String touchServer(String url, String method, String accessToken, String jsonBody) {
+        Log.e("TAG/Utils", "[ERROR][touch]: " + url);
+        disableSSLCertificateChecking();
+        HttpURLConnection connection = null;
+        URL u;
+        try {
+            u = new URL(url);
+        } catch (MalformedURLException e) {
+            Log.e("TAG/Utils", "[ERROR][touch]: " + e.getMessage());
+            return e.getMessage();
+        }
+        try {
+            connection = (HttpURLConnection) u.openConnection();
+            connection.setRequestMethod(method);
+            if (accessToken != null)
+                connection.setRequestProperty("Authorization", "Bearer " + accessToken);
+            connection.setConnectTimeout(10 * 1000);
+            connection.setReadTimeout(10 * 1000);
+            connection.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+            connection.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+            connection.setRequestProperty("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8");
+            connection.setRequestProperty("Cache-Control", "max-age=0");
+            connection.setRequestProperty("Connection", "keep-alive");
+            connection.setRequestProperty("Upgrade-Insecure-Requests", "1");
+            connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.56 Mobile Safari/537.36");
+            if (jsonBody != null) {
+                connection.addRequestProperty("Content-Type", "application/json");
+                connection.addRequestProperty("Content-Encoding", "gzip");
+                GZIPOutputStream outGZIP;
+                outGZIP = new GZIPOutputStream(connection.getOutputStream());
+                byte[] body = jsonBody.getBytes("utf-8");
+                outGZIP.write(body, 0, body.length);
+                outGZIP.close();
+            }
+            int code = connection.getResponseCode();
+            StringBuilder sb = new StringBuilder();
+//            sb.append("ResponseCode: ").append(code).append("\r\n");
+//
+//
+//            Set<String> keys = connection.getHeaderFields().keySet();
+//            for (String key : keys) {
+//                sb.append(key).append(": ").append(connection.getHeaderField(key)).append("\r\n");
+//            }
+            if (code < 400 && code >= 200) {
+                //sb.append("\r\n\r\n");
+                InputStream in;
+                String contentEncoding = connection.getHeaderField("Content-Encoding");
+                if (contentEncoding != null && contentEncoding.equals("gzip")) {
+                    in = new GZIPInputStream(connection.getInputStream());
+                } else {
+                    in = connection.getInputStream();
+                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\r\n");
+                }
+                reader.close();
+            } else {
+                Log.e("TAG/Utils", "[ERROR][touch]: " + code);
+                sb.append("Method: ").append(method).append(";\n")
+                        .append("ResponseCode: ").append(code).append(";\n")
+                        .append("Error: ").append(toString(connection.getErrorStream()));
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            Log.e("TAG/Utils", "[ERROR][touch]: " + e.getMessage());
+            return e.getMessage();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+
+    public static void writeAllBytes(String path, byte[] bytes) throws IOException {
+        FileOutputStream fs = new FileOutputStream(path);
+        fs.write(bytes, 0, bytes.length);
+        fs.close();
+    }
+
+    private static void disableSSLCertificateChecking() {
+        TrustManager[] trustAllCerts = new TrustManager[]{
+                new X509TrustManager() {
+                    @Override
+                    public void checkClientTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws java.security.cert.CertificateException {
+                        // not implemented
+                    }
+
+                    @Override
+                    public void checkServerTrusted(java.security.cert.X509Certificate[] x509Certificates, String s) throws java.security.cert.CertificateException {
+                        // not implemented
+                    }
+
+                    @Override
+                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+                }
+        };
+        try {
+            HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String s, SSLSession sslSession) {
+                    return true;
+                }
+            });
+            SSLContext sc = SSLContext.getInstance("TLS");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -489,7 +691,6 @@ public class Share {
         }
         sApplicationContext = appContext;
     }
-
 
     /**
      * Initialization-on-demand holder. This exists for thread-safe lazy initialization.

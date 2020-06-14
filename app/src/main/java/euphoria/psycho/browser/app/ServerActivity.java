@@ -6,18 +6,15 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.system.ErrnoException;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
