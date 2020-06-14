@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:id="@+id/normal_menu_group">
+        <!-- Icon tint of the info menu item is changed programmatically. -->
+        <item
+            android:id="@+id/menu_id"
+            android:icon="@drawable/btn_menu"
+            android:title="@string/show_menu"
+            android:visible="true"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/search_menu_id"
+            android:icon="@drawable/ic_search"
+            android:title="@string/search"
+            android:visible="false"
+            app:iconTint="@color/default_icon_color_tint_list"
+            app:showAsAction="ifRoom" />
+        <item
+            android:id="@+id/close_menu_id"
+            android:icon="@drawable/btn_close"
+            android:title="@string/close"
+            app:iconTint="@color/default_icon_color_tint_list"
+            app:showAsAction="ifRoom" />
+    </group>
+    <group
+        android:id="@+id/selection_mode_menu_group"
+        android:visible="false">
+
+    </group>
+</menu>

@@ -134,4 +134,10 @@
         <item name="colorControlActivated">@color/default_control_color_active</item>
         <item name="colorControlHighlight">@color/control_highlight_color</item>
     </style>
+
+    <style name="ModernToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:background">@color/default_bg_color</item>
+    </style>
 </resources>

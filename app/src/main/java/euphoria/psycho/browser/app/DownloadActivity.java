@@ -83,41 +83,6 @@ public class DownloadActivity extends AppCompatActivity {
         checkStaticFiles();
     }
 
-    private void extractTwitterVideo() {
-        new Thread(() -> {
-            try {
-                CharSequence twitterUrl = Share.getClipboardString();
-                if (twitterUrl != null) {
-                    String id = Share.substringAfterLast(twitterUrl.toString(), "/");
-                    if (Share.isDigits(id)) {
-                        List<TwitterVideo> twitterVideos = TwitterHelper.extractTwitterVideo(id);
-                        mHandler.post(() -> {
-                            TwitterHelper.showDialog(twitterVideos, DownloadActivity.this);
-                        });
-                    }
-                }
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    Share.showExceptionDialog(DownloadActivity.this, e);
-                });
-            }
-        }).start();
-    }
-
-
-    private void extractYouTubeVideo() {
-        new YouTubeExtractor(this) {
-            @Override
-            public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
-//                if (ytFiles != null) {
-//                    int itag = 22;
-//                    String downloadUrl = ytFiles.get(itag).getUrl();
-//
-//                }
-
-            }
-        }.extract(Share.getClipboardString().toString(), true, true);
-    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -129,21 +94,6 @@ public class DownloadActivity extends AppCompatActivity {
                 permission.WRITE_EXTERNAL_STORAGE
         }, REQUEST_PERMISSIONS_CODE);
 
-        new BottomSheet(this)
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClicked(Pair<Integer, String> item) {
-                        switch (item.first) {
-                            case R.drawable.ic_twitter:
-                                extractTwitterVideo();
-                                break;
-                            case R.drawable.ic_youtube:
-                                extractYouTubeVideo();
-                                break;
-                        }
-                    }
-                })
-                .showDialog();
 
 
     }

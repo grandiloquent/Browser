@@ -44,8 +44,10 @@ public class BottomSheet {
 
 
             mBottomSheetAdapter = new BottomSheetAdapter(mListener, new Pair[]{
+                    Pair.create(R.drawable.ic_film, mContext.getString(R.string.video_server)),
                     Pair.create(R.drawable.ic_twitter, mContext.getString(R.string.twitter)),
-                    Pair.create(R.drawable.ic_youtube, mContext.getString(R.string.youtube))
+                    Pair.create(R.drawable.ic_youtube, mContext.getString(R.string.youtube)),
+
             });
             mRecyclerView.setAdapter(mBottomSheetAdapter);
             BottomSheetDialog dialog = new BottomSheetDialog(mContext);

@@ -11,4 +11,12 @@
     <string name="server_running">The Local Web Server is running.</string>
     <string name="twitter">Twitter</string>
     <string name="youtube">YouTube</string>
+    <string name="menu_file">File</string>
+    <string name="file_manager_search">Search</string>
+    <string name="search">Search</string>
+    <string name="close">Close</string>
+    <string name="file_manager_empty">No file here</string>
+    <string name="file_manager_no_results">No file found</string>
+    <string name="show_menu">Show Menu</string>
+    <string name="video_server">Video Server</string>
 </resources>
