@@ -6,12 +6,12 @@ import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ListAdapter;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
-import android.widget.ListAdapter;
 
 public class UiUtils {
     /**

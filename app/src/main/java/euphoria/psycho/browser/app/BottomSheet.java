@@ -35,7 +35,7 @@ public class BottomSheet {
         return this;
     }
 
-    public void showDialog() {
+    public void showDialog(Pair[] items) {
         if (mContainer == null) {
             mContainer = LayoutInflater.from(mContext).inflate(R.layout.bottomsheet_menu, null);
             mRecyclerView = mContainer.findViewById(R.id.recycler_view);
@@ -43,12 +43,7 @@ public class BottomSheet {
             mRecyclerView.setLayoutManager(new GridLayoutManager(mContext, 4));
 
 
-            mBottomSheetAdapter = new BottomSheetAdapter(mListener, new Pair[]{
-                    Pair.create(R.drawable.ic_film, mContext.getString(R.string.video_server)),
-                    Pair.create(R.drawable.ic_twitter, mContext.getString(R.string.twitter)),
-                    Pair.create(R.drawable.ic_youtube, mContext.getString(R.string.youtube)),
-
-            });
+            mBottomSheetAdapter = new BottomSheetAdapter(mListener, items);
             mRecyclerView.setAdapter(mBottomSheetAdapter);
             BottomSheetDialog dialog = new BottomSheetDialog(mContext);
             dialog.setContentView(mContainer);

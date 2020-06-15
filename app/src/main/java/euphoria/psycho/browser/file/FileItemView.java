@@ -1,38 +1,25 @@
 package euphoria.psycho.browser.file;
 
 import android.content.Context;
-import android.location.Location;
+import android.graphics.Bitmap;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
-import androidx.appcompat.content.res.AppCompatResources;
+import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.ApiCompatibilityUtils;
 import euphoria.psycho.browser.widget.BasicListMenu;
+import euphoria.psycho.browser.widget.LargeIconCallback;
 import euphoria.psycho.browser.widget.ListMenu;
 import euphoria.psycho.browser.widget.ListMenuButton;
 import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
-import euphoria.psycho.browser.widget.ListMenuItemProperties;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
 
-public class FileItemView extends SelectableItemView<FileItem> {
+public class FileItemView extends SelectableItemView<FileItem> implements LargeIconCallback {
     protected ListMenuButton mMoreIcon;
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    private ListMenuButtonDelegate getListMenuButtonDelegate() {
-        return this::getListMenu;
-    }
-
-    private ListMenu getListMenu() {
-        ModelList listItems = getItems();
-        ListMenu.Delegate delegate = item -> {
-
-        };
-        return new BasicListMenu(getContext(), listItems, delegate);
     }
 
     private ModelList getItems() {
@@ -64,6 +51,18 @@ public class FileItemView extends SelectableItemView<FileItem> {
         return listItems;
     }
 
+    private ListMenu getListMenu() {
+        ModelList listItems = getItems();
+        ListMenu.Delegate delegate = item -> {
+
+        };
+        return new BasicListMenu(getContext(), listItems, delegate);
+    }
+
+    private ListMenuButtonDelegate getListMenuButtonDelegate() {
+        return this::getListMenu;
+    }
+
     @Override
     protected void onClick() {
 
@@ -78,5 +77,12 @@ public class FileItemView extends SelectableItemView<FileItem> {
         mMoreIcon.setDelegate(getListMenuButtonDelegate());
 
 
+    }
+
+    @Override
+    public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) {
+//        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
+//                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
+//        setStartIconDrawable(iconDrawable);
     }
 }

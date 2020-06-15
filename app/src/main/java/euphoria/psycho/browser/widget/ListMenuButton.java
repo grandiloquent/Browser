@@ -11,7 +11,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 
-
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.ApiCompatibilityUtils;
 import euphoria.psycho.browser.base.ObserverList;

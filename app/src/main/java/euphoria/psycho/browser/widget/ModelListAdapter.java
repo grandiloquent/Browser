@@ -10,14 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.Collection;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.widget.ListObservable.ListObserver;
 import euphoria.psycho.browser.widget.PropertyModelChangeProcessor.ViewBinder;
-
-
-import java.util.Collection;
 
 /**
  * Adapter for providing data and views to a ListView.

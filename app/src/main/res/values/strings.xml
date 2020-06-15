@@ -21,7 +21,10 @@
     <string name="video_server">Video Server</string>
     <string name="error_no_yt_link">Not a valid YouTube link!</string>
     <string name="accessibility_list_menu_button">%1$s Options</string>
-    <item type="id" name="view_model" />
-    <item type="id" name="view_type" />
-    <item type="id" name="view_mcp" />
+    <item name="view_model" type="id" />
+    <item name="view_type" type="id" />
+    <item name="view_mcp" type="id" />
+    <string name="storage">Internal Storage</string>
+    <string name="create_new_folder">Create New Folder</string>
+    <string name="sd_storage">SD Storage</string>
 </resources>

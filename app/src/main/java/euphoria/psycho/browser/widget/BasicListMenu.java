@@ -11,6 +11,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.LinkedList;
+import java.util.List;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -20,12 +25,6 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.ui.UiUtils;
 import euphoria.psycho.browser.widget.MVCListAdapter.ListItem;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
-
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * An implementation of a list menu. Uses app_menu_layout as the default layout of menu and

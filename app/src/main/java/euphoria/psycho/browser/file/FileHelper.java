@@ -9,6 +9,10 @@ import android.os.Environment;
 
 import java.util.List;
 
+import androidx.core.util.Pair;
+import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.BottomSheet;
+import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
@@ -16,6 +20,28 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 
 public class FileHelper {
+    public static void showBottomSheet(Activity activity, Pair[] items) {
+        new BottomSheet(activity)
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClicked(Pair<Integer, String> item) {
+                        switch (item.first) {
+                            case R.drawable.ic_twitter:
+                                extractTwitterVideo(activity);
+                                break;
+                            case R.drawable.ic_youtube:
+                                startYouTube(activity);
+                                break;
+                            case R.drawable.ic_film:
+                                startVideoServer(activity);
+                                break;
+                        }
+                    }
+                })
+                .showDialog(items);
+
+    }
+
     public static void startVideoServer(Activity activity) {
         Intent intent = new Intent(activity, ServerActivity.class);
         activity.startActivity(intent);
@@ -58,5 +84,16 @@ public class FileHelper {
                 });
             }
         }).start();
+    }
+
+    public static Pair[] createBottomSheetItems(Context context) {
+        return new Pair[]{
+                Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
+                Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
+                Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.video_server)),
+                Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
+                Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
+                Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
+        };
     }
 }

@@ -26,8 +26,15 @@ public class FileItem {
         return mMostRecentJavaTimestamp;
     }
 
-    public void setHistoryManager(FileManager manager) {
+    public void setFileManager(FileManager manager) {
         mManager = manager;
     }
+
+    public void remove() {
+        if (mManager != null) {
+            mManager.removeItem(this);
+        }
+    }
+
 
 }

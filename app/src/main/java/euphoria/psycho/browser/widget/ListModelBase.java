@@ -4,13 +4,13 @@
 
 package euphoria.psycho.browser.widget;
 
-import androidx.annotation.NonNull;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * Base class for a {@link ListObservable} containing a {@link SimpleList} of items that support

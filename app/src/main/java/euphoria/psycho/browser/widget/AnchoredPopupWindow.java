@@ -19,14 +19,12 @@ import android.view.WindowManager;
 import android.widget.PopupWindow;
 import android.widget.PopupWindow.OnDismissListener;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
-import euphoria.psycho.browser.base.ApiCompatibilityUtils;
-import euphoria.psycho.browser.base.ObserverList;
-
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+import euphoria.psycho.browser.base.ObserverList;
 
 /**
  * UI component that handles showing a {@link PopupWindow}. Positioning this popup happens through

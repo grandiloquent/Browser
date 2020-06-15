@@ -4,11 +4,10 @@
 
 package euphoria.psycho.browser.widget;
 
+import java.util.Collection;
+
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.base.ObserverList;
-
-
-import java.util.Collection;
 
 /**
  * A base class for models maintaining a set of properties.

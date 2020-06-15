@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 package euphoria.psycho.browser.widget;
 
-import androidx.annotation.NonNull;
-
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * A minimal subset of the functionality of {@link List}, to allow easier implementation in
