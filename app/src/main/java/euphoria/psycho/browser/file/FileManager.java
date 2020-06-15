@@ -36,7 +36,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         mActivity = activity;
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
-        mFileAdapter = new FileAdapter(mSelectionDelegate, this);
+        mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
         // 1. Create SelectableListLayout.
         mSelectableListLayout =
                 (SelectableListLayout<FileItem>) LayoutInflater.from(activity).inflate(
