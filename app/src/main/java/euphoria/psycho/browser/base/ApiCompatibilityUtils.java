@@ -13,10 +13,24 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import java.io.UnsupportedEncodingException;
+
 import androidx.annotation.Nullable;
 import androidx.core.widget.ImageViewCompat;
 
 public class ApiCompatibilityUtils {
+    /**
+     * {@link String#getBytes()} but specifying UTF-8 as the encoding and capturing the resulting
+     * UnsupportedEncodingException.
+     */
+    public static byte[] getBytesUtf8(String str) {
+        try {
+            return str.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @SuppressWarnings("deprecation")
     public static int getColor(Resources res, int id) throws NotFoundException {
         return res.getColor(id);
