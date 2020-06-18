@@ -1,18 +1,25 @@
 package euphoria.psycho.browser.file;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.widget.TextView;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
+import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
@@ -35,11 +42,39 @@ public class FileHelper {
                             case R.drawable.ic_film:
                                 startVideoServer(activity);
                                 break;
+                            case R.drawable.ic_translate:
+                                youdaoChinese(activity);
+                                break;
+
                         }
                     }
                 })
                 .showDialog(items);
 
+    }
+
+    static ExecutorService sSingleThreadExecutor;
+
+
+    private static void youdaoChinese(Activity activity) {
+        if (sSingleThreadExecutor == null)
+            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
+
+        sSingleThreadExecutor.submit(() -> {
+            CharSequence q = Share.getClipboardString();
+            if (q == null) return;
+            String query = q.toString();
+            String result = NativeHelper.youdao(query, false, false);
+            activity.runOnUiThread(() -> {
+                new AlertDialog.Builder(activity)
+                        .setMessage(result)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            Share.setClipboardString(result);
+                            dialog.dismiss();
+                        })
+                        .show();
+            });
+        });
     }
 
     public static void startVideoServer(Activity activity) {
@@ -94,6 +129,7 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
                 Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
+                Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
         };
     }
 }

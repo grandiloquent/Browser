@@ -27,4 +27,5 @@
     <string name="storage">Internal Storage</string>
     <string name="create_new_folder">Create New Folder</string>
     <string name="sd_storage">SD Storage</string>
+    <string name="youdao">YouDao</string>
 </resources>

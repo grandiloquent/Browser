@@ -4,7 +4,10 @@
 #include "dynarray.h"
 #include "cJSON.h"
 #include "helper.h"
+#include "translator.h"
 
+#define YOUDAO_API_KEY "4da34b556074bc9f"
+#define YOUDAO_API_SECRET "Wt5i6HHltTGFAQgSUgofeWdFZyDxKwOy"
 
 static struct mg_serve_http_opts s_http_server_opts;
 
@@ -215,4 +218,22 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     (*env)->ReleaseStringUTFChars(env, rootDirectory_, rootDirectory);
 
     return 1;
+}
+
+JNIEXPORT jstring JNICALL
+Java_euphoria_psycho_browser_app_NativeHelper_youdao(JNIEnv *env, jclass clazz, jstring query_,
+                                                     jboolean is_english_to_chinese,
+                                                     jboolean is_translate) {
+
+    const char *query = (*env)->GetStringUTFChars(env, query_, 0);
+    size_t buf_body_len = 1024 << 2;
+    char buf_body[buf_body_len];
+    char *buf = youdao(query, is_english_to_chinese, YOUDAO_API_KEY, YOUDAO_API_SECRET,
+                       is_translate, buf_body, buf_body_len);
+    jstring result = (*env)->NewStringUTF(env, buf);
+
+    (*env)->ReleaseStringUTFChars(env, query_, query);
+
+    return result;
+
 }

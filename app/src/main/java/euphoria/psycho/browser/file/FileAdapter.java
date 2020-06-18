@@ -1,5 +1,6 @@
 package euphoria.psycho.browser.file;
 
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
@@ -8,6 +9,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileProvider.BrowsingFileObserver;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 
@@ -53,7 +55,16 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return null;
+
+        // create the row associated with this adapter
+        ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.file_item_view, parent, false);
+
+        // ViewHolder is abstract and it cannot be instantiated directly.
+        ViewHolder holder = new ViewHolder(row) {};
+        //((BookmarkRow) row).onDelegateInitialized(mDelegate);
+        return holder;
+
     }
 
     @Override
