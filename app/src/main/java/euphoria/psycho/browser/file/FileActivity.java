@@ -17,8 +17,15 @@ public class FileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mFileManager = new FileManager(this);
         setContentView(mFileManager.getView());
-
-
+//
+//        new Thread(() -> {
+//            String result = NativeHelper.youdao("good morning", true, true);
+//
+//
+//            Log.e("TAG/", "Debug: onCreate, \n" + result);
+//
+//        })
+//                .start();
     }
 }
 

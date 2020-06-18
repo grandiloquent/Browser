@@ -9,4 +9,6 @@ public class NativeHelper {
     public static native void startServer(String host, String port, String rootDirectory);
 
     public static native String youdao(String query, boolean isEnglishToChinese, boolean isTranslate);
+
+    public static native String google(String query, boolean isEnglishToChinese);
 }

@@ -63,8 +63,8 @@ public class FileHelper {
         sSingleThreadExecutor.submit(() -> {
             CharSequence q = Share.getClipboardString();
             if (q == null) return;
-            String query = q.toString();
-            String result = NativeHelper.youdao(query, false, false);
+            String query = q.toString().trim();
+            String result = NativeHelper.youdao(query, true, query.contains(" "));
             activity.runOnUiThread(() -> {
                 new AlertDialog.Builder(activity)
                         .setMessage(result)

@@ -3,7 +3,7 @@
 
 #define ENSURE_NOT_BIG()  if (buf_body_read_len >= buf_body_len) {    \
             close(fd);    \
-            return NULL;   \
+            return 1;   \
         }
 #define SOCKET_INIT(X, Y) int ret, fd;    \
     {    \
@@ -15,16 +15,16 @@
         ret = getaddrinfo(X, Y, &hints, &cur);    \
         if (ret) {    \
             freeaddrinfo(cur);    \
-            return NULL;    \
+            return 1;    \
         }    \
         fd = socket(cur->ai_family, cur->ai_socktype, cur->ai_protocol);    \
         if (fd < 0) {    \
             freeaddrinfo(cur);    \
-            return NULL;    \
+            return 1;    \
         }    \
         if (connect(fd, cur->ai_addr, cur->ai_addrlen) != 0) {    \
             freeaddrinfo(cur);    \
-            return NULL;    \
+            return 1;    \
         }    \
         freeaddrinfo(cur);    \
     }
@@ -51,6 +51,13 @@
         path_str++;    \
     }    \
     buf_encode[buf_encode_index] = 0
+
+#define  SEND_HEADER() ret = send(fd, buf_header, strlen(buf_header), 0);    \
+    if (ret <= 0) {    \
+        close(fd);    \
+        return 1;    \
+    }
+
 static const char HEX_ARRAY[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
                                  'A', 'B', 'C', 'D', 'E', 'F'};
 
@@ -73,8 +80,8 @@ static int indexof(const char *s, const char *find) {
     return count;
 }
 
-char *youdao(const char *word, bool english_to_chinese, const char *api_key, char *api_secret,
-             bool translate, char *buf_body, size_t buf_body_len) {
+int youdao(const char *word, bool english_to_chinese, const char *api_key, char *api_secret,
+           bool translate, char *buf_body, size_t buf_body_len) {
     const char *from = english_to_chinese ? "EN" : "zh-CHS";
     const char *to = english_to_chinese ? "zh-CHS" : "EN";
 
@@ -114,7 +121,7 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
     ret = send(fd, buf_header, strlen(buf_header), 0);
     if (ret <= 0) {
         close(fd);
-        return NULL;
+        return 1;
     };
 
     size_t buf_body_read_len = 0;
@@ -128,12 +135,12 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
 
         if (ret <= 0) {
             close(fd);
-            return NULL;
+            return 1;
         }
         if (indexof(buf_body, "0\r\n\r\n") != -1) { break; }
         if (indexof(buf_body, "400 Bad Request") != -1) {
             close(fd);
-            return NULL;
+            return 1;
         }
         buf_body_read_len += ret;
     } while (1);
@@ -142,13 +149,13 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
     char *y = strstr(buf_body, "\r\n\r\n");
     if (y == NULL || strlen(y) <= 4) {
         close(fd);
-        return NULL;
+        return 1;
     }
     y = y + 4;
     char *body = strstr(y, "\r\n");
     if (body == NULL) {
         close(fd);
-        return NULL;
+        return 1;
     };
 
     if (translate) {
@@ -159,14 +166,14 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
             if (error_ptr != NULL) {
                 cJSON_Delete(json);
                 close(fd);
-                return NULL;
+                return 1;
             }
         }
         const cJSON *translation = cJSON_GetObjectItem(json, "translation");
         if (translation == NULL) {
             cJSON_Delete(json);
             close(fd);
-            return NULL;
+            return 1;
         }
         const cJSON *t = NULL;
 
@@ -182,7 +189,7 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
             if (error_ptr != NULL) {
                 cJSON_Delete(json);
                 close(fd);
-                return NULL;
+                return 1;
             }
         }
         const cJSON *basic = cJSON_GetObjectItem(json, "basic");
@@ -209,5 +216,103 @@ char *youdao(const char *word, bool english_to_chinese, const char *api_key, cha
     }
 
     close(fd);
-    return buf_body;
+    return 0;
+}
+
+int google(const char *word, bool english_to_chinese, char *buf_body, size_t buf_body_len) {
+    const char *to = english_to_chinese ? "zh" : "en";
+
+    SOCKET_INIT("translate.google.cn", "80");
+    URL_ENCODE(word);
+
+
+    const char *url_format = "/translate_a/single?client=gtx&sl=auto&tl=%s&dt=t&dt=bd&ie=UTF-8&oe=UTF-8&dj=1&source=icon&q=%s";
+
+    size_t buf_path_len = strlen(buf_encode) + strlen(url_format) + 10;
+    char buf_path[buf_path_len];
+    memset(buf_path, 0, buf_path_len);
+
+    snprintf(buf_path, buf_path_len,
+             url_format, to, buf_encode);
+
+    size_t buf_header_len = strlen(buf_path) + 100;
+    char buf_header[buf_header_len];
+    memset(buf_header, 0, buf_header_len);
+    strcat(buf_header, "GET ");
+    strcat(buf_header, buf_path);
+    strcat(buf_header, " HTTP/1.1\r\n");
+    strcat(buf_header, "Accept: application/json, text/javascript, */*; q=0.01\r\n");
+    strcat(buf_header, "Host: translate.google.cn\r\n");
+    strcat(buf_header,
+           "User-Agent: Mozilla/4.0\r\n");
+    strcat(buf_header, "\r\n");
+
+
+    SEND_HEADER();
+
+    size_t buf_body_read_len = 0, header_end = 0;
+    memset(buf_body, 0, buf_body_len);
+    do {
+        ENSURE_NOT_BIG();
+
+
+        while ((ret = read(fd, buf_body + buf_body_read_len, buf_body_len - buf_body_read_len)) ==
+               -1 && errno == EINTR);
+
+        if (ret <= 0) {
+            close(fd);
+            return 1;
+        }
+
+
+        if (indexof(buf_body, "0\r\n\r\n") != -1) {
+            break;
+        }
+//        LOGE("%d %d", ret, buf_body_read_len);
+//
+        //if (indexof(buf_body, "0\r\n\r\n") != -1) { break; }
+        if (indexof(buf_body, "200 OK") == -1) {
+            close(fd);
+            return 1;
+        }
+
+        buf_body_read_len += ret;
+
+
+    } while (1);
+
+
+    char *y = strstr(buf_body, "\r\n\r\n");
+    if (y == NULL || strlen(y) <= 4) {
+        close(fd);
+        return 1;
+    }
+    y = y + 4;
+    char *body = strstr(y, "\r\n");
+    if (body == NULL) {
+        close(fd);
+        return 1;
+    };
+
+    cJSON *json = cJSON_Parse(body);
+    if (json == NULL) {
+        close(fd);
+        return 1;
+    }
+
+
+    cJSON *sentences = cJSON_GetObjectItem(json, "sentences");
+    if (sentences == NULL) {
+        cJSON_Delete(json);
+        close(fd);
+        return 1;
+    }
+    const cJSON *t = NULL;
+    memset(buf_body, 0, buf_body_len);
+
+    cJSON_ArrayForEach(t, sentences) {
+        strcat(buf_body, cJSON_GetObjectItem(t, "trans")->valuestring);
+    }
+    close(fd);
+    return 0;
 }
