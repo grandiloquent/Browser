@@ -29,10 +29,16 @@ public class FileHelper {
 
     public static final int TYPE_DIRECTORY = 1;
     public static final int TYPE_FILE_AUDIO = 2;
-    public static final int TYPE_UNKNOWN = 0;
+    public static final int TYPE_FILE_TEXT = 3;
+    public static final int TYPE_FILE_APK = 4;
+    public static final int TYPE_FILE_IMAGE = 4;
+
+    public static final int TYPE_FILE_UNKNOWN = 0;
     public static VectorDrawableCompat sDirectoryDrawable;
     public static VectorDrawableCompat sAudioDrawable;
+    public static VectorDrawableCompat sTextDrawable;
 
+    public static VectorDrawableCompat sOthersDrawable;
 
     public static void initialize(Context context) {
         sDirectoryDrawable = VectorDrawableCompat.create(
@@ -42,6 +48,14 @@ public class FileHelper {
         sAudioDrawable = VectorDrawableCompat.create(
                 context.getResources(),
                 R.drawable.ic_type_music,
+                context.getTheme());
+        sTextDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_text,
+                context.getTheme());
+        sOthersDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_others,
                 context.getTheme());
     }
 
@@ -180,6 +194,11 @@ public class FileHelper {
 
             return TYPE_FILE_AUDIO;
         }
-        return TYPE_UNKNOWN;
+        if (extension.equals("txt") || extension.equals("json"))
+            return TYPE_FILE_TEXT;
+        if (extension.equals("jpg") || extension.equals("png"))
+            return TYPE_FILE_IMAGE;
+
+        return TYPE_FILE_UNKNOWN;
     }
 }
