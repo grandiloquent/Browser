@@ -2,10 +2,14 @@ package euphoria.psycho.browser.file;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+
+
+import android.graphics.drawable.VectorDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
 import androidx.annotation.Nullable;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.widget.BasicListMenu;
 import euphoria.psycho.browser.widget.LargeIconCallback;
@@ -20,6 +24,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public void setFileManager(FileManager fileManager) {
     }
 
     private ModelList getItems() {
@@ -84,5 +91,21 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 //        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
 //                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
 //        setStartIconDrawable(iconDrawable);
+    }
+
+    @Override
+    public void setItem(FileItem item) {
+        if (getItem() == item) return;
+        super.setItem(item);
+        mTitleView.setText(item.getTitle());
+
+        switch (item.getType()) {
+            case FileHelper.TYPE_DIRECTORY:
+                setStartIconDrawable(FileHelper.sDirectoryDrawable);
+                break;
+            case FileHelper.TYPE_FILE_AUDIO:
+                setStartIconDrawable(FileHelper.sAudioDrawable);
+                break;
+        }
     }
 }

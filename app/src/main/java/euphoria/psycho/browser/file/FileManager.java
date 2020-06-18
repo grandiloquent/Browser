@@ -3,6 +3,7 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -71,7 +72,12 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
         mFileAdapter.initialize();
 
+        FileHelper.initialize(mActivity);
 
+    }
+
+    public String getDirectory() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
     public ViewGroup getView() {

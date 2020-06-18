@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileProvider.BrowsingFileObserver;
+import euphoria.psycho.browser.widget.SelectableItemView;
+import euphoria.psycho.browser.widget.SelectableItemViewHolder;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 
 public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObserver {
@@ -29,6 +31,7 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileProvider.setObserver(this);
         mFileManager = manager;
         mItemViews = new ArrayList<>();
+        mDirectory = manager.getDirectory();
     }
 
     public void initialize() {
@@ -52,6 +55,9 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     }
 
     private void loadItems(List<FileItem> items) {
+        mItems.clear();
+        mItems.addAll(items);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -61,7 +67,10 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-
+        FileItem item = mItems.get(position);
+        SelectableItemViewHolder<FileItem> current = (SelectableItemViewHolder<FileItem>) holder;
+        current.displayItem(item);
+        ((FileItemView) holder.itemView).setFileManager(mFileManager);
     }
 
     @NonNull
@@ -71,11 +80,10 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         // create the row associated with this adapter
         ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.file_item_view, parent, false);
-
-        // ViewHolder is abstract and it cannot be instantiated directly.
-        ViewHolder holder = new ViewHolder(row) {
-        };
+        SelectableItemViewHolder<FileItem> holder = new SelectableItemViewHolder<>(row, mSelectionDelegate);
         //((BookmarkRow) row).onDelegateInitialized(mDelegate);
+        FileItemView itemView = (FileItemView) holder.itemView;
+        mItemViews.add(itemView);
         return holder;
 
     }

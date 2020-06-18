@@ -6,11 +6,17 @@ public class FileItem {
     private final String mUrl;
     private Long mStableId;
     private FileManager mManager;
+    private int mType;
 
-    public FileItem(String title, String url, long mostRecentJavaTimestamp) {
+    public FileItem(String title, String url, long mostRecentJavaTimestamp, int type) {
         mTitle = title;
         mUrl = url;
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
+        mType = type;
+    }
+
+    public void setType(int type) {
+        mType = type;
     }
 
     public long getStableId() {
@@ -26,14 +32,22 @@ public class FileItem {
         return mMostRecentJavaTimestamp;
     }
 
-    public void setFileManager(FileManager manager) {
-        mManager = manager;
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public int getType() {
+        return mType;
     }
 
     public void remove() {
         if (mManager != null) {
             mManager.removeItem(this);
         }
+    }
+
+    public void setFileManager(FileManager manager) {
+        mManager = manager;
     }
 
 
