@@ -27,32 +27,30 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 
 public class FileHelper {
-    public static void showBottomSheet(Activity activity, Pair[] items) {
-        new BottomSheet(activity)
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClicked(Pair<Integer, String> item) {
-                        switch (item.first) {
-                            case R.drawable.ic_twitter:
-                                extractTwitterVideo(activity);
-                                break;
-                            case R.drawable.ic_youtube:
-                                startYouTube(activity);
-                                break;
-                            case R.drawable.ic_film:
-                                startVideoServer(activity);
-                                break;
-                            case R.drawable.ic_translate:
-                                youdaoChinese(activity);
-                                break;
-                            case R.drawable.ic_g_translate:
-                                google(activity);
-                                break;
-
-                        }
+    public static void showBottomSheet(Activity activity, Pair[] items, FileManager fileManager) {
+        BottomSheet bottomSheet = new BottomSheet(activity)
+                .setOnClickListener(item -> {
+                    switch (item.first) {
+                        case R.drawable.ic_twitter:
+                            extractTwitterVideo(activity);
+                            break;
+                        case R.drawable.ic_youtube:
+                            startYouTube(activity);
+                            break;
+                        case R.drawable.ic_film:
+                            startVideoServer(activity);
+                            break;
+                        case R.drawable.ic_translate:
+                            youdaoChinese(activity);
+                            break;
+                        case R.drawable.ic_g_translate:
+                            google(activity);
+                            break;
                     }
-                })
-                .showDialog(items);
+                    fileManager.setBottomSheet(null);
+                });
+        fileManager.setBottomSheet(bottomSheet);
+        bottomSheet.showDialog(items);
 
     }
 

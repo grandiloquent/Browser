@@ -27,5 +27,11 @@ public class FileActivity extends AppCompatActivity {
 //        })
 //                .start();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mFileManager.onPause();
+    }
 }
 

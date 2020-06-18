@@ -14,6 +14,7 @@ import java.util.List;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.widget.ConversionUtils;
 import euphoria.psycho.browser.widget.SelectableListLayout;
@@ -31,6 +32,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private final SelectableListLayout<FileItem> mSelectableListLayout;
     private final SelectionDelegate<FileItem> mSelectionDelegate;
     private final FileManagerToolbar mToolbar;
+    private BottomSheet mBottomSheet;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -76,7 +78,17 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return mSelectableListLayout;
     }
 
+    public void onPause() {
+        if(mBottomSheet!=null){
+            mBottomSheet.dismiss();
+        }
+    }
+
     public void removeItem(FileItem fileItem) {
+    }
+
+    public void setBottomSheet(BottomSheet bottomSheet) {
+        mBottomSheet = bottomSheet;
     }
 
 
@@ -93,7 +105,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                 mActivity.finish();
                 return true;
             case R.id.menu_id:
-                FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity));
+                FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity), this);
                 return true;
         }
         return false;

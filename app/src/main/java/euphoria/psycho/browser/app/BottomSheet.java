@@ -30,6 +30,13 @@ public class BottomSheet {
         mContext = context;
     }
 
+    public void dismiss() {
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+    }
+
     public BottomSheet setOnClickListener(OnClickListener onClickListener) {
         mOnClickListener = onClickListener;
         return this;
