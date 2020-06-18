@@ -33,6 +33,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private final SelectionDelegate<FileItem> mSelectionDelegate;
     private final FileManagerToolbar mToolbar;
     private BottomSheet mBottomSheet;
+    private boolean mIsSearching;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -68,8 +69,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                 (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
                 FAVICON_MAX_CACHE_SIZE_BYTES);
 
-
-        Log.e("TAG/", "Debug: FileManager, \n" + activityManager.getMemoryClass() + " " + FAVICON_MAX_CACHE_SIZE_BYTES);
+        mFileAdapter.initialize();
 
 
     }
@@ -78,8 +78,18 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return mSelectableListLayout;
     }
 
+    public boolean onBackPressed() {
+        return mSelectableListLayout.onBackPressed();
+    }
+
+    public void onDestroy() {
+        mSelectableListLayout.onDestroyed();
+        mFileAdapter.onDestroyed();
+
+    }
+
     public void onPause() {
-        if(mBottomSheet!=null){
+        if (mBottomSheet != null) {
             mBottomSheet.dismiss();
         }
     }
@@ -94,6 +104,9 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
     @Override
     public void onEndSearch() {
+        mFileAdapter.onEndSearch();
+        mSelectableListLayout.onEndSearch();
+        mIsSearching = false;
 
     }
 
@@ -113,11 +126,12 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
     @Override
     public void onSearchTextChanged(String query) {
-
+        mFileAdapter.search(query);
     }
 
     @Override
     public void onSelectionStateChange(List<FileItem> selectedItems) {
+        mFileAdapter.onSelectionStateChange();
 
     }
 }

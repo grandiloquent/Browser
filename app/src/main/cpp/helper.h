@@ -7,6 +7,14 @@
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
+#define ARRAY_COUNT(array) (sizeof((array)) / sizeof((array)[0]))
+
+#define JAVA_METHOD(object, name, type, ...) \
+  JNIEXPORT type JNICALL Java_ ## object ## _ ## name ( \
+    JNIEnv *env, jobject this, ## __VA_ARGS__ \
+  )
+
+
 long parse_range(const char *s) {
 
     if (s == NULL)return 0;

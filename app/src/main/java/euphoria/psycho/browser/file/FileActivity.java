@@ -1,12 +1,9 @@
 package euphoria.psycho.browser.file;
 
 import android.os.Bundle;
-import android.util.Log;
-
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import euphoria.psycho.browser.app.NativeHelper;
 
 public class FileActivity extends AppCompatActivity {
 
@@ -26,6 +23,19 @@ public class FileActivity extends AppCompatActivity {
 //
 //        })
 //                .start();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mFileManager.onBackPressed())
+            super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        mFileManager.onDestroy();
+        mFileManager = null;
+        super.onDestroy();
     }
 
     @Override

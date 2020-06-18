@@ -36,6 +36,18 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileProvider.queryFile(mDirectory);
     }
 
+    public void onDestroyed() {
+    }
+
+    public void onEndSearch() {
+    }
+
+    public void onSelectionStateChange() {
+    }
+
+    public void search(String query) {
+    }
+
     private void clear(boolean b) {
     }
 
@@ -61,7 +73,8 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
                 .inflate(R.layout.file_item_view, parent, false);
 
         // ViewHolder is abstract and it cannot be instantiated directly.
-        ViewHolder holder = new ViewHolder(row) {};
+        ViewHolder holder = new ViewHolder(row) {
+        };
         //((BookmarkRow) row).onDelegateInitialized(mDelegate);
         return holder;
 
