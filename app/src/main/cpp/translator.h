@@ -237,7 +237,7 @@ int google(const char *word, bool english_to_chinese, char *buf_body, size_t buf
 
     size_t buf_header_len = strlen(buf_path) + 100;
     char buf_header[buf_header_len];
-    memset(buf_header, 0, buf_header_len);
+    buf_header[0] = 0;
     strcat(buf_header, "GET ");
     strcat(buf_header, buf_path);
     strcat(buf_header, " HTTP/1.1\r\n");

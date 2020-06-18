@@ -45,12 +45,36 @@ public class FileHelper {
                             case R.drawable.ic_translate:
                                 youdaoChinese(activity);
                                 break;
+                            case R.drawable.ic_g_translate:
+                                google(activity);
+                                break;
 
                         }
                     }
                 })
                 .showDialog(items);
 
+    }
+
+    private static void google(Activity activity) {
+        if (sSingleThreadExecutor == null)
+            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
+
+        sSingleThreadExecutor.submit(() -> {
+            CharSequence q = Share.getClipboardString();
+            if (q == null) return;
+            String query = q.toString().trim();
+            String result = NativeHelper.google(query, false);
+            activity.runOnUiThread(() -> {
+                new AlertDialog.Builder(activity)
+                        .setMessage(result)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            Share.setClipboardString(result);
+                            dialog.dismiss();
+                        })
+                        .show();
+            });
+        });
     }
 
     static ExecutorService sSingleThreadExecutor;
@@ -130,6 +154,8 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
+                Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+
         };
     }
 }
