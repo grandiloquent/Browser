@@ -18,7 +18,7 @@ public class FileActivity extends AppCompatActivity {
         mFileManager = new FileManager(this);
         setContentView(mFileManager.getView());
 
-       
+
     }
 }
 
