@@ -51,6 +51,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -73,6 +74,7 @@ public class Share {
     private static long[] sCrcTable = new long[256];
     private static float sPixelDensity = -1f;
 
+
     static {
         // http://bioinf.cs.ucl.ac.uk/downloads/crc64/crc64.c
         long part;
@@ -85,35 +87,6 @@ public class Share {
             sCrcTable[i] = part;
         }
     }
-
-
-    public static void showExceptionDialog(Context context, Exception e) {
-        TextView textView = new TextView(context);
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("## Message")
-                .append("\n\n")
-                .append(e.getMessage())
-                .append("\n\n")
-                .append("## StackTrace");
-
-        for (StackTraceElement stackTraceElement : e.getStackTrace()) {
-            stringBuilder.append(stackTraceElement.toString())
-                    .append("\n\n");
-        }
-        String content = stringBuilder.toString();
-        AlertDialog dialog = new AlertDialog.Builder(context)
-                .setView(textView)
-                .setPositiveButton(android.R.string.ok, new OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Share.setClipboardString(content);
-                        dialog.dismiss();
-                    }
-                })
-                .create();
-    }
-
-
 
     public static void closeQuietly(Closeable closeable) {
         try {
@@ -497,6 +470,7 @@ public class Share {
         return new File(path).isFile();
     }
 
+
     /**
      * Return list of all normal files under the given directory, traversing
      * directories recursively.
@@ -542,6 +516,32 @@ public class Share {
         } catch (java.security.NoSuchAlgorithmException e) {
         }
         return null;
+    }
+
+    public static void showExceptionDialog(Context context, Exception e) {
+        TextView textView = new TextView(context);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("## Message")
+                .append("\n\n")
+                .append(e.getMessage())
+                .append("\n\n")
+                .append("## StackTrace");
+
+        for (StackTraceElement stackTraceElement : e.getStackTrace()) {
+            stringBuilder.append(stackTraceElement.toString())
+                    .append("\n\n");
+        }
+        String content = stringBuilder.toString();
+        AlertDialog dialog = new AlertDialog.Builder(context)
+                .setView(textView)
+                .setPositiveButton(android.R.string.ok, new OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Share.setClipboardString(content);
+                        dialog.dismiss();
+                    }
+                })
+                .create();
     }
 
     public static String substringAfter(String string, char delimiter) {

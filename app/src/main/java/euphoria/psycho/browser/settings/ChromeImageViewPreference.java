@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
+import euphoria.psycho.browser.R;
 
 /**
  * A preference that supports some Chrome-specific customizations:

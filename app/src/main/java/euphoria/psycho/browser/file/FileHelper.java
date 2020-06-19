@@ -20,6 +20,7 @@ import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
+import euphoria.psycho.browser.app.SettingsActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
@@ -132,6 +133,9 @@ public class FileHelper {
                             google(activity);
                             break;
                         case R.drawable.ic_settings:
+
+                            Intent settingsActivity = new Intent(activity, SettingsActivity.class);
+                            activity.startActivity(settingsActivity);
                             break;
                     }
                     fileManager.setBottomSheet(null);

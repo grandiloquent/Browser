@@ -15,4 +15,18 @@
         <item name="android:importantForAccessibility">no</item>
     </style>
 
+    <style name="TextAppearance.TextAccentMediumThick" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+
+    <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
+
+    <style name="TextAppearance.Button.Text.Blue" parent="TextAppearance.TextAccentMediumThick" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+    </style>
+
+    <style name="TextAppearance.RobotoMediumStyle">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 </resources>

@@ -49,6 +49,13 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity android:name=".app.SettingsActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+            android:exported="false"
+            android:label="@string/settings"
+            android:theme="@style/Theme.Chromium.Settings">
+        </activity>
+
         <service android:name=".app.ServerService" />
     </application>
 </manifest>

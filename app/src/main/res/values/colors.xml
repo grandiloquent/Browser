@@ -1,4 +1,7 @@
 <resources>
+    <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
+    <color name="default_text_color_link_disabled_dark">@color/modern_grey_800_alpha_38</color>
+
     <color name="black_alpha_11">#1D000000</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorPrimary">#008577</color>

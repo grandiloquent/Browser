@@ -1,8 +1,11 @@
 package euphoria.psycho.browser.base;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
@@ -69,9 +72,11 @@ public class ApiCompatibilityUtils {
         }
         window.setStatusBarColor(statusBarColor);
     }
+
     public static Drawable getDrawable(Resources res, int id) throws NotFoundException {
         return getDrawableForDensity(res, id, 0);
     }
+
     public static Drawable getDrawableForDensity(Resources res, int id, int density) {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
@@ -89,6 +94,7 @@ public class ApiCompatibilityUtils {
             StrictMode.setThreadPolicy(oldPolicy);
         }
     }
+
     public static void setStatusBarIconColor(View rootView, boolean useDarkIcons) {
         int systemUiVisibility = rootView.getSystemUiVisibility();
         if (useDarkIcons) {
@@ -97,6 +103,12 @@ public class ApiCompatibilityUtils {
             systemUiVisibility &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         }
         rootView.setSystemUiVisibility(systemUiVisibility);
+    }
+
+    public static void setTaskDescription(Activity activity, String title, Bitmap icon, int color) {
+        ActivityManager.TaskDescription description =
+                new ActivityManager.TaskDescription(title, icon, color);
+        activity.setTaskDescription(description);
     }
 
 }

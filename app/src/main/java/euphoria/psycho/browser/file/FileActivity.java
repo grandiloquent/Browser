@@ -1,9 +1,11 @@
 package euphoria.psycho.browser.file;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import euphoria.psycho.browser.base.Share;
 
 public class FileActivity extends AppCompatActivity {
 
@@ -14,6 +16,10 @@ public class FileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         mFileManager = new FileManager(this);
         setContentView(mFileManager.getView());
+
+
+
+
 //
 //        new Thread(() -> {
 //            String result = NativeHelper.youdao("good morning", true, true);

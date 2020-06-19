@@ -2,7 +2,15 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <euphoria.psycho.browser.settings.TextMessagePreference
-        android:title="@string/do_not_track_description"
+    <euphoria.psycho.browser.settings.ChromeSwitchPreference
+        android:key="display_hidden_files"
+        android:title="@string/display_hidden_files" />
+
+    <androidx.preference.EditTextPreference
+        android:dialogTitle="@string/videos_directory"
+        android:inputType="textNoSuggestions"
+        android:key="videos_directory"
+        android:singleLine="true"
+        android:title="@string/videos_directory"
         app:allowDividerBelow="false" />
 </PreferenceScreen>
