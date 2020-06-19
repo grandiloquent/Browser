@@ -11,4 +11,6 @@ public class NativeHelper {
     public static native String youdao(String query, boolean isEnglishToChinese, boolean isTranslate);
 
     public static native String google(String query, boolean isEnglishToChinese);
+
+    public static native boolean deleteFileSystem(String path);
 }

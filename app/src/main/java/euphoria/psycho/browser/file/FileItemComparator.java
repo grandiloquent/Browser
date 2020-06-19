@@ -22,7 +22,6 @@ public class FileItemComparator implements Comparator<FileItem> {
         if ((o1.getType() == o2.getType()) || (
                 o1.getType() != FileHelper.TYPE_DIRECTORY && o2.getType() != FileHelper.TYPE_DIRECTORY
         )) {
-
             return mCollator.compare(o1.getTitle(), o2.getTitle());
         } else if (o1.getType() == FileHelper.TYPE_DIRECTORY) {
             return -1;

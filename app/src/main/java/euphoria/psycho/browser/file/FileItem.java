@@ -36,6 +36,10 @@ public class FileItem {
         return mTitle;
     }
 
+    public String getUrl() {
+        return mUrl;
+    }
+
     public int getType() {
         return mType;
     }

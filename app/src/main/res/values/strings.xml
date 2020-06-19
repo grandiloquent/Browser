@@ -27,6 +27,16 @@
     <string name="storage">Internal Storage</string>
     <string name="create_new_folder">Create New Folder</string>
     <string name="sd_storage">SD Storage</string>
-    <string name="youdao">YouDao</string>
+    <string name="youdao">Youdao</string>
     <string name="google">Google</string>
+    <string name="managed_by_your_parent">Managed by your parent</string>
+    <string name="managed_by_your_parents">Managed by your parents</string>
+    <string name="remove">Remove</string>
+    <string name="settings">Settings</string>
+    <string name="managed_by_your_organization">Managed by your organization</string>
+    <string name="managed_settings_cannot_be_reset">Managed settings cannot be reset</string>
+    <string name="do_not_track_description">"Enabling “Do Not Track” means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request, and how the request is interpreted.
+
+For example, some websites may respond to this request by showing you ads that aren’t based on other websites you’ve visited. Many websites will still collect and use your browsing data — for example to improve security, to provide content, ads and recommendations, and to generate reporting statistics."</string>
+
 </resources>

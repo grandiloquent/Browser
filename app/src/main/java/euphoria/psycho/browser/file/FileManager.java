@@ -126,6 +126,13 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
             case R.id.menu_id:
                 FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity), this);
                 return true;
+            case R.id.selection_mode_delete_menu_id:
+                for (FileItem i : mSelectionDelegate.getSelectedItems()) {
+                    mFileAdapter.markItemForRemoval(i);
+                }
+                mFileAdapter.removeItems();
+                mSelectionDelegate.clearSelection();
+                return true;
         }
         return false;
     }

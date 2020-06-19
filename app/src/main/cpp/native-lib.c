@@ -153,7 +153,6 @@ static void handle_api_videos(struct mg_connection *nc, const struct http_messag
     mg_send_head(nc, 500, 0, NULL);
     return;
 
-    basenam
 }
 
 static void handle_video(struct mg_connection *nc, const struct http_message *hm) {
@@ -250,4 +249,20 @@ Java_euphoria_psycho_browser_app_NativeHelper_google(JNIEnv *env, jclass clazz, 
     jstring result = (*env)->NewStringUTF(env, buf_body);
     (*env)->ReleaseStringUTFChars(env, query_, query);
     return result;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jclass clazz,
+                                                               jstring path_) {
+    const char *path = (*env)->GetStringUTFChars(env, path_, 0);
+    int ret;
+    if (is_dir(path)) {
+        char nameBuffer[PATH_MAX];
+        struct stat statBuffer;
+        ret = delete_directory(path, nameBuffer, &statBuffer);
+    } else {
+        ret = unlink(path);
+    }
+    (*env)->ReleaseStringUTFChars(env, path_, path);
+    return ret == 0 ? true : false;
 }

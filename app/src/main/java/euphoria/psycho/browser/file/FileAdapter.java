@@ -39,6 +39,11 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileProvider.queryFile(mDirectory);
     }
 
+    public void markItemForRemoval(FileItem i) {
+        mItems.remove(i);
+        mFileProvider.markItemForRemoval(i);
+    }
+
     public void onDestroyed() {
     }
 
@@ -46,6 +51,10 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     }
 
     public void onSelectionStateChange() {
+    }
+
+    public void removeItems() {
+        mFileProvider.removeItems();
     }
 
     public void search(String query) {

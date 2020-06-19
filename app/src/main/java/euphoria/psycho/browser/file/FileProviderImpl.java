@@ -7,13 +7,24 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import euphoria.psycho.browser.app.NativeHelper;
+
 public class FileProviderImpl implements FileProvider {
     private BrowsingFileObserver mObserver;
     private List<FileItem> mItems = new ArrayList<>();
+    private List<FileItem> mRemovalItems;
 
     @Override
     public void destroy() {
 
+    }
+
+    @Override
+    public void markItemForRemoval(FileItem i) {
+        if (mRemovalItems == null) {
+            mRemovalItems = new ArrayList<>();
+        }
+        mRemovalItems.add(i);
     }
 
     @Override
@@ -40,7 +51,11 @@ public class FileProviderImpl implements FileProvider {
 
     @Override
     public void removeItems() {
-
+        for (FileItem i : mRemovalItems) {
+            NativeHelper.deleteFileSystem(i.getUrl());
+        }
+        mRemovalItems.clear();
+        mRemovalItems = null;
     }
 
     @Override

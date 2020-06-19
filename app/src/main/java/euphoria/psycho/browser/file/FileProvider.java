@@ -6,6 +6,8 @@ public interface FileProvider {
 
     void destroy();
 
+    void markItemForRemoval(FileItem i);
+
     void queryFile(String directory);
 
     void removeItems();

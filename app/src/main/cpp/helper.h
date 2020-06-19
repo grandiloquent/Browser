@@ -86,6 +86,7 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
     int ret;
     dir = opendir(path);
     if (dir == NULL) {
+        LOGE("opendir() error on '%s' '%s'\n", path, strerror(errno));
         return 1;
     }
 
@@ -106,6 +107,7 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
         strcpy(filenameOffset, de->d_name);
         ret = lstat(nameBuffer, statBuffer);
         if (ret != 0) {
+            LOGE("lstat() error on '%s' '%s'\n", nameBuffer, strerror(errno));
             return 1;
         }
         if (S_ISDIR(statBuffer->st_mode)) {
@@ -113,17 +115,32 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
             delete_directory(newpath, nameBuffer, statBuffer);
             ret = rmdir(newpath);
             if (ret != 0) {
+                LOGE("rmdir() error on '%s' '%s'\n", newpath, strerror(errno));
+                free(newpath);
                 return 1;
             }
+#if 0
+            LOGE("rmdir() on '%s'\n", newpath);
+#endif
             free(newpath);
         } else {
             ret = unlink(nameBuffer);
             if (ret != 0) {
+                LOGE("unlink() error on '%s' '%s'\n", nameBuffer, strerror(errno));
                 return 1;
             }
         }
     }
     closedir(dir);
+    return rmdir(path);
+}
+
+bool is_dir(const char *pathname) {
+    struct stat info;
+    if (stat(pathname, &info) == -1) {
+        return false;
+    }
+    return S_ISDIR(info.st_mode);
 }
 
 #endif

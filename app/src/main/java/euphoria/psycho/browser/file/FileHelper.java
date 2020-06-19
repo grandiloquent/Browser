@@ -58,7 +58,7 @@ public class FileHelper {
                 context.getResources(),
                 R.drawable.ic_type_others,
                 context.getTheme());
-     sImageDrawable  = VectorDrawableCompat.create(
+        sImageDrawable = VectorDrawableCompat.create(
                 context.getResources(),
                 R.drawable.ic_type_image,
                 context.getTheme());
@@ -74,6 +74,7 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+                Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
         };
     }
 
@@ -129,6 +130,8 @@ public class FileHelper {
                             break;
                         case R.drawable.ic_g_translate:
                             google(activity);
+                            break;
+                        case R.drawable.ic_settings:
                             break;
                     }
                     fileManager.setBottomSheet(null);

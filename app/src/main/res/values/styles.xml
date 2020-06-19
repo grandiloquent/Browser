@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Base.Theme.Chromium" parent="Base.V17.Theme.Chromium" />
 
@@ -146,6 +146,7 @@
         <item name="android:windowMinWidthMinor">85%</item>
         <item name="android:windowMinWidthMajor">55%</item>
     </style>
+
     <style name="ListMenuItemStyle">
         <item name="android:paddingStart">@dimen/default_list_row_padding</item>
         <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
@@ -155,13 +156,62 @@
         <item name="android:windowEnterAnimation">@anim/menu_enter</item>
         <item name="android:windowExitAnimation">@anim/menu_exit</item>
     </style>
+
     <style name="OverflowMenuAnimBottom">
         <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
     </style>
+
     <style name="TextAppearance.ListMenuItem">
         <item name="android:textColor">@color/default_icon_color_tint_list</item>
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="PreferenceLayoutCompat">
+        <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+    </style>
+
+    <style name="PreferenceDescriptionCompat">
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <style name="PreferenceWidgetCompat">
+        <item name="android:paddingStart">16dp</item>
+    </style>
+
+    <style name="PreferenceTitle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextLarge.Primary</item>
+    </style>
+
+    <style name="PreferenceSummary">
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Secondary</item>
+    </style>
+
+    <!-- TODO(crbug.com/1077375): Consider removing this text style. -->
+    <style name="TextAppearance.PreferenceMediumText" tools:ignore="UnusedResources">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="PreferenceLayout">
+        <item name="android:background">?android:attr/activatedBackgroundIndicator</item>
+        <item name="android:minHeight">?android:attr/listPreferredItemHeightSmall</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingStart">?android:attr/listPreferredItemPaddingStart</item>
+        <item name="android:paddingEnd">?android:attr/listPreferredItemPaddingEnd</item>
+    </style>
+
+    <style name="PreferenceSpinnerUnderlineView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginTop">2dp</item>
+        <item name="android:background">@color/modern_grey_600</item>
     </style>
 
 </resources>
