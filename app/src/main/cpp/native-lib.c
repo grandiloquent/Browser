@@ -10,6 +10,7 @@
 #define YOUDAO_API_SECRET "Wt5i6HHltTGFAQgSUgofeWdFZyDxKwOy"
 
 static struct mg_serve_http_opts s_http_server_opts;
+static char video_directory[PATH_MAX];
 
 ///////////////////////////
 bool ends_with(const char *s1, const char *s2) {
@@ -115,15 +116,10 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
 }
 
 static void handle_api_videos(struct mg_connection *nc, const struct http_message *hm) {
-    char path_buf[PATH_MAX];
-    dirname(path_buf, s_http_server_opts.document_root);
-    strcat(path_buf, "/Videos");
     strlist_t files = STRLIST_INITIALIZER;
-    LOGE("list_directory(): %s\n", path_buf);
 
-    int ret = list_directory(path_buf, &files);
+    int ret = list_directory(video_directory, &files);
     if (ret == -1) {
-        LOGE("list_directory(): %s\n", path_buf);
         goto err;
     }
     cJSON *items = cJSON_CreateArray();
@@ -195,20 +191,22 @@ void *start_server(const char *address) {
 
 JNIEXPORT jboolean JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass clazz, jstring host_,
-                                                          jstring port_, jstring rootDirectory_) {
+                                                          jstring port_, jstring rootDirectory_,
+                                                          jstring videoDirectory_) {
     const char *host = (*env)->GetStringUTFChars(env, host_, 0);
     const char *port = (*env)->GetStringUTFChars(env, port_, 0);
     const char *rootDirectory = (*env)->GetStringUTFChars(env, rootDirectory_, 0);
+    const char *videoDirectory = (*env)->GetStringUTFChars(env, videoDirectory_, 0);
+
+    strcpy(video_directory, videoDirectory);
 
     char *dir = malloc(strlen(rootDirectory) + 1);
-
     strcpy(dir, rootDirectory);
     s_http_server_opts.document_root = dir;
 
     char *url = malloc(strlen(host) + strlen(port) + 2);
     memset(url, 0, strlen(host) + strlen(port) + 2);
     sprintf(url, "%s:%s", host, port);
-    LOGE("%s", url);
 
     pthread_t t;
     pthread_create(&t, NULL, (void *(*)(void *)) start_server, url);
@@ -216,6 +214,7 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     (*env)->ReleaseStringUTFChars(env, host_, host);
     (*env)->ReleaseStringUTFChars(env, port_, port);
     (*env)->ReleaseStringUTFChars(env, rootDirectory_, rootDirectory);
+    (*env)->ReleaseStringUTFChars(env, videoDirectory_, videoDirectory);
 
     return 1;
 }

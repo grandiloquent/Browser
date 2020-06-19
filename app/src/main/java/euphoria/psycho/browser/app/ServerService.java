@@ -38,7 +38,7 @@ public class ServerService extends Service {
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
         mCpuWakeLock.acquire();
-        NativeHelper.startServer(Share.getDeviceIP(this), "12345", Share.getExternalStoragePath("FileServer"));
+        NativeHelper.startServer(Share.getDeviceIP(this), "12345", Share.getExternalStoragePath("FileServer"), SettingsManager.getInstance().getVideoDirectory());
     }
 
     @Override
