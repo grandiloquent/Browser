@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.widget.BasicListMenu;
 import euphoria.psycho.browser.widget.LargeIconCallback;
 import euphoria.psycho.browser.widget.ListMenu;
@@ -27,6 +28,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
     }
 
     public void setFileManager(FileManager fileManager) {
+        getItem().setFileManager(fileManager);
     }
 
     private ModelList getItems() {
@@ -72,7 +74,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 
     @Override
     protected void onClick() {
-
+        if (getItem() != null) {
+            getItem().open();
+        }
     }
 
     @Override
@@ -115,6 +119,11 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
             case FileHelper.TYPE_FILE_UNKNOWN:
                 setStartIconDrawable(FileHelper.sOthersDrawable);
                 break;
+        }
+        if (item.getType() == FileHelper.TYPE_DIRECTORY) {
+            mDescriptionView.setText(String.format("%d items", item.getSize()));
+        } else {
+            mDescriptionView.setText(Share.formatFileSize(item.getSize()));
         }
     }
 }

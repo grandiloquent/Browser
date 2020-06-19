@@ -7,16 +7,22 @@ public class FileItem {
     private Long mStableId;
     private FileManager mManager;
     private int mType;
+    private long mSize;
 
-    public FileItem(String title, String url, long mostRecentJavaTimestamp, int type) {
+    public FileItem(String title, String url, long mostRecentJavaTimestamp, int type, long size) {
         mTitle = title;
         mUrl = url;
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
         mType = type;
+        mSize = size;
     }
 
-    public void setType(int type) {
-        mType = type;
+    public long getSize() {
+        return mSize;
+    }
+
+    public void setSize(long size) {
+        mSize = size;
     }
 
     public long getStableId() {
@@ -36,18 +42,26 @@ public class FileItem {
         return mTitle;
     }
 
-    public String getUrl() {
-        return mUrl;
-    }
-
     public int getType() {
         return mType;
+    }
+
+    public void setType(int type) {
+        mType = type;
+    }
+
+    public String getUrl() {
+        return mUrl;
     }
 
     public void remove() {
         if (mManager != null) {
             mManager.removeItem(this);
         }
+    }
+
+    public void open() {
+        mManager.openUrl(mUrl);
     }
 
     public void setFileManager(FileManager manager) {

@@ -27,7 +27,5 @@ public class FileItemComparator implements Comparator<FileItem> {
             return -1;
         }
         return 1;
-
-
     }
 }

@@ -100,6 +100,9 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         }
     }
 
+    public void openUrl(String url) {
+    }
+
     public void removeItem(FileItem fileItem) {
     }
 
@@ -132,6 +135,11 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                 }
                 mFileAdapter.removeItems();
                 mSelectionDelegate.clearSelection();
+                return true;
+            case R.id.search_menu_id:
+                mToolbar.showSearchView();
+                mSelectableListLayout.onStartSearch();
+                mIsSearching = true;
                 return true;
         }
         return false;

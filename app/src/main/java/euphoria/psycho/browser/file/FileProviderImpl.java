@@ -40,7 +40,7 @@ public class FileProviderImpl implements FileProvider {
 
                 FileItem fileItem = new FileItem(file.getName(),
                         file.getAbsolutePath(),
-                        file.lastModified(), FileHelper.getFileType(file));
+                        file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file));
                 mItems.add(fileItem);
             }
         }

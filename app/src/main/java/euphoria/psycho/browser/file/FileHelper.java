@@ -214,4 +214,11 @@ public class FileHelper {
 
         return TYPE_FILE_UNKNOWN;
     }
+
+    public static long getFileSize(File file) {
+        if (file.isDirectory()) {
+            return file.listFiles().length;
+        }
+        return file.length();
+    }
 }
