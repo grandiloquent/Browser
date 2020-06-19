@@ -109,6 +109,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
             case FileHelper.TYPE_FILE_TEXT:
                 setStartIconDrawable(FileHelper.sTextDrawable);
                 break;
+            case FileHelper.TYPE_FILE_IMAGE:
+                setStartIconDrawable(FileHelper.sImageDrawable);
+                break;
             case FileHelper.TYPE_FILE_UNKNOWN:
                 setStartIconDrawable(FileHelper.sOthersDrawable);
                 break;

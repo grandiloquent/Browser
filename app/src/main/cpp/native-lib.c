@@ -153,6 +153,7 @@ static void handle_api_videos(struct mg_connection *nc, const struct http_messag
     mg_send_head(nc, 500, 0, NULL);
     return;
 
+    basenam
 }
 
 static void handle_video(struct mg_connection *nc, const struct http_message *hm) {

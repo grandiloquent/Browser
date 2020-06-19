@@ -2,6 +2,9 @@ package euphoria.psycho.browser.file;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FileProviderImpl implements FileProvider {
@@ -30,7 +33,7 @@ public class FileProviderImpl implements FileProvider {
                 mItems.add(fileItem);
             }
         }
-
+        Collections.sort(mItems, new FileItemComparator(true, 0));
         if (mObserver != null)
             mObserver.onQueryFileComplete(mItems);
     }

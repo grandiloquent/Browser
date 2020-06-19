@@ -80,4 +80,50 @@ void base64enc(char *out, const char *in) {
     out[i] = '\0';
 }
 
+int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer) {
+    DIR *dir;
+    struct dirent *de;
+    int ret;
+    dir = opendir(path);
+    if (dir == NULL) {
+        return 1;
+    }
+
+    char *filenameOffset;
+    strcpy(nameBuffer, path);
+    strcat(nameBuffer, "/");
+    filenameOffset = nameBuffer + strlen(nameBuffer);
+    for (;;) {
+        de = readdir(dir);
+        if (de == NULL) {
+            break;
+        }
+        if (0 == strcmp(de->d_name, ".")
+            || 0 == strcmp(de->d_name, "..")
+                ) {
+            continue;
+        }
+        strcpy(filenameOffset, de->d_name);
+        ret = lstat(nameBuffer, statBuffer);
+        if (ret != 0) {
+            return 1;
+        }
+        if (S_ISDIR(statBuffer->st_mode)) {
+            char *newpath = strdup(nameBuffer);
+            delete_directory(newpath, nameBuffer, statBuffer);
+            ret = rmdir(newpath);
+            if (ret != 0) {
+                return 1;
+            }
+            free(newpath);
+        } else {
+            ret = unlink(nameBuffer);
+            if (ret != 0) {
+                return 1;
+            }
+        }
+    }
+    closedir(dir);
+}
+
 #endif

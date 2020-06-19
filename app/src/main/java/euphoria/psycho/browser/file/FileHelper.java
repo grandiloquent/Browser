@@ -31,12 +31,13 @@ public class FileHelper {
     public static final int TYPE_FILE_AUDIO = 2;
     public static final int TYPE_FILE_TEXT = 3;
     public static final int TYPE_FILE_APK = 4;
-    public static final int TYPE_FILE_IMAGE = 4;
+    public static final int TYPE_FILE_IMAGE = 5;
 
     public static final int TYPE_FILE_UNKNOWN = 0;
     public static VectorDrawableCompat sDirectoryDrawable;
     public static VectorDrawableCompat sAudioDrawable;
     public static VectorDrawableCompat sTextDrawable;
+    public static VectorDrawableCompat sImageDrawable;
 
     public static VectorDrawableCompat sOthersDrawable;
 
@@ -56,6 +57,10 @@ public class FileHelper {
         sOthersDrawable = VectorDrawableCompat.create(
                 context.getResources(),
                 R.drawable.ic_type_others,
+                context.getTheme());
+     sImageDrawable  = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_image,
                 context.getTheme());
     }
 
@@ -194,7 +199,8 @@ public class FileHelper {
 
             return TYPE_FILE_AUDIO;
         }
-        if (extension.equals("txt") || extension.equals("json"))
+        if (extension.equals("txt") || extension.equals("json")
+                || extension.equals("html"))
             return TYPE_FILE_TEXT;
         if (extension.equals("jpg") || extension.equals("png"))
             return TYPE_FILE_IMAGE;
