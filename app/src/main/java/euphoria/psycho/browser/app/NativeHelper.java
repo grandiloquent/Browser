@@ -13,4 +13,6 @@ public class NativeHelper {
     public static native String google(String query, boolean isEnglishToChinese);
 
     public static native boolean deleteFileSystem(String path);
+
+    public static native long dirSize(String path);
 }

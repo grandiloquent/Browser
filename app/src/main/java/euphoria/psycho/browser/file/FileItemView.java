@@ -6,12 +6,15 @@ import android.graphics.Bitmap;
 
 import android.graphics.drawable.VectorDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 
 import androidx.annotation.Nullable;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.tasks.Future;
+import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.widget.BasicListMenu;
 import euphoria.psycho.browser.widget.LargeIconCallback;
 import euphoria.psycho.browser.widget.ListMenu;
@@ -22,6 +25,7 @@ import euphoria.psycho.browser.widget.SelectableItemView;
 
 public class FileItemView extends SelectableItemView<FileItem> implements LargeIconCallback {
     protected ListMenuButton mMoreIcon;
+    private FileManager mFileManager;
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,6 +33,8 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 
     public void setFileManager(FileManager fileManager) {
         getItem().setFileManager(fileManager);
+        if (mFileManager == fileManager) return;
+        mFileManager = fileManager;
     }
 
     private ModelList getItems() {
@@ -60,6 +66,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
         return listItems;
     }
 
+
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
         ListMenu.Delegate delegate = item -> {
@@ -71,6 +78,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
     private ListMenuButtonDelegate getListMenuButtonDelegate() {
         return this::getListMenu;
     }
+
 
     @Override
     protected void onClick() {
@@ -89,6 +97,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 
 
     }
+
 
     @Override
     public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) {
@@ -120,6 +129,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
                 setStartIconDrawable(FileHelper.sOthersDrawable);
                 break;
         }
+
         if (item.getType() == FileHelper.TYPE_DIRECTORY) {
             mDescriptionView.setText(String.format("%d items", item.getSize()));
         } else {

@@ -14,7 +14,101 @@
     JNIEnv *env, jobject this, ## __VA_ARGS__ \
   )
 
+static int parse_size(const char *size_str, size_t *size) {
+    static const size_t MAX_SIZE_T = ~(size_t) 0;
+    size_t mult;
+    unsigned long long int value;
+    const char *end;
+    errno = 0;
+    value = strtoull(size_str, (char **) &end, 10);
+    if (errno != 0 || end == size_str || value > MAX_SIZE_T)
+        return -1;
+    if (*end == '\0') {
+        *size = value;
+        return 0;
+    }
+    if (!strcmp(end, "c"))
+        mult = 1;
+    else if (!strcmp(end, "w"))
+        mult = 2;
+    else if (!strcmp(end, "b"))
+        mult = 512;
+    else if (!strcmp(end, "kB"))
+        mult = 1000;
+    else if (!strcmp(end, "K"))
+        mult = 1024;
+    else if (!strcmp(end, "MB"))
+        mult = (size_t) 1000 * 1000;
+    else if (!strcmp(end, "M"))
+        mult = (size_t) 1024 * 1024;
+    else if (!strcmp(end, "GB"))
+        mult = (size_t) 1000 * 1000 * 1000;
+    else if (!strcmp(end, "G"))
+        mult = (size_t) 1024 * 1024 * 1024;
+    else
+        return -1;
+    if (value > MAX_SIZE_T / mult)
+        return -1;
+    *size = value * mult;
+    return 0;
+}
 
+int64_t stat_size(struct stat *s) {
+    int64_t blksize = s->st_blksize;
+    // count actual blocks used instead of nominal file size
+    int64_t size = s->st_blocks * 512;
+    if (blksize) {
+        /* round up to filesystem block size */
+        size = (size + blksize - 1) & (~(blksize - 1));
+    }
+    return size;
+}
+
+int64_t calculate_dir_size(int dfd) {
+    int64_t size = 0;
+    struct stat s;
+    DIR *d;
+    struct dirent *de;
+    d = fdopendir(dfd);
+    if (d == NULL) {
+        close(dfd);
+        return 0;
+    }
+    while ((de = readdir(d))) {
+        const char *name = de->d_name;
+        if (fstatat(dfd, name, &s, AT_SYMLINK_NOFOLLOW) == 0) {
+            size += stat_size(&s);
+        }
+        if (de->d_type == DT_DIR) {
+            int subfd;
+            /* always skip "." and ".." */
+            if (name[0] == '.') {
+                if (name[1] == 0)
+                    continue;
+                if ((name[1] == '.') && (name[2] == 0))
+                    continue;
+            }
+            subfd = openat(dfd, name, O_RDONLY | O_DIRECTORY);
+            if (subfd >= 0) {
+                size += calculate_dir_size(subfd);
+            }
+        }
+    }
+    closedir(d);
+    return size;
+}
+
+/*
+ int dirfd = open(path.c_str(), O_DIRECTORY, O_RDONLY);
+    if (dirfd < 0) {
+        PLOG(WARNING) << "Failed to open " << path;
+        return -1;
+    } else {
+        uint64_t res = calculate_dir_size(dirfd);
+        close(dirfd);
+        return res;
+    }
+ * */
 long parse_range(const char *s) {
 
     if (s == NULL)return 0;

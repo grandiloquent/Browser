@@ -26,44 +26,18 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 
 public class FileHelper {
-    static ExecutorService sSingleThreadExecutor;
-
     public static final int TYPE_DIRECTORY = 1;
-    public static final int TYPE_FILE_AUDIO = 2;
-    public static final int TYPE_FILE_TEXT = 3;
     public static final int TYPE_FILE_APK = 4;
+    public static final int TYPE_FILE_AUDIO = 2;
     public static final int TYPE_FILE_IMAGE = 5;
-
+    public static final int TYPE_FILE_TEXT = 3;
     public static final int TYPE_FILE_UNKNOWN = 0;
-    public static VectorDrawableCompat sDirectoryDrawable;
     public static VectorDrawableCompat sAudioDrawable;
-    public static VectorDrawableCompat sTextDrawable;
+    public static VectorDrawableCompat sDirectoryDrawable;
     public static VectorDrawableCompat sImageDrawable;
-
     public static VectorDrawableCompat sOthersDrawable;
-
-    public static void initialize(Context context) {
-        sDirectoryDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_folder,
-                context.getTheme());
-        sAudioDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_music,
-                context.getTheme());
-        sTextDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_text,
-                context.getTheme());
-        sOthersDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_others,
-                context.getTheme());
-        sImageDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_image,
-                context.getTheme());
-    }
+    public static VectorDrawableCompat sTextDrawable;
+    static ExecutorService sSingleThreadExecutor;
 
     public static Pair[] createBottomSheetItems(Context context) {
         return new Pair[]{
@@ -111,6 +85,54 @@ public class FileHelper {
                 });
             }
         }).start();
+    }
+
+    public static long getFileSize(File file) {
+        if (file.isDirectory()) {
+            return file.listFiles().length;
+        }
+        return file.length();
+    }
+
+    public static int getFileType(File file) {
+        if (file.isDirectory()) {
+            return TYPE_DIRECTORY;
+        }
+        String extension = Share.substringAfterLast(file.getName(), '.');
+        if (extension.equals("mp3")) {
+
+            return TYPE_FILE_AUDIO;
+        }
+        if (extension.equals("txt") || extension.equals("json")
+                || extension.equals("html"))
+            return TYPE_FILE_TEXT;
+        if (extension.equals("jpg") || extension.equals("png"))
+            return TYPE_FILE_IMAGE;
+
+        return TYPE_FILE_UNKNOWN;
+    }
+
+    public static void initialize(Context context) {
+        sDirectoryDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_folder,
+                context.getTheme());
+        sAudioDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_music,
+                context.getTheme());
+        sTextDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_text,
+                context.getTheme());
+        sOthersDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_others,
+                context.getTheme());
+        sImageDrawable = VectorDrawableCompat.create(
+                context.getResources(),
+                R.drawable.ic_type_image,
+                context.getTheme());
     }
 
     public static void showBottomSheet(Activity activity, Pair[] items, FileManager fileManager) {
@@ -195,30 +217,5 @@ public class FileHelper {
                         .show();
             });
         });
-    }
-
-    public static int getFileType(File file) {
-        if (file.isDirectory()) {
-            return TYPE_DIRECTORY;
-        }
-        String extension = Share.substringAfterLast(file.getName(), '.');
-        if (extension.equals("mp3")) {
-
-            return TYPE_FILE_AUDIO;
-        }
-        if (extension.equals("txt") || extension.equals("json")
-                || extension.equals("html"))
-            return TYPE_FILE_TEXT;
-        if (extension.equals("jpg") || extension.equals("png"))
-            return TYPE_FILE_IMAGE;
-
-        return TYPE_FILE_UNKNOWN;
-    }
-
-    public static long getFileSize(File file) {
-        if (file.isDirectory()) {
-            return file.listFiles().length;
-        }
-        return file.length();
     }
 }

@@ -8,13 +8,15 @@ public class FileItem {
     private FileManager mManager;
     private int mType;
     private long mSize;
+    private String mDescription;
 
-    public FileItem(String title, String url, long mostRecentJavaTimestamp, int type, long size) {
+
+    public FileItem(String title, String url, long mostRecentJavaTimestamp, int type,long size) {
         mTitle = title;
         mUrl = url;
         mMostRecentJavaTimestamp = mostRecentJavaTimestamp;
         mType = type;
-        mSize = size;
+        mSize=size;
     }
 
     public long getSize() {
@@ -62,6 +64,14 @@ public class FileItem {
 
     public void open() {
         mManager.openUrl(mUrl);
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
     }
 
     public void setFileManager(FileManager manager) {

@@ -35,6 +35,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private final FileManagerToolbar mToolbar;
     private BottomSheet mBottomSheet;
     private boolean mIsSearching;
+    private FileInfoManager mFileInfoManager;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -80,6 +81,12 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
+    public FileInfoManager getFileInfoManager() {
+        if (mFileInfoManager == null)
+            mFileInfoManager = new FileInfoManager();
+        return mFileInfoManager;
+    }
+
     public ViewGroup getView() {
         return mSelectableListLayout;
     }
@@ -109,7 +116,6 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     public void setBottomSheet(BottomSheet bottomSheet) {
         mBottomSheet = bottomSheet;
     }
-
 
     @Override
     public void onEndSearch() {

@@ -265,3 +265,19 @@ Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jcla
     (*env)->ReleaseStringUTFChars(env, path_, path);
     return ret == 0 ? true : false;
 }
+
+JNIEXPORT jlong JNICALL
+Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz, jstring path_) {
+    const char *path = (*env)->GetStringUTFChars(env, path_, 0);
+    int dirfd = open(path, O_DIRECTORY, O_RDONLY);
+    (*env)->ReleaseStringUTFChars(env, path_, path);
+    if (dirfd < 0) {
+        return -1;
+    } else {
+        int64_t res = calculate_dir_size(dirfd);
+        close(dirfd);
+        return res;
+    }
+
+
+}
