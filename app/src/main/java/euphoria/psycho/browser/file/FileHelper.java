@@ -7,12 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.storage.StorageManager;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,6 +32,8 @@ import java.util.concurrent.Executors;
 import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
+import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
+import euphoria.psycho.browser.app.FunctionsMenu;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
@@ -51,6 +59,7 @@ public class FileHelper {
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
 
+    private static boolean sIsHasSD;
 
     /*
     ["apk",
@@ -70,19 +79,65 @@ public class FileHelper {
 
     static ExecutorService sSingleThreadExecutor;
 
+    public static void initialize(Context context) {
+        sIsHasSD = getExternalStoragePath(context, true) != null;
+    }
+
     public static Pair[] createBottomSheetItems(Context context) {
+        if (sIsHasSD) {
+            return new Pair[]{
+                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
+                    Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
+                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
+                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
+            };
+        }else {
+            return new Pair[]{
+                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
+                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
+                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
+            };
+        }
+    }
+
+    public static Pair[] createFunctionsMenuItems(Context context) {
         return new Pair[]{
-                Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
-                Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
-                Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                 Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
                 Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
-                Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
-                Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
         };
+    }
+
+    public static void createFuntionsMenu(Activity activity, FileManager fileManager) {
+        FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
+            @Override
+            public void onClicked(Pair<Integer, String> item) {
+                switch (item.first) {
+                    case R.drawable.ic_twitter:
+                        extractTwitterVideo(activity);
+                        break;
+                    case R.drawable.ic_youtube:
+                        startYouTube(activity);
+                        break;
+                    case R.drawable.ic_film:
+                        startVideoServer(activity);
+                        break;
+                    case R.drawable.ic_translate:
+                        youdaoChinese(activity);
+                        break;
+                    case R.drawable.ic_g_translate:
+                        google(activity);
+                        break;
+                }
+            }
+        });
+        functionsMenu.showDialog(createFunctionsMenuItems(activity));
     }
 
     public static void downloadFromUrl(Context context, String youtubeDlUrl, String downloadTitle, String fileName) {
@@ -203,33 +258,27 @@ public class FileHelper {
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
 
-
     public static void showBottomSheet(Activity activity, Pair[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)
                 .setOnClickListener(item -> {
                     switch (item.first) {
-                        case R.drawable.ic_twitter:
-                            extractTwitterVideo(activity);
+                        case R.drawable.ic_storage:
+                            fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
                             break;
-                        case R.drawable.ic_youtube:
-                            startYouTube(activity);
-                            break;
-                        case R.drawable.ic_film:
-                            startVideoServer(activity);
-                            break;
-                        case R.drawable.ic_translate:
-                            youdaoChinese(activity);
-                            break;
-                        case R.drawable.ic_g_translate:
-                            google(activity);
+                        case R.drawable.ic_sd_storage:
+
+                            fileManager.openDirectory(getExternalStoragePath(activity, true));
+
                             break;
                         case R.drawable.ic_settings:
-
                             Intent settingsActivity = new Intent(activity, SettingsActivity.class);
                             activity.startActivity(settingsActivity);
                             break;
                         case R.drawable.ic_info:
                             showDirectoryInfo(activity, fileManager.getDirectory());
+                            break;
+                        case R.drawable.ic_more_vert:
+                            createFuntionsMenu(activity, fileManager);
                             break;
                     }
                     fileManager.setBottomSheet(null);
@@ -239,11 +288,72 @@ public class FileHelper {
 
     }
 
+    public static void startVideoServer(Activity activity) {
+        Intent intent = new Intent(activity, ServerActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void startYouTube(Activity activity) {
+        Intent intent = new Intent(activity, SampleDownloadActivity.class);
+        activity.startActivity(intent);
+    }
+
+    private static String getExternalStoragePath(Context context, boolean is_removable) {
+
+        StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removable == removable) {
+                    return path;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private static void google(Activity activity) {
+        if (sSingleThreadExecutor == null)
+            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
+
+        sSingleThreadExecutor.submit(() -> {
+            CharSequence q = Share.getClipboardString();
+            if (q == null) return;
+            String query = q.toString().trim();
+            String result = NativeHelper.google(query, false);
+            activity.runOnUiThread(() -> {
+                new AlertDialog.Builder(activity)
+                        .setMessage(result)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            Share.setClipboardString(result);
+                            dialog.dismiss();
+                        })
+                        .show();
+            });
+        });
+    }
+
     private static void showDirectoryInfo(Activity activity, String directory) {
 
 
 //            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
-
         File[] files = new File(directory).listFiles(File::isDirectory);
         List<Pair<Long, String>> pairList = new ArrayList<>();
         for (File f : files) {
@@ -268,78 +378,6 @@ public class FileHelper {
                 .setMessage(stringBuilder.toString())
                 .show();
 
-    }
-
-
-//    private static void showDirectoryInfo(String directory,Activity activity) {
-//        File dir = new File(directory);
-//        File[] dirArray = dir.listFiles(new FileFilter() {
-//            @Override
-//            public boolean accept(File pathname) {
-//
-//                return pathname.isDirectory();
-//            }
-//        });
-//
-//        List<Pair<Long, String>> pairList = new ArrayList<>();
-//
-//        for (File file : dirArray) {
-//            long size = NativeHelper.dirSize(file.getAbsolutePath());
-//            pairList.add(Pair.create(size, file.getName()));
-//        }
-//        Collections.sort(pairList, new Comparator<Pair<Long, String>>() {
-//            @Override
-//            public int compare(Pair<Long, String> o1, Pair<Long, String> o2) {
-//                long a = o1.first - o2.first;
-//                if (a > 0) return -1;
-//                if (a == 0) return 0;
-//                else return 1;
-//            }
-//        });
-//        List<String> stringList = new ArrayList<>();
-//        for (Pair<Long, String> p : pairList) {
-//            stringList.add(String.format("%s = %s", Share.formatFileSize(p.first), p.second));
-//        }
-//
-//        StringBuilder stringBuilder = new StringBuilder();
-//
-//        for (String s : stringList) {
-//            stringBuilder.append(s).append('\n');
-//        }
-//        new AlertDialog.Builder(activity).setMessage(stringBuilder.toString()).show();
-//        // Toast.makeText(Share.getApplicationContext(), stringBuilder.toString(), Toast.LENGTH_LONG).show();
-//    }
-//
-
-    public static void startVideoServer(Activity activity) {
-        Intent intent = new Intent(activity, ServerActivity.class);
-        activity.startActivity(intent);
-    }
-
-    public static void startYouTube(Activity activity) {
-        Intent intent = new Intent(activity, SampleDownloadActivity.class);
-        activity.startActivity(intent);
-    }
-
-    private static void google(Activity activity) {
-        if (sSingleThreadExecutor == null)
-            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-
-        sSingleThreadExecutor.submit(() -> {
-            CharSequence q = Share.getClipboardString();
-            if (q == null) return;
-            String query = q.toString().trim();
-            String result = NativeHelper.google(query, false);
-            activity.runOnUiThread(() -> {
-                new AlertDialog.Builder(activity)
-                        .setMessage(result)
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Share.setClipboardString(result);
-                            dialog.dismiss();
-                        })
-                        .show();
-            });
-        });
     }
 
     private static void youdaoChinese(Activity activity) {

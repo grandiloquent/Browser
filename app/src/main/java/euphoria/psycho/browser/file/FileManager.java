@@ -41,6 +41,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private FileImageManager mFileImageManager;
     private String mDirectory;
 
+
     public FileManager(Activity activity) {
         mActivity = activity;
         mSelectionDelegate = new SelectionDelegate<>();
@@ -73,9 +74,11 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
 
         mFileAdapter.initialize();
+        FileHelper.initialize(activity);
 
 
     }
+
 
     public String getDirectory() {
         if (mDirectory == null) {
@@ -95,6 +98,17 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         }
         return mFileImageManager;
     }
+
+
+    public void openDirectory(String dir) {
+        mDirectory = dir;
+        mFileAdapter.initialize();
+    }
+
+    public void refresh() {
+        mFileAdapter.initialize();
+    }
+
 
     public ViewGroup getView() {
         return mSelectableListLayout;

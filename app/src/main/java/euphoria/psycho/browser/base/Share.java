@@ -19,6 +19,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
+import android.os.storage.StorageManager;
 import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.Os;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
@@ -72,7 +74,6 @@ public class Share {
     private static ClipboardManager sClipboardManager;
     private static long[] sCrcTable = new long[256];
     private static float sPixelDensity = -1f;
-
 
     static {
         // http://bioinf.cs.ucl.ac.uk/downloads/crc64/crc64.c
@@ -750,6 +751,38 @@ public class Share {
     private static SharedPreferences fetchAppSharedPreferences() {
         return PreferenceManager.getDefaultSharedPreferences(sApplicationContext);
     }
+
+    private static String getExternalStoragePath(Context mContext, boolean is_removable) {
+
+        StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
+                if (is_removable == removable) {
+                    return path;
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     private static void initJavaSideApplicationContext(Context appContext) {
         assert appContext != null;
