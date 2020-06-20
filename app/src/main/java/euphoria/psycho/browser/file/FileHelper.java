@@ -3,6 +3,7 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -93,7 +94,7 @@ public class FileHelper {
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
             };
-        }else {
+        } else {
             return new Pair[]{
                     Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
                     Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
@@ -154,6 +155,10 @@ public class FileHelper {
     }
 
     public static void extractTwitterVideo(Activity activity) {
+        ProgressDialog dialog = new ProgressDialog(activity);
+        dialog.setMessage(activity.getText(R.string.extracting));
+        dialog.show();
+
         new Thread(() -> {
             try {
                 CharSequence twitterUrl = Share.getClipboardString();
@@ -162,12 +167,14 @@ public class FileHelper {
                     if (Share.isDigits(id)) {
                         List<TwitterVideo> twitterVideos = TwitterHelper.extractTwitterVideo(id);
                         activity.runOnUiThread(() -> {
+                            dialog.dismiss();
                             TwitterHelper.showDialog(twitterVideos, activity);
                         });
                     }
                 }
             } catch (Exception e) {
                 activity.runOnUiThread(() -> {
+                    dialog.dismiss();
                     Share.showExceptionDialog(activity, e);
                 });
             }

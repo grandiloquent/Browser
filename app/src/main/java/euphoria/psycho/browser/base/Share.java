@@ -74,6 +74,7 @@ public class Share {
     private static ClipboardManager sClipboardManager;
     private static long[] sCrcTable = new long[256];
     private static float sPixelDensity = -1f;
+    private static int sWidthPixels;
 
     static {
         // http://bioinf.cs.ucl.ac.uk/downloads/crc64/crc64.c
@@ -467,8 +468,10 @@ public class Share {
                 context.getSystemService(Context.WINDOW_SERVICE);
         wm.getDefaultDisplay().getMetrics(metrics);
         sPixelDensity = metrics.density;
+        sWidthPixels = metrics.widthPixels;
 
     }
+
 
     public static InetAddress intToInetAddress(int hostAddress) {
         byte[] addressBytes = {(byte) (0xff & hostAddress),
@@ -832,6 +835,9 @@ public class Share {
         }
     }
 
+    public static int getWidthPixels() {
+        return sWidthPixels;
+    }
 }
 
 /*

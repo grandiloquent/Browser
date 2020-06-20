@@ -18,7 +18,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         Share.initApplicationContext(this);
-
+        Share.initialize(this);
     }
 }
 

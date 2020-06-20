@@ -130,6 +130,9 @@ public class TwitterHelper {
 
 
     public static void showDialog(List<TwitterVideo> twitterVideos, Context context) {
+        if (twitterVideos == null) {
+            return;
+        }
         String[] items = new String[twitterVideos.size()];
 
         for (int i = 0; i < twitterVideos.size(); i++) {
@@ -143,7 +146,7 @@ public class TwitterHelper {
                             url,
                             Share.substringAfterLast(url, "/"),
                             Share.substringAfterLast(url, "/")
-                            );
+                    );
                 })
                 .create();
         dialog.show();

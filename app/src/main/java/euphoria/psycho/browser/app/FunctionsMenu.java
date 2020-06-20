@@ -4,18 +4,22 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.provider.CalendarContract.Colors;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
+import androidx.appcompat.widget.ViewUtils;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
+import euphoria.psycho.browser.base.Share;
 
 public class FunctionsMenu {
 
@@ -33,7 +37,8 @@ public class FunctionsMenu {
         mParent = parent;
         mOnClickListener = onClickListener;
 
-        mPopupWindow.setBackgroundDrawable(new ColorDrawable(0xFFFFFFFF));
+        mPopupWindow.setWidth(Share.getWidthPixels() - Share.getWidthPixels() / 6);
+        mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setElevation(30);
 
