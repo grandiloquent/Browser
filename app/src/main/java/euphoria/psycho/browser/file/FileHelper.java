@@ -32,11 +32,7 @@ public class FileHelper {
     public static final int TYPE_FILE_IMAGE = 5;
     public static final int TYPE_FILE_TEXT = 3;
     public static final int TYPE_FILE_UNKNOWN = 0;
-    public static VectorDrawableCompat sAudioDrawable;
-    public static VectorDrawableCompat sDirectoryDrawable;
-    public static VectorDrawableCompat sImageDrawable;
-    public static VectorDrawableCompat sOthersDrawable;
-    public static VectorDrawableCompat sTextDrawable;
+
     static ExecutorService sSingleThreadExecutor;
 
     public static Pair[] createBottomSheetItems(Context context) {
@@ -104,7 +100,9 @@ public class FileHelper {
             return TYPE_FILE_AUDIO;
         }
         if (extension.equals("txt") || extension.equals("json")
-                || extension.equals("html"))
+                || extension.equals("html")
+                || extension.equals("css")
+                || extension.equals("sql"))
             return TYPE_FILE_TEXT;
         if (extension.equals("jpg") || extension.equals("png"))
             return TYPE_FILE_IMAGE;
@@ -112,28 +110,6 @@ public class FileHelper {
         return TYPE_FILE_UNKNOWN;
     }
 
-    public static void initialize(Context context) {
-        sDirectoryDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_folder,
-                context.getTheme());
-        sAudioDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_music,
-                context.getTheme());
-        sTextDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_text,
-                context.getTheme());
-        sOthersDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_others,
-                context.getTheme());
-        sImageDrawable = VectorDrawableCompat.create(
-                context.getResources(),
-                R.drawable.ic_type_image,
-                context.getTheme());
-    }
 
     public static void showBottomSheet(Activity activity, Pair[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)

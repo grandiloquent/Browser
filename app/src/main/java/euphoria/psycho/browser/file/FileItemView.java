@@ -23,12 +23,21 @@ import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
 
-public class FileItemView extends SelectableItemView<FileItem> implements LargeIconCallback {
+public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Bitmap> {
+    private final int mDisplayedIconSize;
+    private final int mMinIconSize;
     protected ListMenuButton mMoreIcon;
     private FileManager mFileManager;
+    private FileImageHelper mFileImageHelper;
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
+        mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+    }
+
+    public void setFileImageHelper(FileImageHelper fileImageHelper) {
+        mFileImageHelper = fileImageHelper;
     }
 
     public void setFileManager(FileManager fileManager) {
@@ -66,7 +75,6 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
         return listItems;
     }
 
-
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
         ListMenu.Delegate delegate = item -> {
@@ -78,7 +86,6 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
     private ListMenuButtonDelegate getListMenuButtonDelegate() {
         return this::getListMenu;
     }
-
 
     @Override
     protected void onClick() {
@@ -98,12 +105,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
 
     }
 
-
     @Override
-    public void onLargeIconAvailable(@Nullable Bitmap icon, int fallbackColor, boolean isFallbackColorDefault, int iconType) {
-//        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
-//                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayedIconSize);
-//        setStartIconDrawable(iconDrawable);
+    public void onFutureDone(Future<Bitmap> future) {
+
     }
 
     @Override
@@ -112,23 +116,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements LargeI
         super.setItem(item);
         mTitleView.setText(item.getTitle());
 
-        switch (item.getType()) {
-            case FileHelper.TYPE_DIRECTORY:
-                setStartIconDrawable(FileHelper.sDirectoryDrawable);
-                break;
-            case FileHelper.TYPE_FILE_AUDIO:
-                setStartIconDrawable(FileHelper.sAudioDrawable);
-                break;
-            case FileHelper.TYPE_FILE_TEXT:
-                setStartIconDrawable(FileHelper.sTextDrawable);
-                break;
-            case FileHelper.TYPE_FILE_IMAGE:
-                setStartIconDrawable(FileHelper.sImageDrawable);
-                break;
-            case FileHelper.TYPE_FILE_UNKNOWN:
-                setStartIconDrawable(FileHelper.sOthersDrawable);
-                break;
-        }
+        setStartIconDrawable(mFileImageHelper.getDefaultFileImage(item));
 
         if (item.getType() == FileHelper.TYPE_DIRECTORY) {
             mDescriptionView.setText(String.format("%d items", item.getSize()));
