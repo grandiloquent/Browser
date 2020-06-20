@@ -2,21 +2,14 @@ package euphoria.psycho.browser.file;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-
-
-import android.graphics.drawable.VectorDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 
-import androidx.annotation.Nullable;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.tasks.Future;
 import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.widget.BasicListMenu;
-import euphoria.psycho.browser.widget.LargeIconCallback;
 import euphoria.psycho.browser.widget.ListMenu;
 import euphoria.psycho.browser.widget.ListMenuButton;
 import euphoria.psycho.browser.widget.ListMenuButtonDelegate;

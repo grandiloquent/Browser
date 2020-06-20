@@ -1,7 +1,5 @@
 package euphoria.psycho.browser.file;
 
-import android.util.Log;
-
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;

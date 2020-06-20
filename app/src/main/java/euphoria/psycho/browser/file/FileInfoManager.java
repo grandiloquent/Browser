@@ -3,10 +3,6 @@ package euphoria.psycho.browser.file;
 import android.os.Handler;
 
 import java.io.File;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.tasks.FutureListener;

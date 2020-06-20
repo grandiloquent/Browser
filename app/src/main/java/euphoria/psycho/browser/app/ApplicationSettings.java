@@ -2,7 +2,6 @@ package euphoria.psycho.browser.app;
 
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceFragment;
 
 import java.io.File;
 

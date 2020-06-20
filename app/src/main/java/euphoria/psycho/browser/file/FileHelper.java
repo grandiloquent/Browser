@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import androidx.core.util.Pair;
-import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.NativeHelper;

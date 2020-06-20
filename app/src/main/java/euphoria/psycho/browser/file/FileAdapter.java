@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileProvider.BrowsingFileObserver;
-import euphoria.psycho.browser.widget.SelectableItemView;
 import euphoria.psycho.browser.widget.SelectableItemViewHolder;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 
