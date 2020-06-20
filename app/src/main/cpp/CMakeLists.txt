@@ -33,11 +33,11 @@ add_library( # Sets the name of the library.
 
 add_definitions(-DMG_MAX_HTTP_SEND_MBUF=8092)
 
-add_library(libmongoose
+add_library(mongoose
         SHARED
         mongoose.c
         )
-add_library(libjson
+add_library(json
         SHARED
         cJSON.c
         )
@@ -59,11 +59,11 @@ find_library( # Sets the name of the path variable.
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
-add_library(libtmd5 ${CMAKE_CURRENT_SOURCE_DIR}/tmd5/tmd5.c)
+add_library(tmd5 SHARED ${CMAKE_CURRENT_SOURCE_DIR}/tmd5/tmd5.c)
 
 target_link_libraries( # Specifies the target library.
         native-lib
-        libmongoose
-        libtmd5
-        libjson
+        mongoose
+        tmd5
+        json
         ${log-lib})
