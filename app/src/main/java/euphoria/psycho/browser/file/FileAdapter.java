@@ -22,7 +22,6 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     private final SelectionDelegate<FileItem> mSelectionDelegate;
     private boolean mIsDestroyed;
     private boolean mIsLoadingItems;
-    private String mDirectory;
 
     public FileAdapter(SelectionDelegate<FileItem> delegate, FileManager manager, FileProvider provider) {
         mSelectionDelegate = delegate;
@@ -30,12 +29,11 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileProvider.setObserver(this);
         mFileManager = manager;
         mItemViews = new ArrayList<>();
-        mDirectory = manager.getDirectory();
     }
 
     public void initialize() {
         mIsLoadingItems = true;
-        mFileProvider.queryFile(mDirectory);
+        mFileProvider.queryFile(mFileManager.getDirectory());
     }
 
     public void markItemForRemoval(FileItem i) {

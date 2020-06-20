@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
+import euphoria.psycho.browser.app.SettingsManager;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.widget.ConversionUtils;
 import euphoria.psycho.browser.widget.SelectableListLayout;
@@ -72,14 +74,21 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                 (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
                 FAVICON_MAX_CACHE_SIZE_BYTES);
 
+        mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
+
         mFileAdapter.initialize();
 
 
     }
 
     public String getDirectory() {
-        return Environment.getExternalStorageDirectory().getAbsolutePath();
+        if (mDirectory == null) {
+            mDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+        }
+        return mDirectory;
     }
+
+    private String mDirectory;
 
     public FileImageManager getFileImageManager() {
         if (mFileImageManager == null)
@@ -92,6 +101,16 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     }
 
     public boolean onBackPressed() {
+        String parent = Share.substringBeforeLast(mDirectory, '/');
+
+
+        Log.e("TAG/", "Debug: onBackPressed, \n" + parent);
+        if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+
+            mDirectory = parent;
+            mFileAdapter.initialize();
+            return true;
+        }
         return mSelectableListLayout.onBackPressed();
     }
 
@@ -105,9 +124,15 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         if (mBottomSheet != null) {
             mBottomSheet.dismiss();
         }
+        SettingsManager.getInstance().setLastAccessDirectory(mDirectory);
     }
 
     public void openUrl(FileItem fileItem) {
+        if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
+            mDirectory = fileItem.getUrl();
+            mFileAdapter.initialize();
+            return;
+        }
         FileHelper.openUrl(mActivity, fileItem);
     }
 
