@@ -2,6 +2,7 @@ package euphoria.psycho.browser.file;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
@@ -16,12 +17,12 @@ import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
 
-public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Bitmap> {
+public class FileItemView extends SelectableItemView<FileItem> {
     private final int mDisplayedIconSize;
     private final int mMinIconSize;
     protected ListMenuButton mMoreIcon;
     private FileManager mFileManager;
-    private FileImageHelper mFileImageHelper;
+    private FileImageManager mFileImageManager;
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -29,9 +30,10 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
     }
 
-    public void setFileImageHelper(FileImageHelper fileImageHelper) {
-        mFileImageHelper = fileImageHelper;
+    public void setFileImageManager(FileImageManager fileImageManager) {
+        mFileImageManager = fileImageManager;
     }
+
 
     public void setFileManager(FileManager fileManager) {
         getItem().setFileManager(fileManager);
@@ -87,6 +89,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         }
     }
 
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -98,10 +101,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
 
     }
 
-    @Override
-    public void onFutureDone(Future<Bitmap> future) {
 
-    }
 
     @Override
     public void setItem(FileItem item) {
@@ -109,9 +109,8 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         super.setItem(item);
         mTitleView.setText(item.getTitle());
 
-        setStartIconDrawable(mFileImageHelper.getDefaultFileImage(item));
-
-        if (item.getType() == FileHelper.TYPE_DIRECTORY) {
+        setStartIconDrawable(mFileImageManager.getDefaultDrawable(item));
+        if (item.getType() == FileHelper.TYPE_FOLDER) {
             mDescriptionView.setText(String.format("%d items", item.getSize()));
         } else {
             mDescriptionView.setText(Share.formatFileSize(item.getSize()));

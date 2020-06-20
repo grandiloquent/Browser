@@ -25,12 +25,36 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 
 public class FileHelper {
-    public static final int TYPE_DIRECTORY = 1;
-    public static final int TYPE_FILE_APK = 4;
-    public static final int TYPE_FILE_AUDIO = 2;
-    public static final int TYPE_FILE_IMAGE = 5;
-    public static final int TYPE_FILE_TEXT = 3;
-    public static final int TYPE_FILE_UNKNOWN = 0;
+    public static final int TYPE_APK = 0;
+    public static final int TYPE_EXCEL = 1;
+    public static final int TYPE_FOLDER = 2;
+    public static final int TYPE_IMAGE = 3;
+    public static final int TYPE_MUSIC = 4;
+    public static final int TYPE_OTHERS = 5;
+    public static final int TYPE_PDF = 6;
+    public static final int TYPE_PPS = 7;
+    public static final int TYPE_TEXT = 8;
+    public static final int TYPE_VCF = 9;
+    public static final int TYPE_VIDEO = 10;
+    public static final int TYPE_WORD = 11;
+    public static final int TYPE_ZIP = 12;
+
+
+    /*
+    ["apk",
+"excel",
+"folder",
+"image",
+"music",
+"others",
+"pdf",
+"pps",
+"text",
+"vcf",
+"video",
+"word",
+"zip"]
+    * */
 
     static ExecutorService sSingleThreadExecutor;
 
@@ -91,22 +115,40 @@ public class FileHelper {
 
     public static int getFileType(File file) {
         if (file.isDirectory()) {
-            return TYPE_DIRECTORY;
+            return TYPE_FOLDER;
         }
         String extension = Share.substringAfterLast(file.getName(), '.');
-        if (extension.equals("mp3")) {
 
-            return TYPE_FILE_AUDIO;
+        switch (extension) {
+            case "apk":
+                return TYPE_APK;
+            case "excel":
+                return TYPE_EXCEL;
+            case "png":
+            case "jpg":
+            case "jpeg":
+                return TYPE_IMAGE;
+            case "mp3":
+                return TYPE_MUSIC;
+            case "pdf":
+                return TYPE_PDF;
+            case "pps":
+                return TYPE_PPS;
+            case "txt":
+            case "html":
+            case "sql":
+                return TYPE_TEXT;
+            case "vcf":
+                return TYPE_VCF;
+            case "video":
+                return TYPE_VIDEO;
+            case "word":
+                return TYPE_WORD;
+            case "zip":
+                return TYPE_ZIP;
+            default:
+                return TYPE_OTHERS;
         }
-        if (extension.equals("txt") || extension.equals("json")
-                || extension.equals("html")
-                || extension.equals("css")
-                || extension.equals("sql"))
-            return TYPE_FILE_TEXT;
-        if (extension.equals("jpg") || extension.equals("png"))
-            return TYPE_FILE_IMAGE;
-
-        return TYPE_FILE_UNKNOWN;
     }
 
 

@@ -18,10 +18,10 @@ public class FileItemComparator implements Comparator<FileItem> {
     @Override
     public int compare(FileItem o1, FileItem o2) {
         if ((o1.getType() == o2.getType()) || (
-                o1.getType() != FileHelper.TYPE_DIRECTORY && o2.getType() != FileHelper.TYPE_DIRECTORY
+                o1.getType() != FileHelper.TYPE_FOLDER && o2.getType() != FileHelper.TYPE_FOLDER
         )) {
             return mCollator.compare(o1.getTitle(), o2.getTitle());
-        } else if (o1.getType() == FileHelper.TYPE_DIRECTORY) {
+        } else if (o1.getType() == FileHelper.TYPE_FOLDER) {
             return -1;
         }
         return 1;

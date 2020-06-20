@@ -34,8 +34,15 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private final FileManagerToolbar mToolbar;
     private BottomSheet mBottomSheet;
     private boolean mIsSearching;
-    private FileImageHelper mFileImageHelper;
 
+
+    private FileImageManager mFileImageManager;
+
+    public FileImageManager getFileImageManager() {
+        if (mFileImageManager == null)
+            mFileImageManager = new FileImageManager(mActivity);
+        return mFileImageManager;
+    }
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -80,11 +87,6 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
-    public FileImageHelper getFileImageHelper() {
-        if (mFileImageHelper == null)
-            mFileImageHelper = new FileImageHelper(mActivity);
-        return mFileImageHelper;
-    }
 
     public ViewGroup getView() {
         return mSelectableListLayout;

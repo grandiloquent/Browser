@@ -91,7 +91,7 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         SelectableItemViewHolder<FileItem> holder = new SelectableItemViewHolder<>(row, mSelectionDelegate);
         //((BookmarkRow) row).onDelegateInitialized(mDelegate);
         FileItemView itemView = (FileItemView) holder.itemView;
-        itemView.setFileImageHelper(mFileManager.getFileImageHelper());
+        itemView.setFileImageManager(mFileManager.getFileImageManager());
         mItemViews.add(itemView);
         return holder;
 
