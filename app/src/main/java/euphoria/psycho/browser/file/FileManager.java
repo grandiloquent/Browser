@@ -39,6 +39,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
 
     private FileImageManager mFileImageManager;
+    private String mDirectory;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -68,11 +69,6 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         mEmptyView = mSelectableListLayout.initializeEmptyView(
                 R.string.file_manager_empty, R.string.file_manager_no_results);
 
-        ActivityManager activityManager = ((ActivityManager) Share
-                .getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE));
-        int maxSize = Math.min(
-                (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
-                FAVICON_MAX_CACHE_SIZE_BYTES);
 
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
 
@@ -88,11 +84,15 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return mDirectory;
     }
 
-    private String mDirectory;
-
     public FileImageManager getFileImageManager() {
-        if (mFileImageManager == null)
-            mFileImageManager = new FileImageManager(mActivity);
+        if (mFileImageManager == null) {
+            ActivityManager activityManager = ((ActivityManager) Share
+                    .getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE));
+            int maxSize = Math.min(
+                    (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
+                    FAVICON_MAX_CACHE_SIZE_BYTES);
+            mFileImageManager = new FileImageManager(mActivity, maxSize);
+        }
         return mFileImageManager;
     }
 
@@ -102,9 +102,6 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
     public boolean onBackPressed() {
         String parent = Share.substringBeforeLast(mDirectory, '/');
-
-
-        Log.e("TAG/", "Debug: onBackPressed, \n" + parent);
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
 
             mDirectory = parent;

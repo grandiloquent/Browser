@@ -9,8 +9,16 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileFilter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -72,6 +80,7 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+                Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
                 Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
         };
     }
@@ -219,6 +228,9 @@ public class FileHelper {
                             Intent settingsActivity = new Intent(activity, SettingsActivity.class);
                             activity.startActivity(settingsActivity);
                             break;
+                        case R.drawable.ic_info:
+                            showDirectoryInfo(activity, fileManager.getDirectory());
+                            break;
                     }
                     fileManager.setBottomSheet(null);
                 });
@@ -226,6 +238,78 @@ public class FileHelper {
         bottomSheet.showDialog(items);
 
     }
+
+    private static void showDirectoryInfo(Activity activity, String directory) {
+
+
+//            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
+
+        File[] files = new File(directory).listFiles(File::isDirectory);
+        List<Pair<Long, String>> pairList = new ArrayList<>();
+        for (File f : files) {
+            pairList.add(Pair.create(NativeHelper.dirSize(f.getAbsolutePath()), f.getName()));
+        }
+        Collections.sort(pairList, (o1, o2) -> {
+
+
+            long a = o1.first - o2.first;
+            if (a > 0) return -1;
+            if (a < 0) return 1;
+            return 0;
+        });
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Pair<Long, String> p : pairList) {
+            stringBuilder.append(Share.formatFileSize(p.first))
+                    .append(" = ")
+                    .append(p.second)
+                    .append('\n');
+        }
+        new AlertDialog.Builder(activity)
+                .setMessage(stringBuilder.toString())
+                .show();
+
+    }
+
+
+//    private static void showDirectoryInfo(String directory,Activity activity) {
+//        File dir = new File(directory);
+//        File[] dirArray = dir.listFiles(new FileFilter() {
+//            @Override
+//            public boolean accept(File pathname) {
+//
+//                return pathname.isDirectory();
+//            }
+//        });
+//
+//        List<Pair<Long, String>> pairList = new ArrayList<>();
+//
+//        for (File file : dirArray) {
+//            long size = NativeHelper.dirSize(file.getAbsolutePath());
+//            pairList.add(Pair.create(size, file.getName()));
+//        }
+//        Collections.sort(pairList, new Comparator<Pair<Long, String>>() {
+//            @Override
+//            public int compare(Pair<Long, String> o1, Pair<Long, String> o2) {
+//                long a = o1.first - o2.first;
+//                if (a > 0) return -1;
+//                if (a == 0) return 0;
+//                else return 1;
+//            }
+//        });
+//        List<String> stringList = new ArrayList<>();
+//        for (Pair<Long, String> p : pairList) {
+//            stringList.add(String.format("%s = %s", Share.formatFileSize(p.first), p.second));
+//        }
+//
+//        StringBuilder stringBuilder = new StringBuilder();
+//
+//        for (String s : stringList) {
+//            stringBuilder.append(s).append('\n');
+//        }
+//        new AlertDialog.Builder(activity).setMessage(stringBuilder.toString()).show();
+//        // Toast.makeText(Share.getApplicationContext(), stringBuilder.toString(), Toast.LENGTH_LONG).show();
+//    }
+//
 
     public static void startVideoServer(Activity activity) {
         Intent intent = new Intent(activity, ServerActivity.class);

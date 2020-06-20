@@ -44,9 +44,9 @@ public class FileImageManager {
     private VectorDrawableCompat mZipDrawable;
     private ThreadPool mThreadPool;
     private Handler mHandler;
-    private final LruCache<String, Drawable> mLruCache = new LruCache<>(10 * 1024 * 1024);
+    private final LruCache<String, Drawable> mLruCache;
 
-    public FileImageManager(Context context) {
+    public FileImageManager(Context context, int maxCacheSize) {
         mContext = context;
         initializeDefaultDrawables();
         mThreadPool = new ThreadPool();
@@ -57,8 +57,7 @@ public class FileImageManager {
         }
 
         mCacheDirectory = cacheDirectory.getAbsolutePath();
-
-
+        mLruCache = new LruCache<String, Drawable>(maxCacheSize);
     }
 
     public Drawable getDefaultDrawable(FileItem fileItem) {

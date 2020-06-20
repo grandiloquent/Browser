@@ -38,4 +38,5 @@
     <string name="display_hidden_files">Display Hidden Files.</string>
     <string name="videos_directory">Settings Videos Directory</string>
     <string name="open">Open</string>
+    <string name="directory_info">Directory Info</string>
 </resources>
