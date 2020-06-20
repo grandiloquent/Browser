@@ -63,6 +63,7 @@ public class FileProviderImpl implements FileProvider {
         }
         mRemovalItems.clear();
         mRemovalItems = null;
+        if (mObserver != null) mObserver.onFileDeleted();
     }
 
     @Override
