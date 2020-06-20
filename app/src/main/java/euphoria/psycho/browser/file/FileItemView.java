@@ -17,7 +17,7 @@ import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
 
-public class FileItemView extends SelectableItemView<FileItem> {
+public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Drawable> {
     private final int mDisplayedIconSize;
     private final int mMinIconSize;
     protected ListMenuButton mMoreIcon;
@@ -28,6 +28,16 @@ public class FileItemView extends SelectableItemView<FileItem> {
         super(context, attrs);
         mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
+    }
+
+    @Override
+    public void onFutureDone(Future<Drawable> future) {
+        Drawable drawable = future.get();
+        if (drawable != null) {
+            mFileImageManager.getHandler().post(() -> {
+                setStartIconDrawable(drawable);
+            });
+        }
     }
 
     public void setFileImageManager(FileImageManager fileImageManager) {
@@ -102,7 +112,6 @@ public class FileItemView extends SelectableItemView<FileItem> {
     }
 
 
-
     @Override
     public void setItem(FileItem item) {
         if (getItem() == item) return;
@@ -115,5 +124,10 @@ public class FileItemView extends SelectableItemView<FileItem> {
         } else {
             mDescriptionView.setText(Share.formatFileSize(item.getSize()));
         }
+        requestIcon();
+    }
+
+    private void requestIcon() {
+        mFileImageManager.getDrawable(getItem(), mMinIconSize, this);
     }
 }
