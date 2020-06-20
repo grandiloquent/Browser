@@ -5,12 +5,16 @@ import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.Log;
 import android.util.LruCache;
 
+
+import java.io.File;
+import java.io.IOException;
 
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
@@ -47,6 +51,15 @@ public class FileImageManager {
         initializeDefaultDrawables();
         mThreadPool = new ThreadPool();
         mHandler = new ImageHandler();
+        File cacheDirectory = new File(context.getCacheDir(), "images");
+        if (!cacheDirectory.isDirectory()) {
+            cacheDirectory.mkdirs();
+        }
+
+        mCacheDirectory = cacheDirectory.getAbsolutePath();
+
+
+
     }
 
     public Drawable getDefaultDrawable(FileItem fileItem) {
@@ -98,7 +111,7 @@ public class FileImageManager {
         switch (fileItem.getType()) {
             case FileHelper.TYPE_VIDEO:
             case FileHelper.TYPE_IMAGE:
-                mThreadPool.submit(new ImageJob(fileItem, size, mLruCache), futureListener);
+                mThreadPool.submit(new ImageJob(fileItem, size, mLruCache, mCacheDirectory), futureListener);
                 return;
         }
     }
@@ -140,16 +153,20 @@ public class FileImageManager {
 
     }
 
+    private String mCacheDirectory;
+
     private static class ImageJob implements Job<Drawable> {
 
         private final FileItem mFileItem;
         private final int mSize;
         private final LruCache<String, Drawable> mLruCache;
+        private final String mCacheDirectory;
 
-        private ImageJob(FileItem fileItem, int size, LruCache<String, Drawable> lruCache) {
+        private ImageJob(FileItem fileItem, int size, LruCache<String, Drawable> lruCache, String cacheDirectory) {
             mFileItem = fileItem;
             mSize = size;
             mLruCache = lruCache;
+            mCacheDirectory = cacheDirectory;
         }
 
         @Override
@@ -163,13 +180,35 @@ public class FileImageManager {
                 return drawable;
             }
             Bitmap bitmap = null;
-            switch (mFileItem.getType()) {
-                case FileHelper.TYPE_VIDEO:
-                    bitmap = Share.createVideoThumbnail(mFileItem.getUrl());
-                    break;
-                case FileHelper.TYPE_IMAGE:
-                    bitmap = BitmapFactory.decodeFile(mFileItem.getUrl());
-                    break;
+
+            File image = new File(mCacheDirectory, key);
+
+
+
+            if (image.isFile()) {
+                BitmapFactory.Options opts;
+                bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+
+                Log.e("TAG/", "Debug: run, from File\n");
+            }
+            if (bitmap == null) {
+                switch (mFileItem.getType()) {
+                    case FileHelper.TYPE_VIDEO:
+                        bitmap = Share.createVideoThumbnail(mFileItem.getUrl());
+                        break;
+                    case FileHelper.TYPE_IMAGE:
+                        bitmap = BitmapFactory.decodeFile(mFileItem.getUrl());
+                        break;
+                }
+                if (bitmap != null) {
+                    byte[] buffer = BitmapUtils.compressToBytes(bitmap);
+                    try {
+                        Share.writeAllBytes(image.getAbsolutePath(), buffer);
+                    } catch (IOException e) {
+                        Log.e("TAG/" + ImageJob.this.getClass().getSimpleName(), "Error: run, " + e.getMessage() + " " + e.getCause());
+
+                    }
+                }
             }
             if (bitmap == null) {
                 return null;

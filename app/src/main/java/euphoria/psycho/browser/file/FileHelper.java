@@ -62,7 +62,7 @@ public class FileHelper {
         return new Pair[]{
                 Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
                 Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
-                Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.video_server)),
+                Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                 Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
                 Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
