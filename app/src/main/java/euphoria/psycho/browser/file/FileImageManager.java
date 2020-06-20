@@ -29,6 +29,7 @@ import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
 public class FileImageManager {
 
     private final Context mContext;
+    private final LruCache<String, Drawable> mLruCache;
     private VectorDrawableCompat mApkDrawable;
     private VectorDrawableCompat mExcelDrawable;
     private VectorDrawableCompat mFolderDrawable;
@@ -44,7 +45,7 @@ public class FileImageManager {
     private VectorDrawableCompat mZipDrawable;
     private ThreadPool mThreadPool;
     private Handler mHandler;
-    private final LruCache<String, Drawable> mLruCache;
+    private String mCacheDirectory;
 
     public FileImageManager(Context context, int maxCacheSize) {
         mContext = context;
@@ -151,14 +152,12 @@ public class FileImageManager {
 
     }
 
-    private String mCacheDirectory;
-
     private static class ImageJob implements Job<Drawable> {
 
-        private final FileItem mFileItem;
-        private final int mSize;
-        private final LruCache<String, Drawable> mLruCache;
         private final String mCacheDirectory;
+        private final FileItem mFileItem;
+        private final LruCache<String, Drawable> mLruCache;
+        private final int mSize;
 
         private ImageJob(FileItem fileItem, int size, LruCache<String, Drawable> lruCache, String cacheDirectory) {
             mFileItem = fileItem;

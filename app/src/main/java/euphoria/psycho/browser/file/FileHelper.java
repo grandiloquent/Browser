@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,6 +63,8 @@ public class FileHelper {
 
     private static boolean sIsHasSD;
 
+    private static String sSDPath;
+
     /*
     ["apk",
 "excel",
@@ -79,10 +82,6 @@ public class FileHelper {
     * */
 
     static ExecutorService sSingleThreadExecutor;
-
-    public static void initialize(Context context) {
-        sIsHasSD = getExternalStoragePath(context, true) != null;
-    }
 
     public static Pair[] createBottomSheetItems(Context context) {
         if (sIsHasSD) {
@@ -254,6 +253,14 @@ public class FileHelper {
         }
     }
 
+    public static String getSDPath() {
+        return sSDPath;
+    }
+
+    public static void initialize(Context context) {
+        sIsHasSD = (sSDPath = getExternalStoragePath(context, true)) != null;
+    }
+
     public static void openUrl(Activity activity, FileItem fileItem) {
         String url = fileItem.getUrl();
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -274,7 +281,7 @@ public class FileHelper {
                             break;
                         case R.drawable.ic_sd_storage:
 
-                            fileManager.openDirectory(getExternalStoragePath(activity, true));
+                            fileManager.openDirectory(sSDPath);
 
                             break;
                         case R.drawable.ic_settings:

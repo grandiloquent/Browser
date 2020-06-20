@@ -37,10 +37,13 @@ public class FunctionsMenu {
         mParent = parent;
         mOnClickListener = onClickListener;
 
+
+        Log.e("TAG/", "Debug: FunctionsMenu, \n" + Share.dpToPixel(8));
+
         mPopupWindow.setWidth(Share.getWidthPixels() - Share.getWidthPixels() / 6);
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.setElevation(30);
+        mPopupWindow.setElevation(Share.dpToPixel(8));
 
     }
 

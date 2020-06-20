@@ -99,24 +99,14 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         return mFileImageManager;
     }
 
-
-    public void openDirectory(String dir) {
-        mDirectory = dir;
-        mFileAdapter.initialize();
-    }
-
-    public void refresh() {
-        mFileAdapter.initialize();
-    }
-
-
     public ViewGroup getView() {
         return mSelectableListLayout;
     }
 
     public boolean onBackPressed() {
         String parent = Share.substringBeforeLast(mDirectory, '/');
-        if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())) {
+        if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
+                || parent.startsWith(FileHelper.getSDPath())) {
 
             mDirectory = parent;
             mFileAdapter.initialize();
@@ -138,6 +128,11 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         SettingsManager.getInstance().setLastAccessDirectory(mDirectory);
     }
 
+    public void openDirectory(String dir) {
+        mDirectory = dir;
+        mFileAdapter.initialize();
+    }
+
     public void openUrl(FileItem fileItem) {
         if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
             mDirectory = fileItem.getUrl();
@@ -145,6 +140,10 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
             return;
         }
         FileHelper.openUrl(mActivity, fileItem);
+    }
+
+    public void refresh() {
+        mFileAdapter.initialize();
     }
 
     public void removeItem(FileItem fileItem) {
