@@ -63,7 +63,7 @@ public class FileItem {
     }
 
     public void open() {
-        mManager.openUrl(mUrl);
+        mManager.openUrl(this);
     }
 
     public String getDescription() {

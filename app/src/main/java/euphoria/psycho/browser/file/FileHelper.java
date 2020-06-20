@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
 import java.util.List;
@@ -23,6 +25,8 @@ import euphoria.psycho.browser.app.SettingsActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
+
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class FileHelper {
     public static final int TYPE_APK = 0;
@@ -177,6 +181,17 @@ public class FileHelper {
             default:
                 return TYPE_OTHERS;
         }
+    }
+
+    public static void openUrl(Activity activity, FileItem fileItem) {
+        String url = fileItem.getUrl();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
+        intent.setDataAndType(Uri.fromFile(new File(url)),
+                MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                        Share.substringAfterLast(url, '.')
+                ));
+        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
 
 

@@ -128,6 +128,6 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
     }
 
     private void requestIcon() {
-        mFileImageManager.getDrawable(getItem(), mMinIconSize, this);
+        mFileImageManager.getDrawable(getItem(), mDisplayedIconSize, this);
     }
 }

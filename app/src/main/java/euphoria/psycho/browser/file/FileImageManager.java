@@ -59,7 +59,6 @@ public class FileImageManager {
         mCacheDirectory = cacheDirectory.getAbsolutePath();
 
 
-
     }
 
     public Drawable getDefaultDrawable(FileItem fileItem) {
@@ -176,7 +175,6 @@ public class FileImageManager {
 
             drawable = mLruCache.get(key);
             if (drawable != null) {
-                Log.e("TAG/", "Debug: run, from Cache\n");
                 return drawable;
             }
             Bitmap bitmap = null;
@@ -184,12 +182,9 @@ public class FileImageManager {
             File image = new File(mCacheDirectory, key);
 
 
-
             if (image.isFile()) {
                 BitmapFactory.Options opts;
                 bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-
-                Log.e("TAG/", "Debug: run, from File\n");
             }
             if (bitmap == null) {
                 switch (mFileItem.getType()) {
@@ -197,7 +192,12 @@ public class FileImageManager {
                         bitmap = Share.createVideoThumbnail(mFileItem.getUrl());
                         break;
                     case FileHelper.TYPE_IMAGE:
-                        bitmap = BitmapFactory.decodeFile(mFileItem.getUrl());
+                        final BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        BitmapFactory.decodeFile(mFileItem.getUrl(), options);
+                        options.inSampleSize = Share.calculateInSampleSize(options, mSize, mSize);
+                        options.inJustDecodeBounds = false;
+                        bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
                 }
                 if (bitmap != null) {
