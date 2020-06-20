@@ -124,11 +124,29 @@ public class FileHelper {
                 return TYPE_APK;
             case "excel":
                 return TYPE_EXCEL;
-            case "png":
+            case "bmp":
+            case "gif":
             case "jpg":
+            case "png":
+            case "webp":
+            case "heic":
+            case "heif":
             case "jpeg":
                 return TYPE_IMAGE;
+            case "m4a":
+            case "aac":
+            case "flac":
+            case "gsm":
+            case "mid":
+            case "xmf":
+            case "mxmf":
+            case "rtttl":
+            case "rtx":
+            case "ota":
+            case "imy":
             case "mp3":
+            case "wav":
+            case "ogg":
                 return TYPE_MUSIC;
             case "pdf":
                 return TYPE_PDF;
@@ -137,10 +155,20 @@ public class FileHelper {
             case "txt":
             case "html":
             case "sql":
+            case "c":
+            case "css":
+            case "cs":
+            case "cc":
+            case "h":
+            case "js":
                 return TYPE_TEXT;
             case "vcf":
                 return TYPE_VCF;
-            case "video":
+            case "3gp":
+            case "mp4":
+            case "webm":
+            case "ts":
+            case "mkv":
                 return TYPE_VIDEO;
             case "word":
                 return TYPE_WORD;
