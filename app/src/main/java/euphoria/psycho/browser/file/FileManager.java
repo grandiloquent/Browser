@@ -163,6 +163,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private void sortBy() {
         mFileAdapter.setSortDirection(mSortDirection);
         mFileAdapter.setSortType(mSortType);
+        mFileAdapter.initialize();
     }
 
     @Override

@@ -40,6 +40,12 @@ import euphoria.psycho.browser.base.Share;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class FileHelper {
+    public static final int SORT_BY_ASCENDING=4;
+    public static final int SORT_BY_DATA_MODIFIED=2;
+    public static final int SORT_BY_DESCENDING=5;
+    public static final int SORT_BY_NAME=0;
+    public static final int SORT_BY_SIZE=1;
+    public static final int SORT_BY_TYPE=3;
     public static final int TYPE_APK = 0;
     public static final int TYPE_EXCEL = 1;
     public static final int TYPE_FOLDER = 2;
@@ -53,16 +59,6 @@ public class FileHelper {
     public static final int TYPE_VIDEO = 10;
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
-
-
-    public static final int SORT_BY_NAME=0;
-    public static final int SORT_BY_SIZE=1;
-    public static final int SORT_BY_DATA_MODIFIED=2;
-    public static final int SORT_BY_TYPE=3;
-    public static final int SORT_BY_ASCENDING=4;
-    public static final int SORT_BY_DESCENDING=5;
-
-
     private static boolean sIsHasSD;
 
     private static String sSDPath;
@@ -298,7 +294,7 @@ public class FileHelper {
                         case R.drawable.ic_create_new_folder:
                             createNewDirectory(activity, fileManager);
                             break;
-                        
+
                     }
                     fileManager.setBottomSheet(null);
                 });
