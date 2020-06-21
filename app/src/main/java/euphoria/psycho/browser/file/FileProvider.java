@@ -8,7 +8,7 @@ public interface FileProvider {
 
     void markItemForRemoval(FileItem i);
 
-    void queryFile(String directory);
+    void queryFile(String directory, int sortType, int sortDirection);
 
     void removeItems();
 

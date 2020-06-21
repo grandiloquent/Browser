@@ -2,6 +2,7 @@ package euphoria.psycho.browser.file;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,25 +10,17 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.storage.StorageManager;
-import android.util.Log;
+import android.view.WindowManager.LayoutParams;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
-
-import org.apache.commons.io.FileUtils;
+import android.widget.EditText;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -61,6 +54,15 @@ public class FileHelper {
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
 
+
+    public static final int SORT_BY_NAME=0;
+    public static final int SORT_BY_SIZE=1;
+    public static final int SORT_BY_DATA_MODIFIED=2;
+    public static final int SORT_BY_TYPE=3;
+    public static final int SORT_BY_ASCENDING=4;
+    public static final int SORT_BY_DESCENDING=5;
+
+
     private static boolean sIsHasSD;
 
     private static String sSDPath;
@@ -83,7 +85,7 @@ public class FileHelper {
 
     static ExecutorService sSingleThreadExecutor;
 
-    public static Pair[] createBottomSheetItems(Context context) {
+    public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
         if (sIsHasSD) {
             return new Pair[]{
                     Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
@@ -104,17 +106,7 @@ public class FileHelper {
         }
     }
 
-    public static Pair[] createFunctionsMenuItems(Context context) {
-        return new Pair[]{
-                Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
-                Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
-                Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
-                Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
-                Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
-        };
-    }
-
-    public static void createFuntionsMenu(Activity activity, FileManager fileManager) {
+    public static void createFunctionsMenu(Activity activity, FileManager fileManager) {
         FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
             @Override
             public void onClicked(Pair<Integer, String> item) {
@@ -138,6 +130,16 @@ public class FileHelper {
             }
         });
         functionsMenu.showDialog(createFunctionsMenuItems(activity));
+    }
+
+    public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
+        return new Pair[]{
+                Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
+                Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
+                Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
+                Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
+                Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+        };
     }
 
     public static void downloadFromUrl(Context context, String youtubeDlUrl, String downloadTitle, String fileName) {
@@ -182,7 +184,8 @@ public class FileHelper {
 
     public static long getFileSize(File file) {
         if (file.isDirectory()) {
-            return file.listFiles().length;
+            File[] files = file.listFiles();
+            return files == null ? 0 : files.length;
         }
         return file.length();
     }
@@ -258,7 +261,7 @@ public class FileHelper {
     }
 
     public static void initialize(Context context) {
-        sIsHasSD = (sSDPath = getExternalStoragePath(context, true)) != null;
+        sIsHasSD = (sSDPath = getExternalStoragePath(context)) != null;
     }
 
     public static void openUrl(Activity activity, FileItem fileItem) {
@@ -272,7 +275,7 @@ public class FileHelper {
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
 
-    public static void showBottomSheet(Activity activity, Pair[] items, FileManager fileManager) {
+    public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)
                 .setOnClickListener(item -> {
                     switch (item.first) {
@@ -280,9 +283,7 @@ public class FileHelper {
                             fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
                             break;
                         case R.drawable.ic_sd_storage:
-
                             fileManager.openDirectory(sSDPath);
-
                             break;
                         case R.drawable.ic_settings:
                             Intent settingsActivity = new Intent(activity, SettingsActivity.class);
@@ -292,8 +293,12 @@ public class FileHelper {
                             showDirectoryInfo(activity, fileManager.getDirectory());
                             break;
                         case R.drawable.ic_more_vert:
-                            createFuntionsMenu(activity, fileManager);
+                            createFunctionsMenu(activity, fileManager);
                             break;
+                        case R.drawable.ic_create_new_folder:
+                            createNewDirectory(activity, fileManager);
+                            break;
+                        
                     }
                     fileManager.setBottomSheet(null);
                 });
@@ -312,7 +317,29 @@ public class FileHelper {
         activity.startActivity(intent);
     }
 
-    private static String getExternalStoragePath(Context context, boolean is_removable) {
+    private static void createNewDirectory(Activity activity, FileManager fileManager) {
+        EditText editText = new EditText(activity);
+        editText.requestFocus();
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(R.string.create_new_folder)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    String filename = editText.getText().toString();
+                    File dir = new File(fileManager.getDirectory(), filename);
+                    if (!dir.isDirectory()) {
+                        dir.mkdir();
+                    }
+                    fileManager.refresh();
+                    dialogInterface.dismiss();
+                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
+    }
+
+    private static String getExternalStoragePath(Context context) {
 
         StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
         Class<?> storageVolumeClazz = null;
@@ -322,22 +349,19 @@ public class FileHelper {
             Method getPath = storageVolumeClazz.getMethod("getPath");
             Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
             Object result = getVolumeList.invoke(mStorageManager);
+            if (result == null) return null;
             final int length = Array.getLength(result);
             for (int i = 0; i < length; i++) {
                 Object storageVolumeElement = Array.get(result, i);
                 String path = (String) getPath.invoke(storageVolumeElement);
-                boolean removable = (Boolean) isRemovable.invoke(storageVolumeElement);
-                if (is_removable == removable) {
+                Object removableObject = isRemovable.invoke(storageVolumeElement);
+                if (removableObject == null) return null;
+                boolean removable = (Boolean) removableObject;
+                if (removable) {
                     return path;
                 }
             }
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return null;
@@ -369,6 +393,7 @@ public class FileHelper {
 
 //            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
         File[] files = new File(directory).listFiles(File::isDirectory);
+        if (files == null) return;
         List<Pair<Long, String>> pairList = new ArrayList<>();
         for (File f : files) {
             pairList.add(Pair.create(NativeHelper.dirSize(f.getAbsolutePath()), f.getName()));

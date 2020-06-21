@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/sort_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/sort_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/sort_text"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/dialog_radiobutton_height"
+            android:gravity="center|left"
+            android:paddingLeft="@dimen/dialog_radiobutton_left_margin"
+            android:textSize="@dimen/list_item_text_size" />
+    </LinearLayout>
+</LinearLayout>

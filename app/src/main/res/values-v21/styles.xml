@@ -6,5 +6,10 @@
         <item name="android:windowMinWidthMinor">85%</item>
         <item name="android:windowMinWidthMajor">55%</item>
     </style>
-
+    <style name="Theme_DeviceDefault_Light" parent="@android:style/Theme.DeviceDefault.Light">
+        <item name="android:colorControlNormal">@color/fih_lollipop_Group3_default_primary</item>
+        <item name="android:colorControlActivated">@color/fih_lollipop_Group3_default_primary</item>
+        <item name="android:colorControlHighlight">@color/fih_lollipop_Group3_default_primary</item>
+        <item name="android:colorAccent">@color/fih_lollipop_Group3_default_primary</item>
+    </style>
 </resources>

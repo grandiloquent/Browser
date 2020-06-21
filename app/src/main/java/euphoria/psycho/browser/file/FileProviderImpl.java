@@ -33,7 +33,7 @@ public class FileProviderImpl implements FileProvider {
     }
 
     @Override
-    public void queryFile(String directory) {
+    public void queryFile(String directory, int sortType, int sortDirection) {
 
         mItems.clear();
 
@@ -51,7 +51,7 @@ public class FileProviderImpl implements FileProvider {
                 mItems.add(fileItem);
             }
         }
-        Collections.sort(mItems, new FileItemComparator(true, 0));
+        Collections.sort(mItems, new FileItemComparator(sortDirection,sortType));
         if (mObserver != null)
             mObserver.onQueryFileComplete(mItems);
     }

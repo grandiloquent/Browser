@@ -1,7 +1,9 @@
 <resources>
-    <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark</color>
+    <color name="default_text_color_link_disabled">@color/default_text_color_link_disabled_dark
+    </color>
     <color name="default_text_color_link_disabled_dark">@color/modern_grey_800_alpha_38</color>
-
+    <color name="fih_lollipop_Group3_default_primary">@color/modern_blue_600</color>
+    <!--#fff4f4f7-->
     <color name="black_alpha_11">#1D000000</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorPrimary">#008577</color>
@@ -69,7 +71,7 @@
     <color name="hairline_stroke_color">@color/hairline_stroke_color_light</color>
     <color name="hairline_stroke_color_light">@color/modern_grey_300</color>
     <color name="modern_grey_300">#DADCE0</color>
-    <color name="default_icon_color_secondary" >@color/default_icon_color_secondary_dark</color>
+    <color name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</color>
     <color name="default_icon_color_secondary_dark">@color/modern_grey_600</color>
     <color name="modern_grey_600">#80868B</color>
 </resources>

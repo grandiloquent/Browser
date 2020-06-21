@@ -4,24 +4,51 @@
     <group android:id="@+id/normal_menu_group">
         <!-- Icon tint of the info menu item is changed programmatically. -->
         <item
-            android:id="@+id/menu_id"
-            android:icon="@drawable/btn_menu"
-            android:title="@string/show_menu"
-            android:visible="true"
-            app:showAsAction="ifRoom" />
-        <item
             android:id="@+id/search_menu_id"
             android:icon="@drawable/ic_search"
             android:title="@string/search"
             android:visible="false"
             app:iconTint="@color/default_icon_color_tint_list"
             app:showAsAction="ifRoom" />
+
         <item
-            android:id="@+id/close_menu_id"
-            android:icon="@drawable/btn_close"
-            android:title="@string/close"
-            app:iconTint="@color/default_icon_color_tint_list"
+            android:icon="@drawable/ic_action_sort"
+            android:title="@string/sort_by_name"
+            app:showAsAction="ifRoom">
+            <menu>
+                <group android:checkableBehavior="single">
+
+                    <item
+                        android:id="@+id/sort_by_name_menu_id"
+                        android:title="@string/sort_by_name" />
+                    <item
+                        android:id="@+id/sort_by_size_menu_id"
+                        android:title="@string/sort_by_size" />
+                    <item
+                        android:id="@+id/sort_by_data_modified_menu_id"
+                        android:title="@string/sort_by_data_modified" />
+                    <item
+                        android:id="@+id/sort_by_type_menu_id"
+                        android:title="@string/sort_by_type" />
+                </group>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/sort_by_ascending_menu_id"
+                        android:title="@string/sort_by_ascending" />
+                    <item
+                        android:id="@+id/sort_by_descending_menu_id"
+                        android:title="@string/sort_by_descending" />
+                </group>
+            </menu>
+        </item>
+        <item
+            android:id="@+id/menu_id"
+            android:icon="@drawable/btn_menu"
+            android:title="@string/show_menu"
+            android:visible="true"
             app:showAsAction="ifRoom" />
+
+
     </group>
     <group
         android:id="@+id/selection_mode_menu_group"

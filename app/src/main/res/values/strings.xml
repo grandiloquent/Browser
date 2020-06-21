@@ -41,4 +41,12 @@
     <string name="directory_info">Directory Info</string>
     <string name="more">More</string>
     <string name="extracting">Extracting</string>
+
+    <string name="sort">Sort</string>
+    <string name="sort_by_name">Sort By Name</string>
+    <string name="sort_by_size">Sort By Size</string>
+    <string name="sort_by_data_modified">Sort By Data Modified</string>
+    <string name="sort_by_type">Sort By Type</string>
+    <string name="sort_by_ascending">Sort By Ascending</string>
+    <string name="sort_by_descending">Sort By Descending</string>
 </resources>

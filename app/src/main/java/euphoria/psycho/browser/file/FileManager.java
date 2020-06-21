@@ -36,14 +36,18 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private final FileManagerToolbar mToolbar;
     private BottomSheet mBottomSheet;
     private boolean mIsSearching;
-
-
     private FileImageManager mFileImageManager;
     private String mDirectory;
+    private int mSortType;
+    private int mSortDirection;
 
 
     public FileManager(Activity activity) {
         mActivity = activity;
+
+        mSortType = SettingsManager.getInstance().getSortType();
+        mSortDirection = SettingsManager.getInstance().getSortDirection();
+
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
         mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
@@ -73,7 +77,10 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
 
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
 
+        mFileAdapter.setSortDirection(mSortDirection);
+        mFileAdapter.setSortType(mSortType);
         mFileAdapter.initialize();
+
         FileHelper.initialize(activity);
 
 
@@ -153,6 +160,11 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         mBottomSheet = bottomSheet;
     }
 
+    private void sortBy() {
+        mFileAdapter.setSortDirection(mSortDirection);
+        mFileAdapter.setSortType(mSortType);
+    }
+
     @Override
     public void onEndSearch() {
         mFileAdapter.onEndSearch();
@@ -165,9 +177,7 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     public boolean onMenuItemClick(MenuItem item) {
         mToolbar.hideOverflowMenu();
         switch (item.getItemId()) {
-            case R.id.close_menu_id:
-                mActivity.finish();
-                return true;
+
             case R.id.menu_id:
                 FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity), this);
                 return true;
@@ -183,8 +193,47 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
                 mSelectableListLayout.onStartSearch();
                 mIsSearching = true;
                 return true;
+
+
+            case R.id.sort_by_name_menu_id:
+                mSortType = FileHelper.SORT_BY_NAME;
+                sortBy();
+                return true;
+
+            case R.id.sort_by_size_menu_id:
+                mSortType = FileHelper.SORT_BY_SIZE;
+                sortBy();
+                return true;
+
+            case R.id.sort_by_data_modified_menu_id:
+                mSortType = FileHelper.SORT_BY_DATA_MODIFIED;
+                sortBy();
+                return true;
+
+            case R.id.sort_by_type_menu_id:
+                mSortType = FileHelper.SORT_BY_TYPE;
+                sortBy();
+                return true;
+
+            case R.id.sort_by_ascending_menu_id:
+                mSortDirection = FileHelper.SORT_BY_ASCENDING;
+                sortBy();
+                return true;
+
+            case R.id.sort_by_descending_menu_id:
+                mSortDirection = FileHelper.SORT_BY_DESCENDING;
+                sortBy();
+                return true;
+
+
         }
         return false;
+
+        /*
+        ["name","size","data_modified","type","ascending","descending"
+  ]
+
+        * */
     }
 
     @Override
