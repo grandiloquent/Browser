@@ -1,15 +1,16 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "euphoria.psycho.browser"
         minSdkVersion 23
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         /*vectorDrawables.useSupportLibrary = true*/
         ndk.abiFilters 'armeabi-v7a'
+
 
     }
     buildTypes {
