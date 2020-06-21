@@ -46,7 +46,7 @@ public class FileItemComparator implements Comparator<FileItem> {
 
             }
         } else if (o1.getType() == FileHelper.TYPE_FOLDER) {
-            return mIsAscending ? -1 : -1;
+            return mIsAscending ? -1 :1;
         }
         return mIsAscending ? 1 : -1;
     }

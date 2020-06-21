@@ -52,11 +52,12 @@ public class SettingsManager {
         return Share.getExternalStoragePath("Videos");
     }
 
-    public void seSortDirection(int sortType) {
-        Share.getAppSharedPreferences().edit().putInt(KEY_SORT_DIRECTION, sortType).apply();
-    }
 
-    public void seSortType(int sortType) {
-        Share.getAppSharedPreferences().edit().putInt(KEY_SORT_TYPE, sortType).apply();
+    public void setSortTypeAndDirection(int sortType, int sortDirection) {
+        Share.getAppSharedPreferences()
+                .edit()
+                .putInt(KEY_SORT_TYPE, sortType)
+                .putInt(KEY_SORT_DIRECTION, sortDirection)
+                .apply();
     }
 }

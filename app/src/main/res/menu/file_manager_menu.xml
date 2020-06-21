@@ -16,7 +16,7 @@
             android:title="@string/sort_by_name"
             app:showAsAction="ifRoom">
             <menu>
-                <group android:checkableBehavior="single">
+                <group >
 
                     <item
                         android:id="@+id/sort_by_name_menu_id"
@@ -31,7 +31,7 @@
                         android:id="@+id/sort_by_type_menu_id"
                         android:title="@string/sort_by_type" />
                 </group>
-                <group android:checkableBehavior="single">
+                <group >
                     <item
                         android:id="@+id/sort_by_ascending_menu_id"
                         android:title="@string/sort_by_ascending" />
