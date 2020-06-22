@@ -18,8 +18,6 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     private final SelectionDelegate<FileItem> mSelectionDelegate;
     private boolean mIsDestroyed;
     private boolean mIsLoadingItems;
-    private int mSortType;
-    private int mSortDirection;
     public FileAdapter(SelectionDelegate<FileItem> delegate, FileManager manager, FileProvider provider) {
         mSelectionDelegate = delegate;
         mFileProvider = provider;
@@ -27,21 +25,11 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileManager = manager;
         mItemViews = new ArrayList<>();
     }
-    public int getSortDirection() {
-        return mSortDirection;
-    }
-    public void setSortDirection(int sortDirection) {
-        mSortDirection = sortDirection;
-    }
-    public int getSortType() {
-        return mSortType;
-    }
-    public void setSortType(int sortType) {
-        mSortType = sortType;
-    }
+
+
     public void initialize() {
         mIsLoadingItems = true;
-        mFileProvider.queryFile(mFileManager.getDirectory(), mSortType, mSortDirection);
+        mFileProvider.queryFile(mFileManager.getDirectory(),mFileManager);
     }
     public void markItemForRemoval(FileItem i) {
         mItems.remove(i);

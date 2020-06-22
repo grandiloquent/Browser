@@ -1,15 +1,23 @@
 package euphoria.psycho.browser.file;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import java.util.List;
+import java.util.Set;
+
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -20,7 +28,9 @@ import euphoria.psycho.browser.widget.SelectableListLayout;
 import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
-public class FileManager implements OnMenuItemClickListener, SelectionObserver<FileItem>, SearchDelegate {
+
+public class FileManager implements OnMenuItemClickListener,
+        SelectionObserver<FileItem>, SearchDelegate, OnSharedPreferenceChangeListener {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
     private final Activity mActivity;
@@ -36,10 +46,11 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
     private String mDirectory;
     private int mSortType;
     private int mSortDirection;
+    private boolean mIsShowHiddenFiles;
+
     public FileManager(Activity activity) {
         mActivity = activity;
-        mSortType = SettingsManager.getInstance().getSortType();
-        mSortDirection = SettingsManager.getInstance().getSortDirection();
+        loadPrefer();
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
         mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
@@ -61,18 +72,20 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         // 5. Initialize empty view.
         mEmptyView = mSelectableListLayout.initializeEmptyView(
                 R.string.file_manager_empty, R.string.file_manager_no_results);
-        mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
-        mFileAdapter.setSortDirection(mSortDirection);
-        mFileAdapter.setSortType(mSortType);
+
+
         mFileAdapter.initialize();
         FileHelper.initialize(activity);
+        Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
+
     public String getDirectory() {
         if (mDirectory == null) {
             mDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
         return mDirectory;
     }
+
     public FileImageManager getFileImageManager() {
         if (mFileImageManager == null) {
             ActivityManager activityManager = ((ActivityManager) Share
@@ -84,9 +97,24 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         }
         return mFileImageManager;
     }
+
+    public boolean getShowHidden() {
+
+        return mIsShowHiddenFiles;
+    }
+
+    public int getSortDirection() {
+        return mSortDirection;
+    }
+
+    public int getSortType() {
+        return mSortType;
+    }
+
     public ViewGroup getView() {
         return mSelectableListLayout;
     }
+
     public boolean onBackPressed() {
         String parent = Share.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
@@ -97,20 +125,25 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         }
         return mSelectableListLayout.onBackPressed();
     }
+
     public void onDestroy() {
         mSelectableListLayout.onDestroyed();
         mFileAdapter.onDestroyed();
+        Share.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
+
     public void onPause() {
         if (mBottomSheet != null) {
             mBottomSheet.dismiss();
         }
         SettingsManager.getInstance().setLastAccessDirectory(mDirectory);
     }
+
     public void openDirectory(String dir) {
         mDirectory = dir;
         mFileAdapter.initialize();
     }
+
     public void openUrl(FileItem fileItem) {
         if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
             mDirectory = fileItem.getUrl();
@@ -119,26 +152,38 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
         }
         FileHelper.openUrl(mActivity, fileItem);
     }
+
     public void refresh() {
         mFileAdapter.initialize();
     }
+
     public void removeItem(FileItem fileItem) {
     }
+
     public void setBottomSheet(BottomSheet bottomSheet) {
         mBottomSheet = bottomSheet;
     }
+
+    private void loadPrefer() {
+        mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
+        mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
+        mSortType = SettingsManager.getInstance().getSortType();
+        mSortDirection = SettingsManager.getInstance().getSortDirection();
+    }
+
     private void sortBy() {
         SettingsManager.getInstance().setSortTypeAndDirection(mSortType, mSortDirection);
-        mFileAdapter.setSortDirection(mSortDirection);
-        mFileAdapter.setSortType(mSortType);
+
         mFileAdapter.initialize();
     }
+
     @Override
     public void onEndSearch() {
         mFileAdapter.onEndSearch();
         mSelectableListLayout.onEndSearch();
         mIsSearching = false;
     }
+
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         mToolbar.hideOverflowMenu();
@@ -189,12 +234,20 @@ public class FileManager implements OnMenuItemClickListener, SelectionObserver<F
   ]
         * */
     }
+
     @Override
     public void onSearchTextChanged(String query) {
         mFileAdapter.search(query);
     }
+
     @Override
     public void onSelectionStateChange(List<FileItem> selectedItems) {
         mFileAdapter.onSelectionStateChange();
+    }
+
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String s) {
+        loadPrefer();
+        mFileAdapter.initialize();
     }
 }

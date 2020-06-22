@@ -10,10 +10,20 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import euphoria.psycho.browser.base.Share;
-public class FileActivity extends AppCompatActivity {
-    private FileManager mFileManager;
+public class FileActivity extends AppCompatActivity{
     private static final int REQUEST_PERMISSIONS_CODE = 0;
+    private FileManager mFileManager;
+
+
+
+    private void initialize() {
+        mFileManager = new FileManager(this);
+        setContentView(mFileManager.getView());
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,17 +37,27 @@ public class FileActivity extends AppCompatActivity {
             initialize();
         }
     }
-    @Override
-    public void onBackPressed() {
-        if (!mFileManager.onBackPressed())
-            super.onBackPressed();
-    }
+
     @Override
     protected void onDestroy() {
         mFileManager.onDestroy();
         mFileManager = null;
         super.onDestroy();
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mFileManager != null)
+            mFileManager.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mFileManager.onBackPressed())
+            super.onBackPressed();
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_CODE) {
@@ -50,15 +70,5 @@ public class FileActivity extends AppCompatActivity {
             }
             initialize();
         }
-    }
-    private void initialize() {
-        mFileManager = new FileManager(this);
-        setContentView(mFileManager.getView());
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (mFileManager != null)
-            mFileManager.onPause();
     }
 }

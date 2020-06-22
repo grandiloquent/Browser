@@ -14,6 +14,8 @@ public class SettingsManager {
     private static final String KEY_SORT_DIRECTION = "sort_direction";
     private static final String KEY_SORT_TYPE = "sort_type";
     private static final String KEY_VIDEOS_DIRECTORY = "videos_directory";
+    private static final String KEY_DISPLAY_HIDDEN_FILES = "display_hidden_files";
+
     private static SettingsManager sInstance;
 
     public static SettingsManager getInstance() {
@@ -59,5 +61,9 @@ public class SettingsManager {
                 .putInt(KEY_SORT_TYPE, sortType)
                 .putInt(KEY_SORT_DIRECTION, sortDirection)
                 .apply();
+    }
+
+    public boolean getDisplayHiddenFiles() {
+        return Share.getAppSharedPreferences().getBoolean(KEY_DISPLAY_HIDDEN_FILES, false);
     }
 }
