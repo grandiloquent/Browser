@@ -189,7 +189,9 @@ void *start_server(const char *address) {
     mg_mgr_free(&mgr);
 }
 
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jboolean
+
+JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass clazz, jstring host_,
                                                           jstring port_, jstring rootDirectory_,
                                                           jstring videoDirectory_) {
@@ -219,7 +221,9 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     return 1;
 }
 
-JNIEXPORT jstring JNICALL
+JNIEXPORT jstring
+
+JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_youdao(JNIEnv *env, jclass clazz, jstring query_,
                                                      jboolean is_english_to_chinese,
                                                      jboolean is_translate) {
@@ -237,7 +241,9 @@ Java_euphoria_psycho_browser_app_NativeHelper_youdao(JNIEnv *env, jclass clazz, 
 
 }
 
-JNIEXPORT jstring JNICALL
+JNIEXPORT jstring
+
+JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_google(JNIEnv *env, jclass clazz, jstring query_,
                                                      jboolean is_english_to_chinese) {
 
@@ -250,7 +256,9 @@ Java_euphoria_psycho_browser_app_NativeHelper_google(JNIEnv *env, jclass clazz, 
     return result;
 }
 
-JNIEXPORT jboolean JNICALL
+JNIEXPORT jboolean
+
+JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jclass clazz,
                                                                jstring path_) {
     const char *path = (*env)->GetStringUTFChars(env, path_, 0);
@@ -259,6 +267,9 @@ Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jcla
         char nameBuffer[PATH_MAX];
         struct stat statBuffer;
         ret = delete_directory(path, nameBuffer, &statBuffer);
+        if (!ret) {
+            ret = rmdir(path);
+        }
     } else {
         ret = unlink(path);
     }
@@ -266,7 +277,9 @@ Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jcla
     return ret == 0 ? true : false;
 }
 
-JNIEXPORT jlong JNICALL
+JNIEXPORT jlong
+
+JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz, jstring path_) {
     const char *path = (*env)->GetStringUTFChars(env, path_, 0);
     int dirfd = open(path, O_DIRECTORY, O_RDONLY);
@@ -278,6 +291,5 @@ Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz,
         close(dirfd);
         return res;
     }
-
 
 }

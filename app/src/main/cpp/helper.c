@@ -222,7 +222,7 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
         }
     }
     closedir(dir);
-    return rmdir(path);
+    return 0;
 }
 
 bool is_dir(const char *pathname) {

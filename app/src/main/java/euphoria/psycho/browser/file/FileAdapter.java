@@ -1,11 +1,8 @@
 package euphoria.psycho.browser.file;
-
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -13,7 +10,6 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileProvider.BrowsingFileObserver;
 import euphoria.psycho.browser.widget.SelectableItemViewHolder;
 import euphoria.psycho.browser.widget.SelectionDelegate;
-
 public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObserver {
     private final FileManager mFileManager;
     private final FileProvider mFileProvider;
@@ -24,7 +20,6 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     private boolean mIsLoadingItems;
     private int mSortType;
     private int mSortDirection;
-
     public FileAdapter(SelectionDelegate<FileItem> delegate, FileManager manager, FileProvider provider) {
         mSelectionDelegate = delegate;
         mFileProvider = provider;
@@ -32,63 +27,48 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         mFileManager = manager;
         mItemViews = new ArrayList<>();
     }
-
     public int getSortDirection() {
         return mSortDirection;
     }
-
     public void setSortDirection(int sortDirection) {
         mSortDirection = sortDirection;
     }
-
     public int getSortType() {
         return mSortType;
     }
-
     public void setSortType(int sortType) {
         mSortType = sortType;
     }
-
     public void initialize() {
         mIsLoadingItems = true;
         mFileProvider.queryFile(mFileManager.getDirectory(), mSortType, mSortDirection);
     }
-
     public void markItemForRemoval(FileItem i) {
         mItems.remove(i);
         mFileProvider.markItemForRemoval(i);
     }
-
     public void onDestroyed() {
     }
-
     public void onEndSearch() {
     }
-
     public void onSelectionStateChange() {
     }
-
     public void removeItems() {
         mFileProvider.removeItems();
     }
-
     public void search(String query) {
     }
-
     private void clear(boolean b) {
     }
-
     private void loadItems(List<FileItem> items) {
         mItems.clear();
         mItems.addAll(items);
         notifyDataSetChanged();
     }
-
     @Override
     public int getItemCount() {
         return mItems.size();
     }
-
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FileItem item = mItems.get(position);
@@ -96,11 +76,9 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         current.displayItem(item);
         ((FileItemView) holder.itemView).setFileManager(mFileManager);
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         // create the row associated with this adapter
         ViewGroup row = (ViewGroup) LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.file_item_view, parent, false);
@@ -110,16 +88,13 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
         itemView.setFileImageManager(mFileManager.getFileImageManager());
         mItemViews.add(itemView);
         return holder;
-
     }
-
     @Override
     public void onFileDeleted() {
         if (mIsDestroyed) return;
         mSelectionDelegate.clearSelection();
         initialize();
     }
-
     @Override
     public void onQueryFileComplete(List<FileItem> items) {
         if (mIsDestroyed) return;

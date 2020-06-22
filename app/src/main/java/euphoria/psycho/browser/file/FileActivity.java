@@ -1,25 +1,19 @@
 package euphoria.psycho.browser.file;
-
 import android.Manifest;
 import android.Manifest.permission;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.base.Share;
-
 public class FileActivity extends AppCompatActivity {
-
     private FileManager mFileManager;
     private static final int REQUEST_PERMISSIONS_CODE = 0;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,20 +27,17 @@ public class FileActivity extends AppCompatActivity {
             initialize();
         }
     }
-
     @Override
     public void onBackPressed() {
         if (!mFileManager.onBackPressed())
             super.onBackPressed();
     }
-
     @Override
     protected void onDestroy() {
         mFileManager.onDestroy();
         mFileManager = null;
         super.onDestroy();
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == REQUEST_PERMISSIONS_CODE) {
@@ -60,12 +51,10 @@ public class FileActivity extends AppCompatActivity {
             initialize();
         }
     }
-
     private void initialize() {
         mFileManager = new FileManager(this);
         setContentView(mFileManager.getView());
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -73,4 +62,3 @@ public class FileActivity extends AppCompatActivity {
             mFileManager.onPause();
     }
 }
-

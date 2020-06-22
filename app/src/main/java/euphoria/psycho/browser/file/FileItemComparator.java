@@ -1,22 +1,17 @@
 package euphoria.psycho.browser.file;
-
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
-
 import euphoria.psycho.browser.base.Share;
-
 public class FileItemComparator implements Comparator<FileItem> {
     private final int mSortType;
     private final Collator mCollator;
     private final boolean mIsAscending;
-
     public FileItemComparator(int sortDirection, int sortType) {
         mIsAscending = sortDirection == FileHelper.SORT_BY_ASCENDING;
         mSortType = sortType;
         mCollator = Collator.getInstance(Locale.CHINA);
     }
-
     @Override
     public int compare(FileItem o1, FileItem o2) {
         if ((o1.getType() == o2.getType()) || (
@@ -43,7 +38,6 @@ public class FileItemComparator implements Comparator<FileItem> {
                     }
                 default:
                     return mCollator.compare(o1.getTitle(), o2.getTitle()) * (mIsAscending ? 1 : -1);
-
             }
         } else if (o1.getType() == FileHelper.TYPE_FOLDER) {
             return mIsAscending ? -1 :1;

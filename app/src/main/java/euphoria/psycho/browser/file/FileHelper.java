@@ -1,5 +1,4 @@
 package euphoria.psycho.browser.file;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -13,7 +12,6 @@ import android.os.storage.StorageManager;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
-
 import java.io.File;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -23,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -36,9 +33,7 @@ import euphoria.psycho.browser.app.SettingsActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
-
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
-
 public class FileHelper {
     public static final int SORT_BY_ASCENDING=4;
     public static final int SORT_BY_DATA_MODIFIED=2;
@@ -60,9 +55,7 @@ public class FileHelper {
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
     private static boolean sIsHasSD;
-
     private static String sSDPath;
-
     /*
     ["apk",
 "excel",
@@ -78,9 +71,7 @@ public class FileHelper {
 "word",
 "zip"]
     * */
-
     static ExecutorService sSingleThreadExecutor;
-
     public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
         if (sIsHasSD) {
             return new Pair[]{
@@ -101,7 +92,6 @@ public class FileHelper {
             };
         }
     }
-
     public static void createFunctionsMenu(Activity activity, FileManager fileManager) {
         FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
             @Override
@@ -127,7 +117,6 @@ public class FileHelper {
         });
         functionsMenu.showDialog(createFunctionsMenuItems(activity));
     }
-
     public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
         return new Pair[]{
                 Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
@@ -137,25 +126,20 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
         };
     }
-
     public static void downloadFromUrl(Context context, String youtubeDlUrl, String downloadTitle, String fileName) {
         Uri uri = Uri.parse(youtubeDlUrl);
         DownloadManager.Request request = new DownloadManager.Request(uri);
         request.setTitle(downloadTitle);
-
         request.allowScanningByMediaScanner();
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
         request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
-
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         manager.enqueue(request);
     }
-
     public static void extractTwitterVideo(Activity activity) {
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage(activity.getText(R.string.extracting));
         dialog.show();
-
         new Thread(() -> {
             try {
                 CharSequence twitterUrl = Share.getClipboardString();
@@ -177,7 +161,6 @@ public class FileHelper {
             }
         }).start();
     }
-
     public static long getFileSize(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -185,13 +168,11 @@ public class FileHelper {
         }
         return file.length();
     }
-
     public static int getFileType(File file) {
         if (file.isDirectory()) {
             return TYPE_FOLDER;
         }
         String extension = Share.substringAfterLast(file.getName(), '.');
-
         switch (extension) {
             case "apk":
                 return TYPE_APK;
@@ -251,15 +232,12 @@ public class FileHelper {
                 return TYPE_OTHERS;
         }
     }
-
     public static String getSDPath() {
         return sSDPath;
     }
-
     public static void initialize(Context context) {
         sIsHasSD = (sSDPath = getExternalStoragePath(context)) != null;
     }
-
     public static void openUrl(Activity activity, FileItem fileItem) {
         String url = fileItem.getUrl();
         Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -270,7 +248,6 @@ public class FileHelper {
                 ));
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
-
     public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)
                 .setOnClickListener(item -> {
@@ -294,25 +271,20 @@ public class FileHelper {
                         case R.drawable.ic_create_new_folder:
                             createNewDirectory(activity, fileManager);
                             break;
-
                     }
                     fileManager.setBottomSheet(null);
                 });
         fileManager.setBottomSheet(bottomSheet);
         bottomSheet.showDialog(items);
-
     }
-
     public static void startVideoServer(Activity activity) {
         Intent intent = new Intent(activity, ServerActivity.class);
         activity.startActivity(intent);
     }
-
     public static void startYouTube(Activity activity) {
         Intent intent = new Intent(activity, SampleDownloadActivity.class);
         activity.startActivity(intent);
     }
-
     private static void createNewDirectory(Activity activity, FileManager fileManager) {
         EditText editText = new EditText(activity);
         editText.requestFocus();
@@ -334,9 +306,7 @@ public class FileHelper {
         dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
     }
-
     private static String getExternalStoragePath(Context context) {
-
         StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
         Class<?> storageVolumeClazz = null;
         try {
@@ -362,11 +332,9 @@ public class FileHelper {
         }
         return null;
     }
-
     private static void google(Activity activity) {
         if (sSingleThreadExecutor == null)
             sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-
         sSingleThreadExecutor.submit(() -> {
             CharSequence q = Share.getClipboardString();
             if (q == null) return;
@@ -383,10 +351,7 @@ public class FileHelper {
             });
         });
     }
-
     private static void showDirectoryInfo(Activity activity, String directory) {
-
-
 //            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
         File[] files = new File(directory).listFiles(File::isDirectory);
         if (files == null) return;
@@ -395,8 +360,6 @@ public class FileHelper {
             pairList.add(Pair.create(NativeHelper.dirSize(f.getAbsolutePath()), f.getName()));
         }
         Collections.sort(pairList, (o1, o2) -> {
-
-
             long a = o1.first - o2.first;
             if (a > 0) return -1;
             if (a < 0) return 1;
@@ -412,13 +375,10 @@ public class FileHelper {
         new AlertDialog.Builder(activity)
                 .setMessage(stringBuilder.toString())
                 .show();
-
     }
-
     private static void youdaoChinese(Activity activity) {
         if (sSingleThreadExecutor == null)
             sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-
         sSingleThreadExecutor.submit(() -> {
             CharSequence q = Share.getClipboardString();
             if (q == null) return;
