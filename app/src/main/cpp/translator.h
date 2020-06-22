@@ -1,4 +1,11 @@
 
+
+#ifndef TRANSLATOR_H__
+#define TRANSLATOR_H__
+
+#include <stdlib.h>
+#include <string.h>
+
 #include "tmd5/tmd5.h"
 
 #define ENSURE_NOT_BIG()  if (buf_body_read_len >= buf_body_len) {    \
@@ -316,3 +323,5 @@ int google(const char *word, bool english_to_chinese, char *buf_body, size_t buf
     close(fd);
     return 0;
 }
+
+#endif

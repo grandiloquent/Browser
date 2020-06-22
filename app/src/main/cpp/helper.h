@@ -16,6 +16,7 @@
     JNIEnv *env, jobject this, ## __VA_ARGS__ \
   )
 
+bool ends_with(const char *s1, const char *s2);
 
 int64_t stat_size(struct stat *s);
 
@@ -30,5 +31,6 @@ void base64enc(char *out, const char *in);
 int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer);
 
 bool is_dir(const char *pathname);
+
 
 #endif

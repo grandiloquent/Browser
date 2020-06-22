@@ -8,6 +8,7 @@
 #include <fcntl.h>
 #include <stdbool.h>
 #include "helper.h"
+#include <unistd.h>
 
 
 static int parse_size(const char *size_str, size_t *size) {
@@ -232,4 +233,14 @@ bool is_dir(const char *pathname) {
     }
     return S_ISDIR(info.st_mode);
 }
+bool ends_with(const char *s1, const char *s2) {
+    size_t s1_length = strlen(s1);
+    size_t s2_length = strlen(s2);
+    if (s2_length > s1_length) {
+        return false;
+    }
+    const char *start = s1 + (s1_length - s2_length);
+    return strncmp(start, s2, s2_length) == 0;
+}
+
 

@@ -13,15 +13,6 @@ static struct mg_serve_http_opts s_http_server_opts;
 static char video_directory[PATH_MAX];
 
 ///////////////////////////
-bool ends_with(const char *s1, const char *s2) {
-    size_t s1_length = strlen(s1);
-    size_t s2_length = strlen(s2);
-    if (s2_length > s1_length) {
-        return false;
-    }
-    const char *start = s1 + (s1_length - s2_length);
-    return strncmp(start, s2, s2_length) == 0;
-}
 
 
 static int has_prefix(const struct mg_str *uri, const struct mg_str *prefix);
@@ -48,8 +39,7 @@ int list_directory(const char *dir, strlist_t *files) {
         return -1;
     }
     while ((de = readdir(d)) != 0) {
-        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..")
-                )
+        if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, ".."))
             continue;
         struct stat s;
         int err;
@@ -189,9 +179,7 @@ void *start_server(const char *address) {
     mg_mgr_free(&mgr);
 }
 
-JNIEXPORT jboolean
-
-JNICALL
+JNIEXPORT void JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass clazz, jstring host_,
                                                           jstring port_, jstring rootDirectory_,
                                                           jstring videoDirectory_) {
@@ -218,7 +206,7 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     (*env)->ReleaseStringUTFChars(env, rootDirectory_, rootDirectory);
     (*env)->ReleaseStringUTFChars(env, videoDirectory_, videoDirectory);
 
-    return 1;
+    return;
 }
 
 JNIEXPORT jstring
