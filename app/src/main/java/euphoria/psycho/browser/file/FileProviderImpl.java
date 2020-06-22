@@ -1,10 +1,6 @@
 package euphoria.psycho.browser.file;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.comparator.CompositeFileComparator;
-import org.apache.commons.io.comparator.DirectoryFileComparator;
-import org.apache.commons.io.comparator.NameFileComparator;
-import org.apache.commons.io.comparator.SizeFileComparator;
 
 import java.io.File;
 import java.util.ArrayList;

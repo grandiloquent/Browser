@@ -1,5 +1,6 @@
 # For more information about using CMake with Android Studio, read the
 # documentation: https://d.android.com/studio/projects/add-native-code.html
+PROJECT(native-lib C)
 
 # Sets the minimum version of CMake required to build the native library.
 
@@ -26,8 +27,11 @@ add_library( # Sets the name of the library.
 
         # Sets the library as a shared library.
         SHARED
+        helper.c
         dynarray.c
         native-lib.c)
+
+include_directories(C:/Codes/Android/Browser/app/src/main/cpp)
 
 #add_definitions(-DMG_DISABLE_HTTP_KEEP_ALIVE)
 
