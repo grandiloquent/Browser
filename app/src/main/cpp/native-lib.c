@@ -1,4 +1,4 @@
-#include "jni.h"
+#include <jni.h>
 #include "android/log.h"
 #include "mongoose.h"
 #include "dynarray.h"
