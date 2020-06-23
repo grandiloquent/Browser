@@ -2,6 +2,8 @@ package euphoria.psycho.browser.file;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -12,9 +14,11 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.FileHandler;
 import java.util.stream.Stream;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
@@ -79,11 +83,26 @@ public class FileManager implements OnMenuItemClickListener,
         Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
+    public void copy(FileItem item) {
+    }
+
+    public void delete(FileItem item) {
+        FileHelper.delete(this, item);
+    }
+
+    public Context getActivity() {
+        return mActivity;
+    }
+
     public String getDirectory() {
         if (mDirectory == null) {
             mDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
         }
         return mDirectory;
+    }
+
+    public FileAdapter getFileAdapter() {
+        return mFileAdapter;
     }
 
     public FileImageManager getFileImageManager() {
@@ -96,6 +115,10 @@ public class FileManager implements OnMenuItemClickListener,
             mFileImageManager = new FileImageManager(mActivity, maxSize);
         }
         return mFileImageManager;
+    }
+
+    public SelectionDelegate<FileItem> getSelectionDelegate() {
+        return mSelectionDelegate;
     }
 
     public boolean getShowHidden() {

@@ -14,8 +14,11 @@ import euphoria.psycho.browser.widget.BasicListMenu;
 import euphoria.psycho.browser.widget.ListMenu;
 import euphoria.psycho.browser.widget.ListMenuButton;
 import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
+import euphoria.psycho.browser.widget.ListMenuItemProperties;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
+
+import static euphoria.psycho.browser.widget.BasicListMenu.buildMenuListItem;
 
 public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Drawable> {
     private final int mDisplayedIconSize;
@@ -46,6 +49,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
 //            if (bookmarkItem != null) canMove = bookmarkItem.isMovable();
 //        }
         ModelList listItems = new ModelList();
+        listItems.add(buildMenuListItem(R.string.file_item_copy, 0, 0));
+        listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
+        listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
@@ -69,6 +75,14 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
         ListMenu.Delegate delegate = item -> {
+            switch (item.get(ListMenuItemProperties.TITLE_ID)) {
+                case R.string.file_item_copy:
+                    mFileManager.copy(getItem());
+                    return;
+                case R.string.file_item_delete:
+                    mFileManager.delete(getItem());
+                    return;
+            }
         };
         return new BasicListMenu(getContext(), listItems, delegate);
     }
@@ -95,6 +109,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         mMoreIcon = findViewById(R.id.more);
         mMoreIcon.setDelegate(getListMenuButtonDelegate());
     }
+
 
     @Override
     public void onFutureDone(Future<Drawable> future) {
