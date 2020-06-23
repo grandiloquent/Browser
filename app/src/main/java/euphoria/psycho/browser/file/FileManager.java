@@ -79,7 +79,7 @@ public class FileManager implements OnMenuItemClickListener,
                 R.string.file_manager_empty, R.string.file_manager_no_results);
         mFileAdapter.initialize();
         FileHelper.initialize(activity);
-        mFileOperationManager = new FileOperationManager(activity);
+        mFileOperationManager = new FileOperationManager(this);
         Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -90,7 +90,7 @@ public class FileManager implements OnMenuItemClickListener,
         FileHelper.delete(this, item);
     }
 
-    public Context getActivity() {
+    public Activity getActivity() {
         return mActivity;
     }
 
