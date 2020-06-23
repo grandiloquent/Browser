@@ -96,6 +96,7 @@ public class FileOperationManager implements OnClickListener {
         private final ProgressDialog mProgressDialog;
         private final List<FileItem> mSelections;
         private final Callback mCallback;
+        private final String mInternalPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         public MoveSelections(FileManager fileManager, List<FileItem> selections, Callback callback) {
 
@@ -106,39 +107,61 @@ public class FileOperationManager implements OnClickListener {
             mProgressDialog.setTitle(R.string.move_files_progress_dialog_title);
         }
 
+        private boolean isInSameDisk(String source, String target) {
+            if (source.startsWith(mInternalPath) == target.startsWith(mInternalPath)) {
+                return true;
+            }
+            return false;
+        }
+
+        private void runOnUi(Runnable r) {
+            mFileManager.getActivity().runOnUiThread(r);
+        }
+
+
         public void action() {
             mProgressDialog.show();
             Thread thread = new Thread(() -> {
                 String targetDirectory = mFileManager.getDirectory();
-                String internalPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
                 for (FileItem f : mSelections) {
                     File sourceFile = new File(f.getUrl());
                     File targetFile = new File(targetDirectory, f.getTitle());
-
-
                     if (f.getUrl().equals(targetFile.getAbsolutePath())) continue;
-                    if (f.getUrl().startsWith(internalPath) == targetFile.getAbsolutePath().startsWith(internalPath)) {
 
+                    if (isInSameDisk(f.getUrl(), targetFile.getAbsolutePath())) {
                         boolean result = sourceFile.renameTo(targetFile);
                         if (result) {
-
-                            mFileManager.getActivity().runOnUiThread(() -> {
+                            runOnUi(() -> {
                                 mProgressDialog.setMessage(targetFile.getName());
                             });
                         } else {
-
-
-                            mFileManager.getActivity().runOnUiThread(() -> {
+                            runOnUi(() -> {
                                 mProgressDialog.dismiss();
                                 mCallback.onCompleted(false);
                             });
                             return;
                         }
+                    } else {
+                        if (sourceFile.isFile()) {
+
+                            runOnUi(() -> {
+                                mProgressDialog.setMessage(targetFile.getName());
+                            });
+                            boolean result = NativeHelper.copyFile(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath());
+
+                            if (!result) {
+                                runOnUi(() -> {
+                                    mProgressDialog.dismiss();
+                                    mCallback.onCompleted(false);
+                                });
+                                return;
+                            }
+                        }
                     }
 
                 }
-                mFileManager.getActivity().runOnUiThread(() -> {
+                runOnUi(() -> {
                     mCallback.onCompleted(true);
                     mProgressDialog.dismiss();
                 });

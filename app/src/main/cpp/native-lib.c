@@ -265,9 +265,7 @@ Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jcla
     return ret == 0 ? true : false;
 }
 
-JNIEXPORT jlong
-
-JNICALL
+JNIEXPORT jlong JNICALL
 Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz, jstring path_) {
     const char *path = (*env)->GetStringUTFChars(env, path_, 0);
     int dirfd = open(path, O_DIRECTORY, O_RDONLY);
@@ -302,26 +300,45 @@ int copy_fd(int ifd, int ofd) {
 int copy_file(const char *dst, const char *src, int mode) {
     int fdi, fdo, status;
 
-    mode = (mode & 0111) ? 0777 : 0666;
-    if ((fdi = open(src, O_RDONLY)) < 0)
+    //mode = (mode & 0111) ? 0777 : 0666;
+    if ((fdi = open(src, O_RDONLY)) < 0) {
+        LOGE("open() error on %s", src);
         return fdi;
+    }
+    //open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)
     if ((fdo = open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)) < 0) {
         close(fdi);
+        LOGE("open() error on %s %s", dst, strerror(errno));
         return fdo;
     }
     status = copy_fd(fdi, fdo);
-//    switch (status) {
-//        case COPY_READ_ERROR:
-//           error_errno("copy-fd: read returned");
-//            break;
-//        case COPY_WRITE_ERROR:
-//             error_errno("copy-fd: write returned");
-//            break;
-//    }
+    switch (status) {
+        case COPY_READ_ERROR:
+            LOGE("copy-fd: read returned");
+            break;
+        case COPY_WRITE_ERROR:
+            LOGE("copy-fd: write returned");
+            break;
+    }
     close(fdi);
-    if (close(fdo) != 0)
+    if (close(fdo) != 0) {
+        LOGE("%s: close error", dst);
         return -1;//error_errno("%s: close error", dst);
+    }
     return status;
 
 }
 
+
+#define CLASS euphoria_psycho_browser_app_NativeHelper
+
+JAVA_STATIC_METHOD(CLASS, copyFile, jboolean, jstring source_, jstring target_) {
+    const char *source = (*env)->GetStringUTFChars(env, source_, 0);
+    const char *target = (*env)->GetStringUTFChars(env, target_, 0);
+
+    int ret = copy_file(target, source, 0660);
+
+    (*env)->ReleaseStringUTFChars(env, source_, source);
+    (*env)->ReleaseStringUTFChars(env, target_, target);
+    return ret == 0 ? true : false;
+}
