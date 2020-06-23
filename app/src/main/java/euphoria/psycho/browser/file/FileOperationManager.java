@@ -32,10 +32,6 @@ public class FileOperationManager implements OnClickListener {
     };
 
 
-    interface Callback {
-        void onCompleted(boolean success);
-    }
-
     public FileOperationManager(FileManager fileManager) {
         mFileManager = fileManager;
     }
@@ -72,6 +68,12 @@ public class FileOperationManager implements OnClickListener {
         mClearButton.setVisibility(View.VISIBLE);
     }
 
+    private void clear() {
+        mSelections.clear();
+        mPasteButton.setVisibility(View.INVISIBLE);
+        mClearButton.setVisibility(View.INVISIBLE);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -85,18 +87,16 @@ public class FileOperationManager implements OnClickListener {
         }
     }
 
-    private void clear() {
-        mSelections.clear();
-        mPasteButton.setVisibility(View.INVISIBLE);
-        mClearButton.setVisibility(View.INVISIBLE);
+    interface Callback {
+        void onCompleted(boolean success);
     }
 
     private static class MoveSelections {
+        private final Callback mCallback;
         private final FileManager mFileManager;
+        private final String mInternalPath = Environment.getExternalStorageDirectory().getAbsolutePath();
         private final ProgressDialog mProgressDialog;
         private final List<FileItem> mSelections;
-        private final Callback mCallback;
-        private final String mInternalPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
         public MoveSelections(FileManager fileManager, List<FileItem> selections, Callback callback) {
 
@@ -106,18 +106,6 @@ public class FileOperationManager implements OnClickListener {
             mProgressDialog = new ProgressDialog(fileManager.getActivity());
             mProgressDialog.setTitle(R.string.move_files_progress_dialog_title);
         }
-
-        private boolean isInSameDisk(String source, String target) {
-            if (source.startsWith(mInternalPath) == target.startsWith(mInternalPath)) {
-                return true;
-            }
-            return false;
-        }
-
-        private void runOnUi(Runnable r) {
-            mFileManager.getActivity().runOnUiThread(r);
-        }
-
 
         public void action() {
             mProgressDialog.show();
@@ -143,6 +131,7 @@ public class FileOperationManager implements OnClickListener {
                             return;
                         }
                     } else {
+                        // 移动文件到另一个硬件
                         if (sourceFile.isFile()) {
                             runOnUi(() -> {
                                 mProgressDialog.setMessage(targetFile.getName());
@@ -164,6 +153,9 @@ public class FileOperationManager implements OnClickListener {
                                 });
                                 return;
                             }
+                        } else {
+                            moveDirectory(sourceFile, targetFile);
+
                         }
                     }
 
@@ -174,6 +166,36 @@ public class FileOperationManager implements OnClickListener {
                 });
             });
             thread.start();
+        }
+
+        private void moveDirectory(final File srcDir, final File destDir) {
+            if (!destDir.isDirectory()) {
+                destDir.mkdir();
+            }
+            File[] files = srcDir.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile()) {
+                        File target = new File(destDir, f.getName());
+                        runOnUi(() -> {
+                            mProgressDialog.setMessage(target.getName());
+                        });
+                        NativeHelper.copyFile(f.getAbsolutePath(), target.getAbsolutePath());
+                    } else if (f.isDirectory()) {
+                        moveDirectory(f, new File(destDir, f.getName()));
+                    }
+                }
+            }
+
+        }
+
+        private boolean isInSameDisk(String source, String target) {
+            return source.startsWith(mInternalPath) == target.startsWith(mInternalPath);
+        }
+
+
+        private void runOnUi(Runnable r) {
+            mFileManager.getActivity().runOnUiThread(r);
         }
     }
 }

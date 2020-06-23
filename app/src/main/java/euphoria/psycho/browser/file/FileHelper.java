@@ -292,15 +292,6 @@ public class FileHelper {
         file.delete();
     }
 
-    private static int countFiles(File[] files) {
-        int i = 0;
-        for (int j = 0; j < files.length; j++) {
-            if (!files[j].getName().startsWith("."))
-                i++;
-        }
-        return i;
-    }
-
     public static long getFileSize(File file, boolean isShowHidden) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -489,6 +480,15 @@ public class FileHelper {
             throw new IOException("Failed to copy full contents from '" + srcFile + "' to '" + destFile
                     + "' Expected length: " + srcLen + " Actual: " + dstLen);
         }
+    }
+
+    private static int countFiles(File[] files) {
+        int i = 0;
+        for (int j = 0; j < files.length; j++) {
+            if (!files[j].getName().startsWith("."))
+                i++;
+        }
+        return i;
     }
 
     private static void createNewDirectory(Activity activity, FileManager fileManager) {
