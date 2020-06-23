@@ -59,4 +59,5 @@
     <string name="question_dialog_title">Question</string>
     <string name="question_delete_file_item_message">Are you sure delete \"%1$s\"?</string>
     <string name="cut">Cut</string>
+    <string name="move_files_progress_dialog_title">Move Files</string>
 </resources>

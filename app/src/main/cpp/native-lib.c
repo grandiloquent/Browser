@@ -322,34 +322,6 @@ int copy_file(const char *dst, const char *src, int mode) {
     if (close(fdo) != 0)
         return -1;//error_errno("%s: close error", dst);
     return status;
+
 }
 
-JNIEXPORT jboolean JNICALL
-Java_euphoria_psycho_browser_app_NativeHelper_moveFileSystem(JNIEnv *env, jclass clazz,
-                                                             jstring source_,
-                                                             jstring target_,
-                                                             jstring internal_path_) {
-    const char *source = (*env)->GetStringUTFChars(env, source_, 0);
-    const char *target = (*env)->GetStringUTFChars(env, target_, 0);
-    const char *internal_path = (*env)->GetStringUTFChars(env, internal_path_, 0);
-
-    int ret;
-//    if (is_dir(source)) {
-//        char nameBuffer[PATH_MAX];
-//        struct stat statBuffer;
-//        ret = delete_directory(source, nameBuffer, &statBuffer);
-//        if (!ret) {
-//            ret = rmdir(source);
-//        }
-//    } else {
-//
-//    }
-    if (starts_with(source, internal_path_) == starts_with(target, internal_path)) {
-        ret = rename(source, target);
-    }
-    (*env)->ReleaseStringUTFChars(env, source_, source);
-    (*env)->ReleaseStringUTFChars(env, target_, target);
-    (*env)->ReleaseStringUTFChars(env, internal_path_, internal_path);
-
-    return ret == 0 ? true : false;
-}

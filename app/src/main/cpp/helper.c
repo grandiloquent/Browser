@@ -244,3 +244,17 @@ bool ends_with(const char *s1, const char *s2) {
 }
 
 
+int starts_with(const char *str, const char *prefix) {
+    for (;; str++, prefix++)
+        if (!*prefix)
+            return 1;
+        else if (*str != *prefix)
+            return 0;
+}
+int istarts_with(const char *str, const char *prefix) {
+    for (;; str++, prefix++)
+        if (!*prefix)
+            return 1;
+        else if (tolower(*str) != tolower(*prefix))
+            return 0;
+}

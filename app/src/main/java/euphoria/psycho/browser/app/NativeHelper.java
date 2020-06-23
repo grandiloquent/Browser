@@ -13,7 +13,6 @@ public class NativeHelper {
 
     public static native boolean deleteFileSystem(String path);
 
-    public static native boolean moveFileSystem(String source, String target, String internalPath);
 
     public static native long dirSize(String path);
 }

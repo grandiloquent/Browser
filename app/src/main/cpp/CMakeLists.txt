@@ -31,7 +31,6 @@ add_library( # Sets the name of the library.
         dynarray.c
         native-lib.c)
 
-include_directories(C:/Codes/Android/Browser/app/src/main/cpp)
 
 #add_definitions(-DMG_DISABLE_HTTP_KEEP_ALIVE)
 

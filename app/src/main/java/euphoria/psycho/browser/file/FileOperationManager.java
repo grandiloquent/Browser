@@ -3,6 +3,7 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -22,6 +23,18 @@ public class FileOperationManager implements OnClickListener {
     private FloatingActionButton mPasteButton;
     private FloatingActionButton mClearButton;
     private boolean mIsCopy;
+    private Callback mCallback = new Callback() {
+        @Override
+        public void onCompleted(boolean success) {
+            if (success) mFileManager.getFileAdapter().initialize();
+            clear();
+        }
+    };
+
+
+    interface Callback {
+        void onCompleted(boolean success);
+    }
 
     public FileOperationManager(FileManager fileManager) {
         mFileManager = fileManager;
@@ -35,6 +48,12 @@ public class FileOperationManager implements OnClickListener {
         addToAction(fileItems, false);
     }
 
+    private void actionPaste() {
+        if (mIsCopy) {
+        } else {
+            new MoveSelections(mFileManager, mSelections, mCallback).action();
+        }
+    }
 
     private void addToAction(List<FileItem> fileItems, boolean isCopy) {
         Activity activity = mFileManager.getActivity();
@@ -57,33 +76,34 @@ public class FileOperationManager implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.clear:
-                mSelections.clear();
-                mPasteButton.setVisibility(View.INVISIBLE);
-                mClearButton.setVisibility(View.INVISIBLE);
+                clear();
+                break;
             case R.id.paste:
                 actionPaste();
+
                 break;
         }
     }
 
-    private void actionPaste() {
-        if (mIsCopy) {
-        } else {
-            new MoveSelections(mFileManager, mSelections).action();
-        }
+    private void clear() {
+        mSelections.clear();
+        mPasteButton.setVisibility(View.INVISIBLE);
+        mClearButton.setVisibility(View.INVISIBLE);
     }
-
 
     private static class MoveSelections {
         private final FileManager mFileManager;
-        private final List<FileItem> mSelections;
         private final ProgressDialog mProgressDialog;
+        private final List<FileItem> mSelections;
+        private final Callback mCallback;
 
-        public MoveSelections(FileManager fileManager, List<FileItem> selections) {
+        public MoveSelections(FileManager fileManager, List<FileItem> selections, Callback callback) {
 
             mFileManager = fileManager;
             mSelections = selections;
+            mCallback = callback;
             mProgressDialog = new ProgressDialog(fileManager.getActivity());
+            mProgressDialog.setTitle(R.string.move_files_progress_dialog_title);
         }
 
         public void action() {
@@ -93,17 +113,33 @@ public class FileOperationManager implements OnClickListener {
                 String internalPath = Environment.getExternalStorageDirectory().getAbsolutePath();
 
                 for (FileItem f : mSelections) {
-                    String source = f.getUrl();
+                    File sourceFile = new File(f.getUrl());
                     File targetFile = new File(targetDirectory, f.getTitle());
-                    if (source.equals(targetFile.getAbsolutePath())) continue;
 
-                    NativeHelper.moveFileSystem(
-                            source,
-                            targetFile.getAbsolutePath(),
-                            internalPath
-                    );
+
+                    if (f.getUrl().equals(targetFile.getAbsolutePath())) continue;
+                    if (f.getUrl().startsWith(internalPath) == targetFile.getAbsolutePath().startsWith(internalPath)) {
+
+                        boolean result = sourceFile.renameTo(targetFile);
+                        if (result) {
+
+                            mFileManager.getActivity().runOnUiThread(() -> {
+                                mProgressDialog.setMessage(targetFile.getName());
+                            });
+                        } else {
+
+
+                            mFileManager.getActivity().runOnUiThread(() -> {
+                                mProgressDialog.dismiss();
+                                mCallback.onCompleted(false);
+                            });
+                            return;
+                        }
+                    }
+
                 }
                 mFileManager.getActivity().runOnUiThread(() -> {
+                    mCallback.onCompleted(true);
                     mProgressDialog.dismiss();
                 });
             });

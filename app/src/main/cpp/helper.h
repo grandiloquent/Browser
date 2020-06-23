@@ -1,5 +1,5 @@
 #ifndef HELPER_H__
-#define  HELPER_H__
+#define HELPER_H__
 
 #include <android/log.h>
 #include <stdint.h>
@@ -33,20 +33,8 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
 
 bool is_dir(const char *pathname);
 
-int starts_with(const char *str, const char *prefix) {
-    for (;; str++, prefix++)
-        if (!*prefix)
-            return 1;
-        else if (*str != *prefix)
-            return 0;
-}
+int starts_with(const char *str, const char *prefix);
 
-int istarts_with(const char *str, const char *prefix) {
-    for (;; str++, prefix++)
-        if (!*prefix)
-            return 1;
-        else if (tolower(*str) != tolower(*prefix))
-            return 0;
-}
+int istarts_with(const char *str, const char *prefix);
 
 #endif
