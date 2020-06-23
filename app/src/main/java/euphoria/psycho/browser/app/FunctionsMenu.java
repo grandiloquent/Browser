@@ -1,5 +1,4 @@
 package euphoria.psycho.browser.app;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -10,9 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.PopupWindow;
-
 import com.google.android.material.bottomsheet.BottomSheetDialog;
-
 import androidx.appcompat.widget.ViewUtils;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -20,9 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
 import euphoria.psycho.browser.base.Share;
-
 public class FunctionsMenu {
-
     private final PopupWindow mPopupWindow;
     private RecyclerView mRecyclerView;
     private View mContainer;
@@ -30,23 +25,17 @@ public class FunctionsMenu {
     private final Context mContext;
     private final View mParent;
     private final OnClickListener mOnClickListener;
-
     public FunctionsMenu(Context context, View parent, OnClickListener onClickListener) {
         mContext = context;
         mPopupWindow = new PopupWindow(context);
         mParent = parent;
         mOnClickListener = onClickListener;
-
-
         Log.e("TAG/", "Debug: FunctionsMenu, \n" + Share.dpToPixel(8));
-
         mPopupWindow.setWidth(Share.getWidthPixels() - Share.getWidthPixels() / 6);
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setElevation(Share.dpToPixel(8));
-
     }
-
     private OnClickListener mListener = new OnClickListener() {
         @Override
         public void onClicked(Pair<Integer, String> item) {
@@ -54,8 +43,6 @@ public class FunctionsMenu {
             if (mOnClickListener != null) mOnClickListener.onClicked(item);
         }
     };
-
-
     public void showDialog(Pair[] items) {
         if (mContainer == null) {
             mContainer = LayoutInflater.from(mContext).inflate(R.layout.bottomsheet_menu, null);
@@ -68,5 +55,4 @@ public class FunctionsMenu {
         }
         mPopupWindow.showAtLocation(mParent, Gravity.CENTER, 0, 0);
     }
-
 }

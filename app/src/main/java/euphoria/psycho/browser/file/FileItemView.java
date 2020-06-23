@@ -1,9 +1,11 @@
 package euphoria.psycho.browser.file;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.tasks.Future;
@@ -14,34 +16,30 @@ import euphoria.psycho.browser.widget.ListMenuButton;
 import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
+
 public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Drawable> {
     private final int mDisplayedIconSize;
     private final int mMinIconSize;
     protected ListMenuButton mMoreIcon;
     private FileManager mFileManager;
     private FileImageManager mFileImageManager;
+
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
     }
-    @Override
-    public void onFutureDone(Future<Drawable> future) {
-        Drawable drawable = future.get();
-        if (drawable != null) {
-            mFileImageManager.getHandler().post(() -> {
-                setStartIconDrawable(drawable);
-            });
-        }
-    }
+
     public void setFileImageManager(FileImageManager fileImageManager) {
         mFileImageManager = fileImageManager;
     }
+
     public void setFileManager(FileManager fileManager) {
         getItem().setFileManager(fileManager);
         if (mFileManager == fileManager) return;
         mFileManager = fileManager;
     }
+
     private ModelList getItems() {
         // Rebuild listItems, cause mLocation may be changed anytime.
         boolean canMove = false;
@@ -69,21 +67,29 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
 //        }
         return listItems;
     }
+
     private ListMenu getListMenu() {
         ModelList listItems = getItems();
         ListMenu.Delegate delegate = item -> {
         };
         return new BasicListMenu(getContext(), listItems, delegate);
     }
+
     private ListMenuButtonDelegate getListMenuButtonDelegate() {
         return this::getListMenu;
     }
+
+    private void requestIcon() {
+        mFileImageManager.getDrawable(getItem(), mDisplayedIconSize, this);
+    }
+
     @Override
     protected void onClick() {
         if (getItem() != null) {
             getItem().open();
         }
     }
+
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -91,6 +97,17 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         mMoreIcon = findViewById(R.id.more);
         mMoreIcon.setDelegate(getListMenuButtonDelegate());
     }
+
+    @Override
+    public void onFutureDone(Future<Drawable> future) {
+        Drawable drawable = future.get();
+        if (drawable != null) {
+            mFileImageManager.getHandler().post(() -> {
+                setStartIconDrawable(drawable);
+            });
+        }
+    }
+
     @Override
     public void setItem(FileItem item) {
         if (getItem() == item) return;
@@ -103,8 +120,5 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
             mDescriptionView.setText(Share.formatFileSize(item.getSize()));
         }
         requestIcon();
-    }
-    private void requestIcon() {
-        mFileImageManager.getDrawable(getItem(), mDisplayedIconSize, this);
     }
 }

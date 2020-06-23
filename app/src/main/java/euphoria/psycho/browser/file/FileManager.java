@@ -12,8 +12,10 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.preference.Preference;
@@ -72,8 +74,6 @@ public class FileManager implements OnMenuItemClickListener,
         // 5. Initialize empty view.
         mEmptyView = mSelectableListLayout.initializeEmptyView(
                 R.string.file_manager_empty, R.string.file_manager_no_results);
-
-
         mFileAdapter.initialize();
         FileHelper.initialize(activity);
         Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
@@ -99,7 +99,6 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     public boolean getShowHidden() {
-
         return mIsShowHiddenFiles;
     }
 
@@ -171,9 +170,9 @@ public class FileManager implements OnMenuItemClickListener,
         mSortDirection = SettingsManager.getInstance().getSortDirection();
     }
 
+    // 排序文件
     private void sortBy() {
         SettingsManager.getInstance().setSortTypeAndDirection(mSortType, mSortDirection);
-
         mFileAdapter.initialize();
     }
 
@@ -226,6 +225,32 @@ public class FileManager implements OnMenuItemClickListener,
             case R.id.sort_by_descending_menu_id:
                 mSortDirection = FileHelper.SORT_BY_DESCENDING;
                 sortBy();
+                return true;
+            case R.id.selection_mode_select_same_type_menu_id:
+                List<FileItem> fileItems = mSelectionDelegate.getSelectedItemsAsList();
+                if (fileItems.size() > 0) {
+                    FileItem fileItem = fileItems.get(0);
+                    List<FileItem> items = mFileAdapter.getFileItems();
+                    Set<FileItem> fileItemSet = new HashSet<>();
+                    if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
+                        for (FileItem f : items) {
+                            if (f.getType() == FileHelper.TYPE_FOLDER) {
+                                fileItemSet.add(f);
+                            }
+                        }
+                    } else {
+                        String extension = Share.substringAfterLast(fileItem.getUrl(), ".");
+                        for (FileItem f : items) {
+                            if (Share.substringAfterLast(f.getUrl(), ".").equals(extension)) {
+                                fileItemSet.add(f);
+                            }
+                        }
+                    }
+                    mSelectionDelegate.setSelectedItems(fileItemSet);
+                }
+                return true;
+            case R.id.selection_mode_select_all_menu_id:
+                mSelectionDelegate.setSelectedItems(new HashSet<>(mFileAdapter.getFileItems()));
                 return true;
         }
         return false;

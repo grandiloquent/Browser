@@ -1,25 +1,19 @@
 package euphoria.psycho.browser.file;
-
 import org.apache.commons.io.FileUtils;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import euphoria.psycho.browser.app.NativeHelper;
-
 public class FileProviderImpl implements FileProvider {
     private BrowsingFileObserver mObserver;
     private List<FileItem> mItems = new ArrayList<>();
     private List<FileItem> mRemovalItems;
-
     @Override
     public void destroy() {
     }
-
     @Override
     public void markItemForRemoval(FileItem i) {
         if (mRemovalItems == null) {
@@ -27,7 +21,6 @@ public class FileProviderImpl implements FileProvider {
         }
         mRemovalItems.add(i);
     }
-
     @Override
     public void queryFile(String directory, FileManager fileManager) {
         mItems.clear();
@@ -47,7 +40,6 @@ public class FileProviderImpl implements FileProvider {
         if (mObserver != null)
             mObserver.onQueryFileComplete(mItems);
     }
-
     @Override
     public void removeItems() {
         for (FileItem i : mRemovalItems) {
@@ -57,7 +49,6 @@ public class FileProviderImpl implements FileProvider {
         mRemovalItems = null;
         if (mObserver != null) mObserver.onFileDeleted();
     }
-
     @Override
     public void setObserver(BrowsingFileObserver observer) {
         mObserver = observer;
