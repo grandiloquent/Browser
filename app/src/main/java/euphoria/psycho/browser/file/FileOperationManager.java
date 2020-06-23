@@ -144,12 +144,19 @@ public class FileOperationManager implements OnClickListener {
                         }
                     } else {
                         if (sourceFile.isFile()) {
-
                             runOnUi(() -> {
                                 mProgressDialog.setMessage(targetFile.getName());
                             });
                             boolean result = NativeHelper.copyFile(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath());
 
+                            if (!result) {
+                                runOnUi(() -> {
+                                    mProgressDialog.dismiss();
+                                    mCallback.onCompleted(false);
+                                });
+                                return;
+                            }
+                            result = sourceFile.delete();
                             if (!result) {
                                 runOnUi(() -> {
                                     mProgressDialog.dismiss();
