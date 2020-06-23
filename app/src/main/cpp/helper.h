@@ -4,6 +4,7 @@
 #include <android/log.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 #define LOG_TAG "TAG/Native"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
@@ -32,5 +33,20 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
 
 bool is_dir(const char *pathname);
 
+int starts_with(const char *str, const char *prefix) {
+    for (;; str++, prefix++)
+        if (!*prefix)
+            return 1;
+        else if (*str != *prefix)
+            return 0;
+}
+
+int istarts_with(const char *str, const char *prefix) {
+    for (;; str++, prefix++)
+        if (!*prefix)
+            return 1;
+        else if (tolower(*str) != tolower(*prefix))
+            return 0;
+}
 
 #endif

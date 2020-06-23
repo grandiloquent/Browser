@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 
+import org.apache.commons.io.FileUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,9 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.widget.FloatingActionButton;
 
 public class FileOperationManager implements OnClickListener {
+
+    private void actionPaste() {
+    }
 
     private final List<FileItem> mSelections = new ArrayList<>();
     private FloatingActionButton mPasteButton;
@@ -24,10 +29,6 @@ public class FileOperationManager implements OnClickListener {
         mActivity = activity;
     }
 
-    public void addToCopy(List<FileItem> fileItems) {
-        addToAction(fileItems, true);
-    }
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -36,8 +37,22 @@ public class FileOperationManager implements OnClickListener {
                 mPasteButton.setVisibility(View.INVISIBLE);
                 mClearButton.setVisibility(View.INVISIBLE);
                 break;
+            case R.id.paste:
+                actionPaste();
+
+                break;
         }
     }
+
+
+    public void addToCopy(List<FileItem> fileItems) {
+        addToAction(fileItems, true);
+    }
+
+    public void addToCut(List<FileItem> fileItems) {
+        addToAction(fileItems, false);
+    }
+
 
     private void addToAction(List<FileItem> fileItems, boolean isCopy) {
         if (mPasteButton == null) {

@@ -262,6 +262,9 @@ public class FileManager implements OnMenuItemClickListener,
             case R.id.selection_mode_copy_menu_id:
                 FileHelper.copySelections(this);
                 return true;
+            case R.id.selection_mode_cut_menu_id:
+                FileHelper.cutSelections(this);
+                return true;
 
         }
         return false;
