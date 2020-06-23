@@ -19,14 +19,12 @@ import euphoria.psycho.browser.widget.SelectableItemView;
 
 public class FileItemView extends SelectableItemView<FileItem> implements FutureListener<Drawable> {
     private final int mDisplayedIconSize;
-    private final int mMinIconSize;
     protected ListMenuButton mMoreIcon;
     private FileManager mFileManager;
     private FileImageManager mFileImageManager;
 
     public FileItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mMinIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_min_size);
         mDisplayedIconSize = getResources().getDimensionPixelSize(R.dimen.default_favicon_size);
     }
 
