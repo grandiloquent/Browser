@@ -53,23 +53,37 @@
     <group
         android:id="@+id/selection_mode_menu_group"
         android:visible="false">
+
+        <item
+            android:id="@+id/selection_mode_copy_menu_id"
+            android:icon="@drawable/ic_action_content_copy"
+            android:title="@string/copy"
+            app:iconTint="@color/default_icon_color_inverse"
+            app:showAsAction="ifRoom" />
+
+        <item
+            android:id="@+id/selection_mode_cut_menu_id"
+            android:icon="@drawable/ic_action_content_cut"
+            android:title="@string/cut"
+            app:iconTint="@color/default_icon_color_inverse"
+            app:showAsAction="ifRoom" />
         <item
             android:id="@+id/selection_mode_select_same_type_menu_id"
             android:icon="@drawable/ic_action_tab_unselected"
             android:title="@string/select_same_type"
             app:iconTint="@color/default_icon_color_inverse"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="never" />
         <item
             android:id="@+id/selection_mode_select_all_menu_id"
             android:icon="@drawable/ic_action_select_all"
             android:title="@string/select_all"
             app:iconTint="@color/default_icon_color_inverse"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="never" />
         <item
             android:id="@+id/selection_mode_delete_menu_id"
             android:icon="@drawable/ic_delete_white_24dp"
             android:title="@string/remove"
             app:iconTint="@color/default_icon_color_inverse"
-            app:showAsAction="ifRoom" />
+            app:showAsAction="never" />
     </group>
 </menu>
