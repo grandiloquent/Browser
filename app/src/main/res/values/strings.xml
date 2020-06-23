@@ -41,6 +41,7 @@
     <string name="directory_info">Directory Info</string>
     <string name="more">More</string>
     <string name="extracting">Extracting</string>
+    <string name="copy">Copy</string>
 
     <string name="sort">Sort</string>
     <string name="sort_by_name">Sort By Name</string>
@@ -51,4 +52,11 @@
     <string name="sort_by_descending">Sort By Descending</string>
     <string name="select_same_type">Select Same Type</string>
     <string name="select_all">Select All</string>
+    <string name="file_item_delete">Delete</string>
+    <string name="file_item_copy">Copy</string>
+    <string name="file_item_paste">Paste</string>
+    <string name="file_item_rename">Rename</string>
+    <string name="question_dialog_title">Question</string>
+    <string name="question_delete_file_item_message">Are you sure delete \"%1$s\"?</string>
+    <string name="cut">Cut</string>
 </resources>
