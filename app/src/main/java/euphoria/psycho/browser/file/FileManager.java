@@ -40,9 +40,7 @@ public class FileManager implements OnMenuItemClickListener,
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
             10 * ConversionUtils.BYTES_PER_MEGABYTE; // 10MB
     private final Activity mActivity;
-    private final TextView mEmptyView;
     private final FileAdapter mFileAdapter;
-    private final RecyclerView mRecyclerView;
     private final SelectableListLayout<FileItem> mSelectableListLayout;
     private final SelectionDelegate<FileItem> mSelectionDelegate;
     private final FileManagerToolbar mToolbar;
@@ -53,6 +51,7 @@ public class FileManager implements OnMenuItemClickListener,
     private int mSortType;
     private int mSortDirection;
     private boolean mIsShowHiddenFiles;
+    private FileOperationManager mFileOperationManager;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -65,7 +64,7 @@ public class FileManager implements OnMenuItemClickListener,
                 (SelectableListLayout<FileItem>) LayoutInflater.from(activity).inflate(
                         R.layout.file_main, null);
         // 2. Initialize RecyclerView.
-        mRecyclerView = mSelectableListLayout.initializeRecyclerView(mFileAdapter);
+        RecyclerView recyclerView = mSelectableListLayout.initializeRecyclerView(mFileAdapter);
         // 3. Initialize toolbar.
         mToolbar = (FileManagerToolbar) mSelectableListLayout.initializeToolbar(
                 R.layout.file_toolbar, mSelectionDelegate, R.string.menu_file,
@@ -76,10 +75,11 @@ public class FileManager implements OnMenuItemClickListener,
         // 4. Width constrain the SelectableListLayout.
         mSelectableListLayout.configureWideDisplayStyle();
         // 5. Initialize empty view.
-        mEmptyView = mSelectableListLayout.initializeEmptyView(
+        TextView emptyView = mSelectableListLayout.initializeEmptyView(
                 R.string.file_manager_empty, R.string.file_manager_no_results);
         mFileAdapter.initialize();
         FileHelper.initialize(activity);
+        mFileOperationManager = new FileOperationManager(activity);
         Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
@@ -115,6 +115,10 @@ public class FileManager implements OnMenuItemClickListener,
             mFileImageManager = new FileImageManager(mActivity, maxSize);
         }
         return mFileImageManager;
+    }
+
+    public FileOperationManager getFileOperationManager() {
+        return mFileOperationManager;
     }
 
     public SelectionDelegate<FileItem> getSelectionDelegate() {
@@ -250,31 +254,15 @@ public class FileManager implements OnMenuItemClickListener,
                 sortBy();
                 return true;
             case R.id.selection_mode_select_same_type_menu_id:
-                List<FileItem> fileItems = mSelectionDelegate.getSelectedItemsAsList();
-                if (fileItems.size() > 0) {
-                    FileItem fileItem = fileItems.get(0);
-                    List<FileItem> items = mFileAdapter.getFileItems();
-                    Set<FileItem> fileItemSet = new HashSet<>();
-                    if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
-                        for (FileItem f : items) {
-                            if (f.getType() == FileHelper.TYPE_FOLDER) {
-                                fileItemSet.add(f);
-                            }
-                        }
-                    } else {
-                        String extension = Share.substringAfterLast(fileItem.getUrl(), ".");
-                        for (FileItem f : items) {
-                            if (Share.substringAfterLast(f.getUrl(), ".").equals(extension)) {
-                                fileItemSet.add(f);
-                            }
-                        }
-                    }
-                    mSelectionDelegate.setSelectedItems(fileItemSet);
-                }
+                FileHelper.selectSameType(this);
                 return true;
             case R.id.selection_mode_select_all_menu_id:
                 mSelectionDelegate.setSelectedItems(new HashSet<>(mFileAdapter.getFileItems()));
                 return true;
+            case R.id.selection_mode_copy_menu_id:
+                FileHelper.copySelections(this);
+                return true;
+
         }
         return false;
         /*

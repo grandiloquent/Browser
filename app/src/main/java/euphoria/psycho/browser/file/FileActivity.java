@@ -24,9 +24,9 @@ public class FileActivity extends AppCompatActivity {
     private FileManager mFileManager;
 
     private void initialize() {
-        mFileManager = new FileManager(this);
         setContentView(R.layout.activity_file);
         FrameLayout container = findViewById(R.id.container);
+        mFileManager = new FileManager(this);
         container.addView(mFileManager.getView(), 0);
     }
 

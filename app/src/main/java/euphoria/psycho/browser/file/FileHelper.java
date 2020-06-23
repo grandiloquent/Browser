@@ -20,7 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -77,6 +79,12 @@ public class FileHelper {
 "zip"]
     * */
     static ExecutorService sSingleThreadExecutor;
+
+    public static void copySelections(FileManager fileManager) {
+        List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
+        fileManager.getFileOperationManager().addToCopy(fileItems);
+        fileManager.getSelectionDelegate().clearSelection();
+    }
 
     public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
         if (sIsHasSD) {
@@ -278,6 +286,30 @@ public class FileHelper {
                         Share.substringAfterLast(url, '.')
                 ));
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
+    }
+
+    public static void selectSameType(FileManager fileManager) {
+        List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
+        if (fileItems.size() > 0) {
+            FileItem fileItem = fileItems.get(0);
+            List<FileItem> items = fileManager.getFileAdapter().getFileItems();
+            Set<FileItem> fileItemSet = new HashSet<>();
+            if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
+                for (FileItem f : items) {
+                    if (f.getType() == FileHelper.TYPE_FOLDER) {
+                        fileItemSet.add(f);
+                    }
+                }
+            } else {
+                String extension = Share.substringAfterLast(fileItem.getUrl(), ".");
+                for (FileItem f : items) {
+                    if (Share.substringAfterLast(f.getUrl(), ".").equals(extension)) {
+                        fileItemSet.add(f);
+                    }
+                }
+            }
+            fileManager.getSelectionDelegate().setSelectedItems(fileItemSet);
+        }
     }
 
     public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
