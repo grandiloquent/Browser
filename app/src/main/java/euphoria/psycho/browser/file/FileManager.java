@@ -49,7 +49,6 @@ public class FileManager implements OnMenuItemClickListener,
     private FileImageManager mFileImageManager;
     private String mDirectory;
     private int mSortType;
-    private int mSortDirection;
     private boolean mIsShowHiddenFiles;
     private FileOperationManager mFileOperationManager;
 
@@ -129,9 +128,6 @@ public class FileManager implements OnMenuItemClickListener,
         return mIsShowHiddenFiles;
     }
 
-    public int getSortDirection() {
-        return mSortDirection;
-    }
 
     public int getSortType() {
         return mSortType;
@@ -194,12 +190,11 @@ public class FileManager implements OnMenuItemClickListener,
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
         mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
         mSortType = SettingsManager.getInstance().getSortType();
-        mSortDirection = SettingsManager.getInstance().getSortDirection();
     }
 
     // 排序文件
     private void sortBy() {
-        SettingsManager.getInstance().setSortTypeAndDirection(mSortType, mSortDirection);
+        SettingsManager.getInstance().setSortType(mSortType);
         mFileAdapter.initialize();
     }
 
@@ -230,27 +225,27 @@ public class FileManager implements OnMenuItemClickListener,
                 mIsSearching = true;
                 return true;
             case R.id.sort_by_name_menu_id:
-                mSortType = FileHelper.SORT_BY_NAME;
+                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME;
                 sortBy();
                 return true;
             case R.id.sort_by_size_menu_id:
-                mSortType = FileHelper.SORT_BY_SIZE;
+                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE;
                 sortBy();
                 return true;
             case R.id.sort_by_data_modified_menu_id:
-                mSortType = FileHelper.SORT_BY_DATA_MODIFIED;
+                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED;
                 sortBy();
                 return true;
             case R.id.sort_by_type_menu_id:
-                mSortType = FileHelper.SORT_BY_TYPE;
+                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE;
                 sortBy();
                 return true;
             case R.id.sort_by_ascending_menu_id:
-                mSortDirection = FileHelper.SORT_BY_ASCENDING;
+                mSortType = (mSortType & 31) | FileHelper.SORT_BY_ASCENDING;
                 sortBy();
                 return true;
             case R.id.sort_by_descending_menu_id:
-                mSortDirection = FileHelper.SORT_BY_DESCENDING;
+                mSortType = (mSortType & 31);
                 sortBy();
                 return true;
             case R.id.selection_mode_select_same_type_menu_id:

@@ -1,6 +1,5 @@
 package euphoria.psycho.browser.file;
 
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -43,7 +42,7 @@ public class FileProviderImpl implements FileProvider {
                 }
             }
         }
-        Collections.sort(mItems, new FileItemComparator(fileManager.getSortDirection(), fileManager.getSortType()));
+        Collections.sort(mItems, new FileItemComparator(fileManager.getSortType()));
         if (mObserver != null)
             mObserver.onQueryFileComplete(mItems);
     }

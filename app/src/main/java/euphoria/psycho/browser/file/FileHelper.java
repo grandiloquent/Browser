@@ -50,12 +50,14 @@ import euphoria.psycho.browser.base.Share;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class FileHelper {
-    public static final int SORT_BY_ASCENDING = 4;
-    public static final int SORT_BY_DATA_MODIFIED = 2;
     public static final int SORT_BY_DESCENDING = 5;
-    public static final int SORT_BY_NAME = 0;
-    public static final int SORT_BY_SIZE = 1;
-    public static final int SORT_BY_TYPE = 3;
+    public static final int SORT_BY_NAME = 1 << 1;
+    public static final int SORT_BY_SIZE = 1 << 2;
+    public static final int SORT_BY_TYPE = 1 << 3;
+    public static final int SORT_BY_DATA_MODIFIED = 1 << 4;
+    public static final int SORT_BY_ASCENDING = 1 << 5;
+    public static final int SORT_TYPE_DEFAULT = 33;
+
     public static final int TYPE_APK = 0;
     public static final int TYPE_EXCEL = 1;
     public static final int TYPE_FOLDER = 2;
