@@ -292,10 +292,19 @@ public class FileHelper {
         file.delete();
     }
 
-    public static long getFileSize(File file) {
+    private static int countFiles(File[] files) {
+        int i = 0;
+        for (int j = 0; j < files.length; j++) {
+            if (!files[j].getName().startsWith("."))
+                i++;
+        }
+        return i;
+    }
+
+    public static long getFileSize(File file, boolean isShowHidden) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
-            return files == null ? 0 : files.length;
+            return files == null ? 0 : (isShowHidden ? files.length : countFiles(files));
         }
         return file.length();
     }
