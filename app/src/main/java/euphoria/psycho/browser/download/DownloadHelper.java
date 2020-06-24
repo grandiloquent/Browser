@@ -1,4 +1,4 @@
-package euphoria.psycho.browser.downlaod;
+package euphoria.psycho.browser.download;
 
 import java.net.HttpURLConnection;
 import java.net.URLConnection;

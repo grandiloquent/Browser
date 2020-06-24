@@ -58,5 +58,6 @@
         </activity>
 
         <service android:name=".app.ServerService" />
+        <service android:name=".download.DownloadService" />
     </application>
 </manifest>

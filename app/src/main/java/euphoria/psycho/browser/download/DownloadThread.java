@@ -1,15 +1,13 @@
-package euphoria.psycho.browser.downlaod;
+package euphoria.psycho.browser.download;
 
 import android.util.Pair;
 
 import java.io.*;
 import java.net.*;
-import java.util.List;
-import java.util.Map;
 
 import static euphoria.psycho.browser.base.Share.substringAfterLast;
 import static euphoria.psycho.browser.base.Share.substringBefore;
-import static euphoria.psycho.browser.downlaod.DownloadHelper.*;
+import static euphoria.psycho.browser.download.DownloadHelper.*;
 import static java.net.HttpURLConnection.*;
 
 public class DownloadThread extends Thread {

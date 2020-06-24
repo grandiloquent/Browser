@@ -1,7 +1,7 @@
-package euphoria.psycho.browser.downlaod;
+package euphoria.psycho.browser.download;
 
-import static euphoria.psycho.browser.downlaod.DownloadHelper.STATUS_UNHANDLED_HTTP_CODE;
-import static euphoria.psycho.browser.downlaod.DownloadHelper.STATUS_UNHANDLED_REDIRECT;
+import static euphoria.psycho.browser.download.DownloadHelper.STATUS_UNHANDLED_HTTP_CODE;
+import static euphoria.psycho.browser.download.DownloadHelper.STATUS_UNHANDLED_REDIRECT;
 
 public class StopRequestException extends Exception {
     private final int mFinalStatus;
