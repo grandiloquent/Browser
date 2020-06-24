@@ -1,4 +1,5 @@
 package euphoria.psycho.browser.file;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -10,8 +11,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.Log;
 import android.util.LruCache;
+
 import java.io.File;
 import java.io.IOException;
+
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.BitmapUtils;
@@ -21,6 +24,7 @@ import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.tasks.ThreadPool;
 import euphoria.psycho.browser.tasks.ThreadPool.Job;
 import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
+
 public class FileImageManager {
     private final Context mContext;
     private final LruCache<String, Drawable> mLruCache;
@@ -40,6 +44,7 @@ public class FileImageManager {
     private ThreadPool mThreadPool;
     private Handler mHandler;
     private String mCacheDirectory;
+
     public FileImageManager(Context context, int maxCacheSize) {
         mContext = context;
         initializeDefaultDrawables();
@@ -52,6 +57,7 @@ public class FileImageManager {
         mCacheDirectory = cacheDirectory.getAbsolutePath();
         mLruCache = new LruCache<String, Drawable>(maxCacheSize);
     }
+
     public Drawable getDefaultDrawable(FileItem fileItem) {
         switch (fileItem.getType()) {
             case FileHelper.TYPE_APK:
@@ -82,6 +88,7 @@ public class FileImageManager {
                 return mOthersDrawable;
         }
     }
+
     public void getDrawable(FileItem fileItem, int size, FutureListener<Drawable> futureListener) {
         switch (fileItem.getType()) {
             case FileHelper.TYPE_VIDEO:
@@ -90,9 +97,11 @@ public class FileImageManager {
                 return;
         }
     }
+
     public Handler getHandler() {
         return mHandler;
     }
+
     private void initializeDefaultDrawables() {
         Resources resources = mContext.getResources();
         Theme theme = mContext.getTheme();
@@ -123,17 +132,20 @@ public class FileImageManager {
         mZipDrawable = VectorDrawableCompat.create(resources,
                 R.drawable.ic_type_zip, theme);
     }
+
     private static class ImageJob implements Job<Drawable> {
         private final String mCacheDirectory;
         private final FileItem mFileItem;
         private final LruCache<String, Drawable> mLruCache;
         private final int mSize;
+
         private ImageJob(FileItem fileItem, int size, LruCache<String, Drawable> lruCache, String cacheDirectory) {
             mFileItem = fileItem;
             mSize = size;
             mLruCache = lruCache;
             mCacheDirectory = cacheDirectory;
         }
+
         @Override
         public Drawable run(JobContext jc) {
             Drawable drawable = null;
@@ -180,6 +192,7 @@ public class FileImageManager {
             return drawable;
         }
     }
+
     private static class ImageHandler extends Handler {
     }
 }

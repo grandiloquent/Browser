@@ -4,9 +4,13 @@ import android.Manifest;
 import android.Manifest.permission;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +46,7 @@ public class FileActivity extends AppCompatActivity {
         } else {
             initialize();
         }
+       //createDebugFiles();
     }
 
     @Override
@@ -75,6 +80,35 @@ public class FileActivity extends AppCompatActivity {
                 }
             }
             initialize();
+        }
+    }
+
+    private void createDebugFiles() {
+
+
+        Log.e("TAG/", "Debug: createDebugFiles, \n" + Environment.getDataDirectory());
+
+        File dir = new File(Environment.getExternalStorageDirectory(), "aaa");
+        dir.mkdir();
+        for (int i = 0; i < 10; i++) {
+            File a = new File(dir, i + ".txt");
+            try {
+                a.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            a = new File(dir, i + ".pdf");
+            try {
+                a.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            a = new File(dir, i + ".mp4");
+            try {
+                a.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

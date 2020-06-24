@@ -56,7 +56,11 @@ public class FileManager implements OnMenuItemClickListener,
 
     public FileManager(Activity activity) {
         mActivity = activity;
+
         loadPrefer();
+        mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
+        mSortType = SettingsManager.getInstance().getSortType();
+
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
         mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
@@ -122,6 +126,10 @@ public class FileManager implements OnMenuItemClickListener,
         return mFileOperationManager;
     }
 
+    public LinkedList<String> getHistoryList() {
+        return mHistoryList;
+    }
+
     public SelectionDelegate<FileItem> getSelectionDelegate() {
         return mSelectionDelegate;
     }
@@ -171,14 +179,9 @@ public class FileManager implements OnMenuItemClickListener,
         mFileAdapter.initialize();
     }
 
-    public LinkedList<String> getHistoryList() {
-        return mHistoryList;
-    }
-
     public void openUrl(FileItem fileItem) {
         if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
             mDirectory = fileItem.getUrl();
-
             mFileAdapter.initialize();
             return;
         }
@@ -199,13 +202,19 @@ public class FileManager implements OnMenuItemClickListener,
     // 排序文件
     public void sortBy() {
         SettingsManager.getInstance().setSortType(mSortType);
+
+        Log.e("TAG/", "Debug: sortBy, \n" + mDirectory);
+
         mFileAdapter.initialize();
     }
 
     private void loadPrefer() {
-        mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
+        
+
+        Log.e("TAG/", "Debug: loadPrefer, \n");
+
+
         mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
-        mSortType = SettingsManager.getInstance().getSortType();
     }
 
     private void showHistoryDialog() {

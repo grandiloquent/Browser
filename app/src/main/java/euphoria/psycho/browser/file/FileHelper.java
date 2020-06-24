@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.storage.StorageManager;
+import android.util.Log;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -74,6 +75,7 @@ public class FileHelper {
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
     private static boolean sIsHasSD;
+    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3)$", Pattern.CASE_INSENSITIVE);
     private static String sSDPath;
     /*
     ["apk",
@@ -407,8 +409,6 @@ public class FileHelper {
         }
     }
 
-    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3)$", Pattern.CASE_INSENSITIVE);
-
     public static void openUrl(Activity activity, FileItem fileItem) {
         if (sMusicPattern.matcher(fileItem.getTitle()).find()) {
             Intent service = new Intent(activity, MusicPlaybackService.class);
@@ -673,7 +673,7 @@ public class FileHelper {
             sSortItems.add(activity.getString(R.string.sort_by_ascending));
             sSortItems.add(activity.getString(R.string.sort_by_descending));
         }
-        new AlertDialog.Builder(activity)
+        new Builder(activity)
                 .setTitle(R.string.sort)
                 .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
                     switch (i) {
@@ -696,7 +696,12 @@ public class FileHelper {
                             fileManager.setSortType((fileManager.getSortType() & 31));
                             break;
                     }
+
+
+                    Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
+
                     fileManager.sortBy();
+                    //Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
 
                     dialogInterface.dismiss();
                 })
