@@ -173,6 +173,11 @@ public class FileImageManager {
                         options.inJustDecodeBounds = false;
                         bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
+                    case FileHelper.TYPE_APK:
+                        Drawable ico = FileHelper.getApkIcon(Share.getApplicationContext(), mFileItem.getUrl());
+                        if (ico != null)
+                            bitmap = BitmapUtils.drawableToBitmap(ico);
+                        break;
                 }
                 if (bitmap != null) {
                     byte[] buffer = BitmapUtils.compressToBytes(bitmap);

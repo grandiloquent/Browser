@@ -22,6 +22,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
 
@@ -34,7 +36,8 @@ public class BitmapUtils {
     private static final int DEFAULT_JPEG_QUALITY = 90;
     public static final int UNCONSTRAINED = -1;
 
-    private BitmapUtils(){}
+    private BitmapUtils() {
+    }
 
     /*
      * Compute the sample size as a function of minSideLength
@@ -56,7 +59,7 @@ public class BitmapUtils {
      * request is 3. So we round up the sample size to avoid OOM.
      */
     public static int computeSampleSize(int width, int height,
-            int minSideLength, int maxNumOfPixels) {
+                                        int minSideLength, int maxNumOfPixels) {
         int initialSize = computeInitialSampleSize(
                 width, height, minSideLength, maxNumOfPixels);
 
@@ -66,7 +69,7 @@ public class BitmapUtils {
     }
 
     private static int computeInitialSampleSize(int w, int h,
-            int minSideLength, int maxNumOfPixels) {
+                                                int minSideLength, int maxNumOfPixels) {
         if (maxNumOfPixels == UNCONSTRAINED
                 && minSideLength == UNCONSTRAINED) return 1;
 
@@ -84,7 +87,7 @@ public class BitmapUtils {
     // This computes a sample size which makes the longer side at least
     // minSideLength long. If that's not possible, return 1.
     public static int computeSampleSizeLarger(int w, int h,
-            int minSideLength) {
+                                              int minSideLength) {
         int initialSize = Math.max(w / minSideLength, h / minSideLength);
         if (initialSize <= 1) return 1;
 
@@ -127,6 +130,28 @@ public class BitmapUtils {
         return target;
     }
 
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = null;
+
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        }
+
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
+    }
+
     private static Bitmap.Config getConfig(Bitmap bitmap) {
         Bitmap.Config config = bitmap.getConfig();
         if (config == null) {
@@ -152,7 +177,7 @@ public class BitmapUtils {
 
         // scale the image so that the shorter side equals to the target;
         // the longer side will be center-cropped.
-        float scale = (float) size / Math.min(w,  h);
+        float scale = (float) size / Math.min(w, h);
 
         Bitmap target = Bitmap.createBitmap(size, size, getConfig(bitmap));
         int width = Math.round(scale * bitmap.getWidth());
