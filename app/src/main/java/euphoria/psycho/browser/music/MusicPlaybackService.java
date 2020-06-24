@@ -39,6 +39,7 @@ import android.provider.CalendarContract.Colors;
 import android.widget.RemoteViews;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
@@ -48,6 +49,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.base.Share;
 
 public class MusicPlaybackService extends Service implements
         OnTimedTextListener, OnTimedMetaDataAvailableListener, OnSeekCompleteListener, OnPreparedListener, OnErrorListener, OnCompletionListener, OnBufferingUpdateListener, OnInfoListener {
@@ -56,13 +58,17 @@ public class MusicPlaybackService extends Service implements
     private static final String ACTION_NEXT = "action_next";
     private static final String ACTION_PREVIOUS = "action_previous";
     private static final String ACTION_STOP = "action_stop";
+    private static final String ACTION_PAUSE = "action_pause";
     private static final String CHANNEL_ID = "Browser_channel_01";
+    public static final String ACTION_FILES = "action_files";
+
     private long mNotificationPostTime;
     private int mNotificationId;
     private MediaPlayer mMediaPlayer;
     private int mIndex;
     private File[] mMusics;
     WakeLock mWakeLock;
+    NotificationManager mNotificationManager;
 
     public static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -83,10 +89,19 @@ public class MusicPlaybackService extends Service implements
             mNotificationPostTime = System.currentTimeMillis();
         }
         final RemoteViews views = new RemoteViews(getPackageName(), R.layout.player_notification);
-
+        views.setTextViewText(R.id.notificationSongName, content);
         views.setOnClickPendingIntent(R.id.notificationStop, buildPendingIntent(ACTION_STOP));
         views.setOnClickPendingIntent(R.id.notificationFForward, buildPendingIntent(ACTION_NEXT));
         views.setOnClickPendingIntent(R.id.notificationPrevious, buildPendingIntent(ACTION_PREVIOUS));
+        views.setOnClickPendingIntent(R.id.notificationPlayPause, buildPendingIntent(ACTION_PAUSE));
+
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                views.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_pause_white_24dp);
+            } else {
+                views.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
+            }
+        }
         builder.setSmallIcon(R.drawable.ic_stat_music_note)
                 .setContentTitle(getString(R.string.notification_music_title))
                 .setWhen(mNotificationPostTime)
@@ -133,6 +148,8 @@ public class MusicPlaybackService extends Service implements
             mMediaPlayer.setOnErrorListener(this);
             mMediaPlayer.setOnCompletionListener(this);
             mMediaPlayer.setOnBufferingUpdateListener(this);
+        } else {
+            mMediaPlayer.reset();
         }
         try {
             mMediaPlayer.setDataSource(mMusics[mIndex].getAbsolutePath());
@@ -198,11 +215,10 @@ public class MusicPlaybackService extends Service implements
         }
         mNotificationId = hashCode();
         startForeground(mNotificationId, buildNotification(
-                "123"
+                ""
         ));
+        mNotificationManager = getNotificationManager(this);
 
-        mMusics = new File("/storage/0000-0000/song").listFiles();
-        play();
     }
 
     @Override
@@ -228,6 +244,7 @@ public class MusicPlaybackService extends Service implements
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mMediaPlayer.start();
+        notifyChange();
     }
 
     @Override
@@ -250,14 +267,47 @@ public class MusicPlaybackService extends Service implements
                 }
                 stopSelf();
                 break;
+            case ACTION_FILES:
+                loadFiles(intent.getStringExtra(EXTRA_FILENAME));
+                break;
             case ACTION_NEXT:
                 playNext(false);
+                break;
+            case ACTION_PAUSE:
+                pause();
                 break;
             case ACTION_PREVIOUS:
                 playNext(true);
                 break;
+
+
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void loadFiles(String filename) {
+        File music = new File(filename);
+        mMusics = music.getParentFile().listFiles(file -> file.isFile() && file.getName().endsWith(".mp3"));
+        if (mMusics == null) return;
+        for (int i = 0; i < mMusics.length; i++) {
+            if (mMusics[i].getAbsolutePath().equals(filename)) {
+                mIndex = i;
+                break;
+            }
+        }
+        play();
+    }
+
+    private void pause() {
+        if (mMediaPlayer.isPlaying())
+            mMediaPlayer.pause();
+        else
+            mMediaPlayer.start();
+        notifyChange();
+    }
+
+    private void notifyChange() {
+        mNotificationManager.notify(mNotificationId, buildNotification(Share.substringBeforeLast(mMusics[mIndex].getName(), '.')));
     }
 
     @Override

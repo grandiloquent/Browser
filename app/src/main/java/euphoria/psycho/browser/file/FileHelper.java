@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.regex.Pattern;
 
 import androidx.core.graphics.PathUtils;
 import androidx.core.util.Pair;
@@ -46,6 +47,7 @@ import euphoria.psycho.browser.app.SettingsActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.music.MusicPlaybackService;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -89,6 +91,7 @@ public class FileHelper {
 "zip"]
     * */
     static ExecutorService sSingleThreadExecutor;
+    private static List<String> sSortItems;
 
     public static void cleanDirectory(final File directory) throws IOException {
         final File[] files = verifiedListFiles(directory);
@@ -404,7 +407,16 @@ public class FileHelper {
         }
     }
 
+    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3)$", Pattern.CASE_INSENSITIVE);
+
     public static void openUrl(Activity activity, FileItem fileItem) {
+        if (sMusicPattern.matcher(fileItem.getTitle()).find()) {
+            Intent service = new Intent(activity, MusicPlaybackService.class);
+            service.setAction(MusicPlaybackService.ACTION_FILES);
+            service.putExtra(MusicPlaybackService.EXTRA_FILENAME, fileItem.getUrl());
+            activity.startService(service);
+            return;
+        }
         String url = fileItem.getUrl();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -470,49 +482,6 @@ public class FileHelper {
                 });
         fileManager.setBottomSheet(bottomSheet);
         bottomSheet.showDialog(items);
-    }
-
-    private static List<String> sSortItems;
-
-    private static void showSortDialog(Activity activity, FileManager fileManager) {
-        if (sSortItems == null) {
-            sSortItems = new ArrayList<>();
-            // ["name","size","type","data_modified","ascending","descending"]
-            sSortItems.add(activity.getString(R.string.sort_by_name));
-            sSortItems.add(activity.getString(R.string.sort_by_size));
-            sSortItems.add(activity.getString(R.string.sort_by_type));
-            sSortItems.add(activity.getString(R.string.sort_by_data_modified));
-            sSortItems.add(activity.getString(R.string.sort_by_ascending));
-            sSortItems.add(activity.getString(R.string.sort_by_descending));
-        }
-        new AlertDialog.Builder(activity)
-                .setTitle(R.string.sort)
-                .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
-                    switch (i) {
-                        case 0:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME);
-                            break;
-                        case 1:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE);
-                            break;
-                        case 2:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE);
-                            break;
-                        case 3:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED);
-                            break;
-                        case 4:
-                            fileManager.setSortType((fileManager.getSortType() & 31) | FileHelper.SORT_BY_ASCENDING);
-                            break;
-                        case 5:
-                            fileManager.setSortType((fileManager.getSortType() & 31));
-                            break;
-                    }
-                    fileManager.sortBy();
-
-                    dialogInterface.dismiss();
-                })
-                .show();
     }
 
     public static void startVideoServer(Activity activity) {
@@ -690,6 +659,47 @@ public class FileHelper {
         }
         new AlertDialog.Builder(activity)
                 .setMessage(stringBuilder.toString())
+                .show();
+    }
+
+    private static void showSortDialog(Activity activity, FileManager fileManager) {
+        if (sSortItems == null) {
+            sSortItems = new ArrayList<>();
+            // ["name","size","type","data_modified","ascending","descending"]
+            sSortItems.add(activity.getString(R.string.sort_by_name));
+            sSortItems.add(activity.getString(R.string.sort_by_size));
+            sSortItems.add(activity.getString(R.string.sort_by_type));
+            sSortItems.add(activity.getString(R.string.sort_by_data_modified));
+            sSortItems.add(activity.getString(R.string.sort_by_ascending));
+            sSortItems.add(activity.getString(R.string.sort_by_descending));
+        }
+        new AlertDialog.Builder(activity)
+                .setTitle(R.string.sort)
+                .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME);
+                            break;
+                        case 1:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE);
+                            break;
+                        case 2:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE);
+                            break;
+                        case 3:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED);
+                            break;
+                        case 4:
+                            fileManager.setSortType((fileManager.getSortType() & 31) | FileHelper.SORT_BY_ASCENDING);
+                            break;
+                        case 5:
+                            fileManager.setSortType((fileManager.getSortType() & 31));
+                            break;
+                    }
+                    fileManager.sortBy();
+
+                    dialogInterface.dismiss();
+                })
                 .show();
     }
 
