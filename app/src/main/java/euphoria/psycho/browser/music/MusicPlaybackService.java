@@ -54,14 +54,13 @@ import euphoria.psycho.browser.base.Share;
 public class MusicPlaybackService extends Service implements
         OnTimedTextListener, OnTimedMetaDataAvailableListener, OnSeekCompleteListener, OnPreparedListener, OnErrorListener, OnCompletionListener, OnBufferingUpdateListener, OnInfoListener {
 
+    public static final String ACTION_FILES = "action_files";
     public static final String EXTRA_FILENAME = "filename";
     private static final String ACTION_NEXT = "action_next";
+    private static final String ACTION_PAUSE = "action_pause";
     private static final String ACTION_PREVIOUS = "action_previous";
     private static final String ACTION_STOP = "action_stop";
-    private static final String ACTION_PAUSE = "action_pause";
     private static final String CHANNEL_ID = "Browser_channel_01";
-    public static final String ACTION_FILES = "action_files";
-
     private long mNotificationPostTime;
     private int mNotificationId;
     private MediaPlayer mMediaPlayer;
@@ -73,6 +72,7 @@ public class MusicPlaybackService extends Service implements
     public static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
+
 
     public void onMediaTimeDiscontinuity(@NonNull MediaPlayer mediaPlayer, @NonNull MediaTimestamp mediaTimestamp) {
 
@@ -132,6 +132,31 @@ public class MusicPlaybackService extends Service implements
                 NotificationManager.IMPORTANCE_LOW
         );
         getNotificationManager(this).createNotificationChannel(channel);
+    }
+
+    private void loadFiles(String filename) {
+        File music = new File(filename);
+        mMusics = music.getParentFile().listFiles(file -> file.isFile() && file.getName().endsWith(".mp3"));
+        if (mMusics == null) return;
+        for (int i = 0; i < mMusics.length; i++) {
+            if (mMusics[i].getAbsolutePath().equals(filename)) {
+                mIndex = i;
+                break;
+            }
+        }
+        play();
+    }
+
+    private void notifyChange() {
+        mNotificationManager.notify(mNotificationId, buildNotification(Share.substringBeforeLast(mMusics[mIndex].getName(), '.')));
+    }
+
+    private void pause() {
+        if (mMediaPlayer.isPlaying())
+            mMediaPlayer.pause();
+        else
+            mMediaPlayer.start();
+        notifyChange();
     }
 
     private void play() {
@@ -279,35 +304,8 @@ public class MusicPlaybackService extends Service implements
             case ACTION_PREVIOUS:
                 playNext(true);
                 break;
-
-
         }
         return super.onStartCommand(intent, flags, startId);
-    }
-
-    private void loadFiles(String filename) {
-        File music = new File(filename);
-        mMusics = music.getParentFile().listFiles(file -> file.isFile() && file.getName().endsWith(".mp3"));
-        if (mMusics == null) return;
-        for (int i = 0; i < mMusics.length; i++) {
-            if (mMusics[i].getAbsolutePath().equals(filename)) {
-                mIndex = i;
-                break;
-            }
-        }
-        play();
-    }
-
-    private void pause() {
-        if (mMediaPlayer.isPlaying())
-            mMediaPlayer.pause();
-        else
-            mMediaPlayer.start();
-        notifyChange();
-    }
-
-    private void notifyChange() {
-        mNotificationManager.notify(mNotificationId, buildNotification(Share.substringBeforeLast(mMusics[mIndex].getName(), '.')));
     }
 
     @Override
