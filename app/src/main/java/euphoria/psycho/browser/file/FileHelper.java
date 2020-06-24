@@ -51,11 +51,11 @@ import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class FileHelper {
     public static final int SORT_BY_ASCENDING = 1 << 5;
-    public static final int SORT_BY_DATA_MODIFIED = 1 << 4;
-    public static final int SORT_BY_DESCENDING = 5;
-    public static final int SORT_BY_NAME = 1 << 1;
-    public static final int SORT_BY_SIZE = 1 << 2;
-    public static final int SORT_BY_TYPE = 1 << 3;
+    public static final int SORT_BY_DATA_MODIFIED = 1 << 1;
+    public static final int SORT_BY_NAME = 1 << 2;
+    public static final int SORT_BY_SIZE = 1 << 3;
+    public static final int SORT_BY_TYPE = 1 << 4;
+    // ["name","size","type","data_modified"]
     public static final int SORT_TYPE_DEFAULT = 33;
 
     public static final int TYPE_APK = 0;
@@ -491,29 +491,25 @@ public class FileHelper {
                     switch (i) {
                         case 0:
                             fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME);
-                            fileManager.sortBy();
                             break;
                         case 1:
                             fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE);
-                            fileManager.sortBy();
                             break;
                         case 2:
                             fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE);
-                            fileManager.sortBy();
                             break;
                         case 3:
                             fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED);
-                            fileManager.sortBy();
                             break;
                         case 4:
                             fileManager.setSortType((fileManager.getSortType() & 31) | FileHelper.SORT_BY_ASCENDING);
-                            fileManager.sortBy();
                             break;
                         case 5:
                             fileManager.setSortType((fileManager.getSortType() & 31));
-                            fileManager.sortBy();
                             break;
                     }
+                    fileManager.sortBy();
+
                     dialogInterface.dismiss();
                 })
                 .show();

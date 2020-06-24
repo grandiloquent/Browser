@@ -1,0 +1,6 @@
+<resources>
+    <plurals name="selected_items">
+        <item quantity="other">%d</item>
+        <item quantity="one">1</item>
+    </plurals>
+</resources>
