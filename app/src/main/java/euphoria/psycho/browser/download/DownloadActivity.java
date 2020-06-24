@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
+import euphoria.psycho.browser.music.MusicPlaybackService;
 
 public class DownloadActivity extends Activity {
 
@@ -23,7 +24,7 @@ public class DownloadActivity extends Activity {
             startService(service);
         });
         setContentView(mButton);
-        Intent servcie = new Intent(this, DownloadService.class);
+        Intent servcie = new Intent(this, MusicPlaybackService.class);
         startService(servcie);
     }
 }

@@ -24,18 +24,14 @@
         </activity>
         <activity
             android:name=".app.ServerActivity"
-            android:label="文件服务器">
-        </activity>
+            android:label="文件服务器"></activity>
 
         <activity
             android:name=".file.FileActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".app.SampleDownloadActivity"
@@ -55,10 +51,14 @@
             android:label="@string/settings"
             android:theme="@style/Theme.Chromium.Settings" />
         <activity android:name=".download.DownloadActivity">
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <service android:name=".app.ServerService" />
         <service android:name=".download.DownloadService" />
+        <service android:name=".music.MusicPlaybackService" />
     </application>
 </manifest>

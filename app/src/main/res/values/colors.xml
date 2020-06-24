@@ -74,4 +74,7 @@
     <color name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</color>
     <color name="default_icon_color_secondary_dark">@color/modern_grey_600</color>
     <color name="modern_grey_600">#80868B</color>
+    <color name="background_notification_color">#323232</color>
+    <color name="background_title_color">#ffffff</color>
+    <color name="background_subtext_color">#999999</color>
 </resources>
