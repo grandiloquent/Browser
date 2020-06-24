@@ -26,6 +26,7 @@ import android.system.Os;
 import android.system.StructStat;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Pair;
 import android.view.WindowManager;
 import android.widget.TextView;
 
