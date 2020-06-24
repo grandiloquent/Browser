@@ -50,12 +50,12 @@ import euphoria.psycho.browser.base.Share;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
 public class FileHelper {
+    public static final int SORT_BY_ASCENDING = 1 << 5;
+    public static final int SORT_BY_DATA_MODIFIED = 1 << 4;
     public static final int SORT_BY_DESCENDING = 5;
     public static final int SORT_BY_NAME = 1 << 1;
     public static final int SORT_BY_SIZE = 1 << 2;
     public static final int SORT_BY_TYPE = 1 << 3;
-    public static final int SORT_BY_DATA_MODIFIED = 1 << 4;
-    public static final int SORT_BY_ASCENDING = 1 << 5;
     public static final int SORT_TYPE_DEFAULT = 33;
 
     public static final int TYPE_APK = 0;
@@ -154,6 +154,7 @@ public class FileHelper {
                     Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                     Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
             };
         } else {
@@ -162,6 +163,7 @@ public class FileHelper {
                     Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                     Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
             };
         }
@@ -187,6 +189,7 @@ public class FileHelper {
                     case R.drawable.ic_g_translate:
                         google(activity);
                         break;
+
                 }
             }
         });
@@ -459,11 +462,61 @@ public class FileHelper {
                         case R.drawable.ic_create_new_folder:
                             createNewDirectory(activity, fileManager);
                             break;
+                        case R.drawable.ic_sort:
+                            showSortDialog(activity, fileManager);
+                            break;
                     }
                     fileManager.setBottomSheet(null);
                 });
         fileManager.setBottomSheet(bottomSheet);
         bottomSheet.showDialog(items);
+    }
+
+    private static List<String> sSortItems;
+
+    private static void showSortDialog(Activity activity, FileManager fileManager) {
+        if (sSortItems == null) {
+            sSortItems = new ArrayList<>();
+            // ["name","size","type","data_modified","ascending","descending"]
+            sSortItems.add(activity.getString(R.string.sort_by_name));
+            sSortItems.add(activity.getString(R.string.sort_by_size));
+            sSortItems.add(activity.getString(R.string.sort_by_type));
+            sSortItems.add(activity.getString(R.string.sort_by_data_modified));
+            sSortItems.add(activity.getString(R.string.sort_by_ascending));
+            sSortItems.add(activity.getString(R.string.sort_by_descending));
+        }
+        new AlertDialog.Builder(activity)
+                .setTitle(R.string.sort)
+                .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME);
+                            fileManager.sortBy();
+                            break;
+                        case 1:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE);
+                            fileManager.sortBy();
+                            break;
+                        case 2:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE);
+                            fileManager.sortBy();
+                            break;
+                        case 3:
+                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED);
+                            fileManager.sortBy();
+                            break;
+                        case 4:
+                            fileManager.setSortType((fileManager.getSortType() & 31) | FileHelper.SORT_BY_ASCENDING);
+                            fileManager.sortBy();
+                            break;
+                        case 5:
+                            fileManager.setSortType((fileManager.getSortType() & 31));
+                            fileManager.sortBy();
+                            break;
+                    }
+                    dialogInterface.dismiss();
+                })
+                .show();
     }
 
     public static void startVideoServer(Activity activity) {

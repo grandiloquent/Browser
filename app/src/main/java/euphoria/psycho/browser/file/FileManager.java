@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.FileHandler;
@@ -51,6 +52,7 @@ public class FileManager implements OnMenuItemClickListener,
     private int mSortType;
     private boolean mIsShowHiddenFiles;
     private FileOperationManager mFileOperationManager;
+    private LinkedList<String> mHistoryList = new LinkedList<>();
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -128,9 +130,12 @@ public class FileManager implements OnMenuItemClickListener,
         return mIsShowHiddenFiles;
     }
 
-
     public int getSortType() {
         return mSortType;
+    }
+
+    public void setSortType(int i) {
+        mSortType = i;
     }
 
     public ViewGroup getView() {
@@ -166,9 +171,14 @@ public class FileManager implements OnMenuItemClickListener,
         mFileAdapter.initialize();
     }
 
+    public LinkedList<String> getHistoryList() {
+        return mHistoryList;
+    }
+
     public void openUrl(FileItem fileItem) {
         if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
             mDirectory = fileItem.getUrl();
+
             mFileAdapter.initialize();
             return;
         }
@@ -186,16 +196,27 @@ public class FileManager implements OnMenuItemClickListener,
         mBottomSheet = bottomSheet;
     }
 
+    // 排序文件
+    public void sortBy() {
+        SettingsManager.getInstance().setSortType(mSortType);
+        mFileAdapter.initialize();
+    }
+
     private void loadPrefer() {
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
         mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
         mSortType = SettingsManager.getInstance().getSortType();
     }
 
-    // 排序文件
-    private void sortBy() {
-        SettingsManager.getInstance().setSortType(mSortType);
-        mFileAdapter.initialize();
+    private void showHistoryDialog() {
+        new AlertDialog.Builder(mActivity)
+                .setTitle(R.string.history)
+                .setItems(mHistoryList.toArray(new String[0]), (dialogInterface, i) -> {
+                    mDirectory = mHistoryList.get(i);
+                    mFileAdapter.initialize();
+                    dialogInterface.dismiss();
+                })
+                .show();
     }
 
     @Override
@@ -224,30 +245,6 @@ public class FileManager implements OnMenuItemClickListener,
                 mSelectableListLayout.onStartSearch();
                 mIsSearching = true;
                 return true;
-            case R.id.sort_by_name_menu_id:
-                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME;
-                sortBy();
-                return true;
-            case R.id.sort_by_size_menu_id:
-                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE;
-                sortBy();
-                return true;
-            case R.id.sort_by_data_modified_menu_id:
-                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED;
-                sortBy();
-                return true;
-            case R.id.sort_by_type_menu_id:
-                mSortType = (mSortType & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE;
-                sortBy();
-                return true;
-            case R.id.sort_by_ascending_menu_id:
-                mSortType = (mSortType & 31) | FileHelper.SORT_BY_ASCENDING;
-                sortBy();
-                return true;
-            case R.id.sort_by_descending_menu_id:
-                mSortType = (mSortType & 31);
-                sortBy();
-                return true;
             case R.id.selection_mode_select_same_type_menu_id:
                 FileHelper.selectSameType(this);
                 return true;
@@ -259,6 +256,10 @@ public class FileManager implements OnMenuItemClickListener,
                 return true;
             case R.id.selection_mode_cut_menu_id:
                 FileHelper.cutSelections(this);
+                return true;
+            case R.id.history_menu_id:
+
+                showHistoryDialog();
                 return true;
 
         }

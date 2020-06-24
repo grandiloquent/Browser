@@ -52,6 +52,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         listItems.add(buildMenuListItem(R.string.file_item_copy, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
+        listItems.add(buildMenuListItem(R.string.file_item_copy_path, 0, 0));
+
+
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
@@ -81,6 +84,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     return;
                 case R.string.file_item_delete:
                     mFileManager.delete(getItem());
+                    return;
+                case R.string.file_item_copy_path:
+                    Share.setClipboardString(getItem().getUrl());
                     return;
             }
         };
@@ -128,7 +134,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         mTitleView.setText(item.getTitle());
         setStartIconDrawable(mFileImageManager.getDefaultDrawable(item));
         if (item.getType() == FileHelper.TYPE_FOLDER) {
-            mDescriptionView.setText(String.format("%d items", item.getSize()));
+            mDescriptionView.setText(getContext().getString(R.string.items, item.getSize()));
         } else {
             mDescriptionView.setText(Share.formatFileSize(item.getSize()));
         }

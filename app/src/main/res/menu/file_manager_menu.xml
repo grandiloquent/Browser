@@ -10,44 +10,17 @@
             android:visible="false"
             app:iconTint="@color/default_icon_color_tint_list"
             app:showAsAction="ifRoom" />
-
         <item
-            android:icon="@drawable/ic_action_sort"
-            android:title="@string/sort_by_name"
-            app:showAsAction="ifRoom">
-            <menu>
-                <group>
-
-                    <item
-                        android:id="@+id/sort_by_name_menu_id"
-                        android:title="@string/sort_by_name" />
-                    <item
-                        android:id="@+id/sort_by_size_menu_id"
-                        android:title="@string/sort_by_size" />
-                    <item
-                        android:id="@+id/sort_by_data_modified_menu_id"
-                        android:title="@string/sort_by_data_modified" />
-                    <item
-                        android:id="@+id/sort_by_type_menu_id"
-                        android:title="@string/sort_by_type" />
-                </group>
-                <group>
-                    <item
-                        android:id="@+id/sort_by_ascending_menu_id"
-                        android:title="@string/sort_by_ascending" />
-                    <item
-                        android:id="@+id/sort_by_descending_menu_id"
-                        android:title="@string/sort_by_descending" />
-                </group>
-            </menu>
-        </item>
+            android:id="@+id/history_menu_id"
+            android:icon="@drawable/ic_action_history"
+            android:title="@string/history"
+            app:showAsAction="ifRoom" />
         <item
             android:id="@+id/menu_id"
             android:icon="@drawable/btn_menu"
             android:title="@string/show_menu"
             android:visible="true"
             app:showAsAction="ifRoom" />
-
 
     </group>
     <group

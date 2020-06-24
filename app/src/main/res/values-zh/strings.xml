@@ -9,10 +9,10 @@
     <string name="hide_info">Hide Info</string>
     <string name="select_items">选择项</string>
     <string name="show_info">Show Info</string>
-    <string name="server_running">The Local Web Server is running.</string>
+    <string name="server_running">本地服务器已运行！</string>
     <string name="twitter">Twitter</string>
     <string name="youtube">YouTube</string>
-    <string name="menu_file">File</string>
+    <string name="menu_file">文件</string>
     <string name="file_manager_search">搜索</string>
     <string name="search">搜索</string>
     <string name="close">关闭</string>
@@ -38,4 +38,30 @@
     <string name="managed_settings_cannot_be_reset">Managed settings cannot be reset</string>
     <string name="display_hidden_files">显示隐藏文件</string>
     <string name="videos_directory">设置视频所在目录</string>
+    <string name="open">打开</string>
+    <string name="directory_info">目录信息</string>
+    <string name="more">更多</string>
+    <string name="extracting">提取中</string>
+    <string name="copy">复制</string>
+    <string name="sort">排序</string>
+    <string name="sort_by_name">名称</string>
+    <string name="sort_by_size">大小</string>
+    <string name="sort_by_data_modified">日期</string>
+    <string name="sort_by_type">类型</string>
+    <string name="sort_by_ascending">升序</string>
+    <string name="sort_by_descending">降序</string>
+    <string name="select_same_type">选择相同类型</string>
+    <string name="select_all">全选</string>
+    <string name="file_item_delete">删除</string>
+    <string name="file_item_copy">复制</string>
+    <string name="file_item_paste">粘贴</string>
+    <string name="file_item_rename">重命名</string>
+    <string name="question_dialog_title">询问</string>
+    <string name="question_delete_file_item_message">确定要删除 “%1$s”？</string>
+    <string name="cut">剪切</string>
+    <string name="move_files_progress_dialog_title">移动文件</string>
+    <string name="items">%d 项</string>
+    <string name="file_item_copy_path">复制路径</string>
+    <string name="history">历史</string>
+
 </resources>

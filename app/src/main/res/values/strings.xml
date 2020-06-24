@@ -42,7 +42,6 @@
     <string name="more">More</string>
     <string name="extracting">Extracting</string>
     <string name="copy">Copy</string>
-
     <string name="sort">Sort</string>
     <string name="sort_by_name">Sort By Name</string>
     <string name="sort_by_size">Sort By Size</string>
@@ -60,4 +59,7 @@
     <string name="question_delete_file_item_message">Are you sure delete \"%1$s\"?</string>
     <string name="cut">Cut</string>
     <string name="move_files_progress_dialog_title">Move Files</string>
+    <string name="items">%d items</string>
+    <string name="file_item_copy_path">Copy Path</string>
+    <string name="history">History</string>
 </resources>
