@@ -1,5 +1,7 @@
 # Browser 文件管理器
 
+<video src="file1.mp4"></video>
+
 * [x] 本地视频服务器
 * [x] 有道字典
 * [x] 谷歌翻译
