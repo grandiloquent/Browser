@@ -1,6 +1,6 @@
 # Browser 文件管理器
 
-<video src="file1.mp4"></video>
+<img src="file1.gif">
 
 * [x] 本地视频服务器
 * [x] 有道字典
