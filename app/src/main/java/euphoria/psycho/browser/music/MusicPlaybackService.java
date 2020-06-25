@@ -1,6 +1,7 @@
 package euphoria.psycho.browser.music;
 
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.Notification.MediaStyle;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -48,8 +49,6 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationCompat.Builder;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
@@ -125,6 +124,11 @@ public class MusicPlaybackService extends Service implements
 
     }
 
+    private void acquireWakeLock() {
+        mWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Browser::PlayerWakelockTag");
+        mWakeLock.acquire(10 * 60 * 1000L /*10 minutes*/);
+    }
+
     private void actionStop() {
         if (VERSION.SDK_INT >= VERSION_CODES.N) {
             stopForeground(STOP_FOREGROUND_REMOVE);
@@ -139,24 +143,24 @@ public class MusicPlaybackService extends Service implements
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             builder = new Builder(this, CHANNEL_ID);
         } else {
-            builder = new NotificationCompat.Builder(this);
+            builder = new Builder(this);
         }
         if (mNotificationPostTime == 0) {
             mNotificationPostTime = System.currentTimeMillis();
         }
-
         if (mRemoteViews == null) {
             mRemoteViews = buildRemoteViews();
         }
-
         rendererRemoteViews();
-
         builder.setSmallIcon(R.drawable.ic_stat_music_note)
                 .setContentTitle(getString(R.string.notification_music_title))
-                .setWhen(mNotificationPostTime)
-                .setCustomContentView(mRemoteViews);
+                .setWhen(mNotificationPostTime);
 
-
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            builder.setCustomContentView(mRemoteViews);
+        } else {
+            builder.setContent(mRemoteViews);
+        }
         return builder.build();
 
     }
@@ -167,39 +171,6 @@ public class MusicPlaybackService extends Service implements
         intent.setComponent(componentName);
 
         return PendingIntent.getService(this, 0, intent, 0);
-    }
-
-    private void rendererRemoteViews() {
-        if (mMusics != null && mMusics.length > 0) {
-            MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
-            metadataRetriever.setDataSource(mMusics[mIndex].getAbsolutePath());
-            String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (songName == null) {
-                songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
-            }
-            mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
-            String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            if (artist == null) {
-                artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
-                artist = Share.substringBeforeLast(artist, '.');
-            }
-            mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
-            if (metadataRetriever.getEmbeddedPicture() != null) {
-                Bitmap bitmap = BitmapFactory.decodeByteArray(
-                        metadataRetriever.getEmbeddedPicture(),
-                        0,
-                        metadataRetriever.getEmbeddedPicture().length
-                );
-                mRemoteViews.setImageViewBitmap(R.id.notificationCover, bitmap);
-            }
-        }
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_pause_white_24dp);
-            } else {
-                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
-            }
-        }
     }
 
     private RemoteViews buildRemoteViews() {
@@ -297,6 +268,39 @@ public class MusicPlaybackService extends Service implements
         }
     }
 
+    private void rendererRemoteViews() {
+        if (mMusics != null && mMusics.length > 0) {
+            MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+            metadataRetriever.setDataSource(mMusics[mIndex].getAbsolutePath());
+            String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (songName == null) {
+                songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
+            }
+            mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
+            String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            if (artist == null) {
+                artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
+                artist = Share.substringBeforeLast(artist, '.');
+            }
+            mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
+            if (metadataRetriever.getEmbeddedPicture() != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(
+                        metadataRetriever.getEmbeddedPicture(),
+                        0,
+                        metadataRetriever.getEmbeddedPicture().length
+                );
+                mRemoteViews.setImageViewBitmap(R.id.notificationCover, bitmap);
+            }
+        }
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_pause_white_24dp);
+            } else {
+                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
+            }
+        }
+    }
+
     private void stopPlay() {
         mMediaPlayer.release();
         mMediaPlayer = null;
@@ -321,18 +325,13 @@ public class MusicPlaybackService extends Service implements
     @Override
     public void onCreate() {
         super.onCreate();
-
-        mWakeLock = ((PowerManager) getSystemService(POWER_SERVICE)).newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Browser::PlayerWakelockTag");
-        mWakeLock.acquire();
-
+        acquireWakeLock();
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             createNotificationChannel();
         }
         mNotificationId = hashCode();
-
         startForeground(mNotificationId, buildNotification());
         mNotificationManager = getNotificationManager(this);
-
     }
 
     @Override
@@ -356,6 +355,9 @@ public class MusicPlaybackService extends Service implements
         return false;
     }
 
+    /**
+     * Called when the media file is ready for playback.
+     */
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
         mMediaPlayer.start();
