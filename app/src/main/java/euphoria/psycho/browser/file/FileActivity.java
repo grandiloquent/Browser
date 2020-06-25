@@ -91,7 +91,7 @@ public class FileActivity extends AppCompatActivity {
         File dir = new File(Environment.getExternalStorageDirectory(), "aaa");
         dir.mkdir();
         for (int i = 0; i < 10; i++) {
-            File a = new File(dir, i + ".txt");
+            File a = new File(dir, i + ".mp3");
             try {
                 a.createNewFile();
             } catch (IOException e) {

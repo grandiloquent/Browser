@@ -201,6 +201,9 @@ public class Share {
         return crc;
     }
 
+
+
+
     public static byte[] createChecksum(InputStream fis) throws Exception {
 
         byte[] buffer = new byte[1024];
@@ -447,6 +450,10 @@ public class Share {
         return getMD5Checksum(new FileInputStream(filename));
     }
 
+    public static int getWidthPixels() {
+        return sWidthPixels;
+    }
+
     /**
      * Initializes the java application context.
      * <p>
@@ -473,7 +480,6 @@ public class Share {
 
     }
 
-
     public static InetAddress intToInetAddress(int hostAddress) {
         byte[] addressBytes = {(byte) (0xff & hostAddress),
                 (byte) (0xff & (hostAddress >> 8)),
@@ -496,7 +502,6 @@ public class Share {
     public static boolean isFile(String path) {
         return new File(path).isFile();
     }
-
 
     /**
      * Return list of all normal files under the given directory, traversing
@@ -787,7 +792,6 @@ public class Share {
         return null;
     }
 
-
     private static void initJavaSideApplicationContext(Context appContext) {
         assert appContext != null;
         // Guard against anyone trying to downcast.
@@ -834,10 +838,6 @@ public class Share {
             result = 31 * result + (int) (stat.st_ino ^ (stat.st_ino >>> 32));
             return result;
         }
-    }
-
-    public static int getWidthPixels() {
-        return sWidthPixels;
     }
 }
 

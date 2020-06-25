@@ -9,7 +9,10 @@ import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.DrmInfo;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
@@ -36,7 +39,9 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.provider.CalendarContract.Colors;
+import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -49,6 +54,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.base.BitmapUtils;
 import euphoria.psycho.browser.base.Share;
 
 public class MusicPlaybackService extends Service implements
@@ -68,17 +74,67 @@ public class MusicPlaybackService extends Service implements
     private File[] mMusics;
     WakeLock mWakeLock;
     NotificationManager mNotificationManager;
+    private RemoteViews mRemoteViews;
+
+    public static String dumpMediaMeta(String path) {
+        MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+        metadataRetriever.setDataSource(path);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("METADATA_KEY_CD_TRACK_NUMBER").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CD_TRACK_NUMBER)).append("\n");
+        stringBuilder.append("METADATA_KEY_ALBUM").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM)).append("\n");
+        stringBuilder.append("METADATA_KEY_ARTIST").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST)).append("\n");
+        stringBuilder.append("METADATA_KEY_AUTHOR").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_AUTHOR)).append("\n");
+        stringBuilder.append("METADATA_KEY_COMPOSER").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER)).append("\n");
+        stringBuilder.append("METADATA_KEY_DATE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DATE)).append("\n");
+        stringBuilder.append("METADATA_KEY_GENRE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE)).append("\n");
+        stringBuilder.append("METADATA_KEY_TITLE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE)).append("\n");
+        stringBuilder.append("METADATA_KEY_YEAR").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_YEAR)).append("\n");
+        stringBuilder.append("METADATA_KEY_DURATION").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)).append("\n");
+        stringBuilder.append("METADATA_KEY_NUM_TRACKS").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_NUM_TRACKS)).append("\n");
+        stringBuilder.append("METADATA_KEY_WRITER").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_WRITER)).append("\n");
+        stringBuilder.append("METADATA_KEY_MIMETYPE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_MIMETYPE)).append("\n");
+        stringBuilder.append("METADATA_KEY_ALBUMARTIST").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)).append("\n");
+        stringBuilder.append("METADATA_KEY_DISC_NUMBER").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DISC_NUMBER)).append("\n");
+        stringBuilder.append("METADATA_KEY_COMPILATION").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPILATION)).append("\n");
+        stringBuilder.append("METADATA_KEY_HAS_AUDIO").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_AUDIO)).append("\n");
+        stringBuilder.append("METADATA_KEY_HAS_VIDEO").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)).append("\n");
+        stringBuilder.append("METADATA_KEY_VIDEO_WIDTH").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)).append("\n");
+        stringBuilder.append("METADATA_KEY_VIDEO_HEIGHT").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)).append("\n");
+        stringBuilder.append("METADATA_KEY_BITRATE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)).append("\n");
+        stringBuilder.append("METADATA_KEY_LOCATION").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_LOCATION)).append("\n");
+        stringBuilder.append("METADATA_KEY_VIDEO_ROTATION").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)).append("\n");
+        stringBuilder.append("METADATA_KEY_CAPTURE_FRAMERATE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_CAPTURE_FRAMERATE)).append("\n");
+        stringBuilder.append("METADATA_KEY_HAS_IMAGE").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_IMAGE)).append("\n");
+        stringBuilder.append("METADATA_KEY_IMAGE_COUNT").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_COUNT)).append("\n");
+        stringBuilder.append("METADATA_KEY_IMAGE_PRIMARY").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_PRIMARY)).append("\n");
+        stringBuilder.append("METADATA_KEY_IMAGE_WIDTH").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_WIDTH)).append("\n");
+        stringBuilder.append("METADATA_KEY_IMAGE_HEIGHT").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_HEIGHT)).append("\n");
+        stringBuilder.append("METADATA_KEY_IMAGE_ROTATION").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_IMAGE_ROTATION)).append("\n");
+        stringBuilder.append("METADATA_KEY_VIDEO_FRAME_COUNT").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT)).append("\n");
+        stringBuilder.append("METADATA_KEY_EXIF_OFFSET").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_OFFSET)).append("\n");
+        stringBuilder.append("METADATA_KEY_EXIF_LENGTH").append(" : ").append(metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_EXIF_LENGTH)).append("\n");
+
+        return stringBuilder.toString();
+    }
 
     public static NotificationManager getNotificationManager(Context context) {
         return (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
-
     public void onMediaTimeDiscontinuity(@NonNull MediaPlayer mediaPlayer, @NonNull MediaTimestamp mediaTimestamp) {
 
     }
 
-    private Notification buildNotification(String content) {
+    private void actionStop() {
+        if (VERSION.SDK_INT >= VERSION_CODES.N) {
+            stopForeground(STOP_FOREGROUND_REMOVE);
+        } else {
+            stopForeground(true);
+        }
+        stopSelf();
+    }
+
+    private Notification buildNotification() {
         Builder builder;
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             builder = new Builder(this, CHANNEL_ID);
@@ -88,29 +144,18 @@ public class MusicPlaybackService extends Service implements
         if (mNotificationPostTime == 0) {
             mNotificationPostTime = System.currentTimeMillis();
         }
-        final RemoteViews views = new RemoteViews(getPackageName(), R.layout.player_notification);
-        views.setTextViewText(R.id.notificationSongName, content);
-        views.setOnClickPendingIntent(R.id.notificationStop, buildPendingIntent(ACTION_STOP));
-        views.setOnClickPendingIntent(R.id.notificationFForward, buildPendingIntent(ACTION_NEXT));
-        views.setOnClickPendingIntent(R.id.notificationPrevious, buildPendingIntent(ACTION_PREVIOUS));
-        views.setOnClickPendingIntent(R.id.notificationPlayPause, buildPendingIntent(ACTION_PAUSE));
 
-        if (mMediaPlayer != null) {
-            if (mMediaPlayer.isPlaying()) {
-                views.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_pause_white_24dp);
-            } else {
-                views.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
-            }
+        if (mRemoteViews == null) {
+            mRemoteViews = buildRemoteViews();
         }
+
+        rendererRemoteViews();
+
         builder.setSmallIcon(R.drawable.ic_stat_music_note)
                 .setContentTitle(getString(R.string.notification_music_title))
                 .setWhen(mNotificationPostTime)
-                .setCustomContentView(views)
-//                .setColor(0xff403f4d)
-//                .setColorized(true)
+                .setCustomContentView(mRemoteViews);
 
-
-        ;
 
         return builder.build();
 
@@ -122,6 +167,47 @@ public class MusicPlaybackService extends Service implements
         intent.setComponent(componentName);
 
         return PendingIntent.getService(this, 0, intent, 0);
+    }
+
+    private void rendererRemoteViews() {
+        if (mMusics != null && mMusics.length > 0) {
+            MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
+            metadataRetriever.setDataSource(mMusics[mIndex].getAbsolutePath());
+            String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+            if (songName == null) {
+                songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
+            }
+            mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
+            String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+            if (artist == null) {
+                artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
+            }
+            mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
+            if (metadataRetriever.getEmbeddedPicture() != null) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(
+                        metadataRetriever.getEmbeddedPicture(),
+                        0,
+                        metadataRetriever.getEmbeddedPicture().length
+                );
+                mRemoteViews.setImageViewBitmap(R.id.notificationCover, bitmap);
+            }
+        }
+        if (mMediaPlayer != null) {
+            if (mMediaPlayer.isPlaying()) {
+                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_pause_white_24dp);
+            } else {
+                mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
+            }
+        }
+    }
+
+    private RemoteViews buildRemoteViews() {
+        final RemoteViews views = new RemoteViews(getPackageName(), R.layout.player_notification);
+        views.setOnClickPendingIntent(R.id.notificationStop, buildPendingIntent(ACTION_STOP));
+        views.setOnClickPendingIntent(R.id.notificationFForward, buildPendingIntent(ACTION_NEXT));
+        views.setOnClickPendingIntent(R.id.notificationPrevious, buildPendingIntent(ACTION_PREVIOUS));
+        views.setOnClickPendingIntent(R.id.notificationPlayPause, buildPendingIntent(ACTION_PAUSE));
+        return views;
     }
 
     @RequiresApi(api = VERSION_CODES.O)
@@ -148,7 +234,7 @@ public class MusicPlaybackService extends Service implements
     }
 
     private void notifyChange() {
-        mNotificationManager.notify(mNotificationId, buildNotification(Share.substringBeforeLast(mMusics[mIndex].getName(), '.')));
+        mNotificationManager.notify(mNotificationId, buildNotification());
     }
 
     private void pause() {
@@ -178,8 +264,11 @@ public class MusicPlaybackService extends Service implements
         }
         try {
             mMediaPlayer.setDataSource(mMusics[mIndex].getAbsolutePath());
+
+
             mMediaPlayer.prepare();
         } catch (IOException e) {
+            Toast.makeText(this, "无法播放： " + mMusics[mIndex].getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
 
     }
@@ -239,9 +328,8 @@ public class MusicPlaybackService extends Service implements
             createNotificationChannel();
         }
         mNotificationId = hashCode();
-        startForeground(mNotificationId, buildNotification(
-                ""
-        ));
+
+        startForeground(mNotificationId, buildNotification());
         mNotificationManager = getNotificationManager(this);
 
     }
@@ -258,6 +346,7 @@ public class MusicPlaybackService extends Service implements
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+        Log.e("TAG/", "Debug: onError, \n" + i + " " + i1);
         return false;
     }
 
@@ -285,12 +374,7 @@ public class MusicPlaybackService extends Service implements
         }
         switch (action) {
             case ACTION_STOP:
-                if (VERSION.SDK_INT >= VERSION_CODES.N) {
-                    stopForeground(STOP_FOREGROUND_REMOVE);
-                } else {
-                    stopForeground(true);
-                }
-                stopSelf();
+                actionStop();
                 break;
             case ACTION_FILES:
                 loadFiles(intent.getStringExtra(EXTRA_FILENAME));

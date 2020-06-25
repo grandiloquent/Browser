@@ -80,7 +80,9 @@ public class FileHelper {
     public static final int TYPE_WORD = 11;
     public static final int TYPE_ZIP = 12;
     private static boolean sIsHasSD;
-    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3)$", Pattern.CASE_INSENSITIVE);
+    // https://developer.android.com/guide/topics/media/media-formats
+    // 匹配文件名是否为音频格式
+    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3|m4a|aac|flac|gsm|mid|xmf|mxmf|rtttl|rtx|ota|imy|wav|ogg)$", Pattern.CASE_INSENSITIVE);
     private static String sSDPath;
     /*
     ["apk",
@@ -265,22 +267,6 @@ public class FileHelper {
         manager.enqueue(request);
     }
 
-
-    public static Drawable getApkIcon(Context context, String apkPath) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo info = pm.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
-        if (info != null) {
-            ApplicationInfo appInfo = info.applicationInfo;
-            appInfo.sourceDir = apkPath;
-            appInfo.publicSourceDir = apkPath;
-            try {
-                return appInfo.loadIcon(pm);
-            } catch (OutOfMemoryError e) {
-            }
-        }
-        return null;
-    }
-
     public static void extractTwitterVideo(Activity activity) {
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage(activity.getText(R.string.extracting));
@@ -323,6 +309,21 @@ public class FileHelper {
         file.delete();
     }
 
+    public static Drawable getApkIcon(Context context, String apkPath) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo info = pm.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
+        if (info != null) {
+            ApplicationInfo appInfo = info.applicationInfo;
+            appInfo.sourceDir = apkPath;
+            appInfo.publicSourceDir = apkPath;
+            try {
+                return appInfo.loadIcon(pm);
+            } catch (OutOfMemoryError e) {
+            }
+        }
+        return null;
+    }
+
     public static long getFileSize(File file, boolean isShowHidden) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -331,9 +332,16 @@ public class FileHelper {
         return file.length();
     }
 
+    public static boolean isMusic(File f) {
+        return sMusicPattern.matcher(f.getName()).find();
+    }
+
     public static int getFileType(File file) {
         if (file.isDirectory()) {
             return TYPE_FOLDER;
+        }
+        if (isMusic(file)) {
+            return TYPE_MUSIC;
         }
         String extension = Share.substringAfterLast(file.getName(), '.');
         switch (extension) {
@@ -350,21 +358,7 @@ public class FileHelper {
             case "heif":
             case "jpeg":
                 return TYPE_IMAGE;
-            case "m4a":
-            case "aac":
-            case "flac":
-            case "gsm":
-            case "mid":
-            case "xmf":
-            case "mxmf":
-            case "rtttl":
-            case "rtx":
-            case "ota":
-            case "imy":
-            case "mp3":
-            case "wav":
-            case "ogg":
-                return TYPE_MUSIC;
+
             case "pdf":
                 return TYPE_PDF;
             case "pps":
