@@ -181,6 +181,7 @@ public class MusicPlaybackService extends Service implements
             String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
             if (artist == null) {
                 artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
+                artist = Share.substringBeforeLast(artist, '.');
             }
             mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
             if (metadataRetriever.getEmbeddedPicture() != null) {
