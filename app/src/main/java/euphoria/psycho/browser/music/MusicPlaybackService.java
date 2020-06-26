@@ -71,8 +71,8 @@ public class MusicPlaybackService extends Service implements
     private MediaPlayer mMediaPlayer;
     private int mIndex;
     private File[] mMusics;
-    WakeLock mWakeLock;
-    NotificationManager mNotificationManager;
+    private WakeLock mWakeLock;
+    private NotificationManager mNotificationManager;
     private RemoteViews mRemoteViews;
 
     public static String dumpMediaMeta(String path) {
@@ -272,17 +272,10 @@ public class MusicPlaybackService extends Service implements
         if (mMusics != null && mMusics.length > 0) {
             MediaMetadataRetriever metadataRetriever = new MediaMetadataRetriever();
             metadataRetriever.setDataSource(mMusics[mIndex].getAbsolutePath());
-            String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-            if (songName == null) {
-                songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
-            }
-            mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
-            String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
-            if (artist == null) {
-                artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
-                artist = Share.substringBeforeLast(artist, '.');
-            }
-            mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
+
+            setSongName(metadataRetriever);
+            setArtistName(metadataRetriever);
+
             if (metadataRetriever.getEmbeddedPicture() != null) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(
                         metadataRetriever.getEmbeddedPicture(),
@@ -299,6 +292,23 @@ public class MusicPlaybackService extends Service implements
                 mRemoteViews.setImageViewResource(R.id.notificationPlayPause, R.drawable.ic_play_arrow_white_24dp);
             }
         }
+    }
+
+    private void setArtistName(MediaMetadataRetriever metadataRetriever) {
+        String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
+        if (artist == null) {
+            artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
+            artist = Share.substringBeforeLast(artist, '.');
+        }
+        mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
+    }
+
+    private void setSongName(MediaMetadataRetriever metadataRetriever) {
+        String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        if (songName == null) {
+            songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
+        }
+        mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
     }
 
     private void stopPlay() {

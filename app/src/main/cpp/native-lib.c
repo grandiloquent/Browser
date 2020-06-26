@@ -265,8 +265,10 @@ Java_euphoria_psycho_browser_app_NativeHelper_deleteFileSystem(JNIEnv *env, jcla
     return ret == 0 ? true : false;
 }
 
-JNIEXPORT jlong JNICALL
-Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz, jstring path_) {
+
+#define CLASS euphoria_psycho_browser_app_NativeHelper
+
+JAVA_STATIC_METHOD(CLASS, dirSize, jlong, jstring path_) {
     const char *path = (*env)->GetStringUTFChars(env, path_, 0);
     int dirfd = open(path, O_DIRECTORY, O_RDONLY);
     (*env)->ReleaseStringUTFChars(env, path_, path);
@@ -277,60 +279,7 @@ Java_euphoria_psycho_browser_app_NativeHelper_dirSize(JNIEnv *env, jclass clazz,
         close(dirfd);
         return res;
     }
-
 }
-
-#define COPY_READ_ERROR (-2)
-#define COPY_WRITE_ERROR (-3)
-
-int copy_fd(int ifd, int ofd) {
-    while (1) {
-        char buffer[8192];
-        ssize_t len = read(ifd, buffer, sizeof(buffer));
-        if (!len)
-            break;
-        if (len < 0)
-            return COPY_READ_ERROR;
-        if (write(ofd, buffer, len) < 0)
-            return COPY_WRITE_ERROR;
-    }
-    return 0;
-}
-
-int copy_file(const char *dst, const char *src, int mode) {
-    int fdi, fdo, status;
-
-    //mode = (mode & 0111) ? 0777 : 0666;
-    if ((fdi = open(src, O_RDONLY)) < 0) {
-        LOGE("open() error on %s", src);
-        return fdi;
-    }
-    //open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)
-    if ((fdo = open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)) < 0) {
-        close(fdi);
-        LOGE("open() error on %s %s", dst, strerror(errno));
-        return fdo;
-    }
-    status = copy_fd(fdi, fdo);
-    switch (status) {
-        case COPY_READ_ERROR:
-            LOGE("copy-fd: read returned");
-            break;
-        case COPY_WRITE_ERROR:
-            LOGE("copy-fd: write returned");
-            break;
-    }
-    close(fdi);
-    if (close(fdo) != 0) {
-        LOGE("%s: close error", dst);
-        return -1;//error_errno("%s: close error", dst);
-    }
-    return status;
-
-}
-
-
-#define CLASS euphoria_psycho_browser_app_NativeHelper
 
 JAVA_STATIC_METHOD(CLASS, copyFile, jboolean, jstring source_, jstring target_) {
     const char *source = (*env)->GetStringUTFChars(env, source_, 0);

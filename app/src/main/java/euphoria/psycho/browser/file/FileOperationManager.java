@@ -120,52 +120,38 @@ public class FileOperationManager implements OnClickListener {
                     if (isInSameDisk(f.getUrl(), targetFile.getAbsolutePath())) {
                         boolean result = sourceFile.renameTo(targetFile);
                         if (result) {
-                            runOnUi(() -> {
-                                mProgressDialog.setMessage(targetFile.getName());
-                            });
+                            updateProgress(targetFile.getName());
                         } else {
-                            runOnUi(() -> {
-                                mProgressDialog.dismiss();
-                                mCallback.onCompleted(false);
-                            });
+                            updateFailure();
                             return;
                         }
                     } else {
                         // 移动文件到另一个硬件
                         if (sourceFile.isFile()) {
-                            runOnUi(() -> {
-                                mProgressDialog.setMessage(targetFile.getName());
-                            });
+                            updateProgress(targetFile.getName());
                             boolean result = NativeHelper.copyFile(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath());
-
                             if (!result) {
-                                runOnUi(() -> {
-                                    mProgressDialog.dismiss();
-                                    mCallback.onCompleted(false);
-                                });
+                                updateFailure();
                                 return;
                             }
                             result = sourceFile.delete();
                             if (!result) {
-                                runOnUi(() -> {
-                                    mProgressDialog.dismiss();
-                                    mCallback.onCompleted(false);
-                                });
+                                updateFailure();
                                 return;
                             }
                         } else {
                             moveDirectory(sourceFile, targetFile);
-
                         }
                     }
 
                 }
-                runOnUi(() -> {
-                    mCallback.onCompleted(true);
-                    mProgressDialog.dismiss();
-                });
+                updateSuccess();
             });
             thread.start();
+        }
+
+        private boolean isInSameDisk(String source, String target) {
+            return source.startsWith(mInternalPath) == target.startsWith(mInternalPath);
         }
 
         private void moveDirectory(final File srcDir, final File destDir) {
@@ -173,29 +159,41 @@ public class FileOperationManager implements OnClickListener {
                 destDir.mkdir();
             }
             File[] files = srcDir.listFiles();
-            if (files != null) {
-                for (File f : files) {
-                    if (f.isFile()) {
-                        File target = new File(destDir, f.getName());
-                        runOnUi(() -> {
-                            mProgressDialog.setMessage(target.getName());
-                        });
-                        NativeHelper.copyFile(f.getAbsolutePath(), target.getAbsolutePath());
-                    } else if (f.isDirectory()) {
-                        moveDirectory(f, new File(destDir, f.getName()));
-                    }
+            if (files == null || files.length == 0) return;
+            for (File f : files) {
+                if (f.isFile()) {
+                    File target = new File(destDir, f.getName());
+                    updateProgress(target.getName());
+                    NativeHelper.copyFile(f.getAbsolutePath(), target.getAbsolutePath());
+                } else if (f.isDirectory()) {
+                    moveDirectory(f, new File(destDir, f.getName()));
                 }
             }
-
         }
-
-        private boolean isInSameDisk(String source, String target) {
-            return source.startsWith(mInternalPath) == target.startsWith(mInternalPath);
-        }
-
 
         private void runOnUi(Runnable r) {
             mFileManager.getActivity().runOnUiThread(r);
+        }
+
+        private void updateFailure() {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mProgressDialog.dismiss();
+                mCallback.onCompleted(false);
+            });
+        }
+
+        // 使用 UI 线程更新 ProgressDialog
+        private void updateProgress(String message) {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mProgressDialog.setMessage(message);
+            });
+        }
+
+        private void updateSuccess() {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mCallback.onCompleted(true);
+                mProgressDialog.dismiss();
+            });
         }
     }
 }

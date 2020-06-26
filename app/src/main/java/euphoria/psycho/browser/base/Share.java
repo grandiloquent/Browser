@@ -193,6 +193,13 @@ public class Share {
         closeQuietly(out);
     }
 
+    public static long crc64Long(String in) {
+        if (in == null || in.length() == 0) {
+            return 0;
+        }
+        return crc64Long(getBytes(in));
+    }
+
     public static final long crc64Long(byte[] buffer) {
         long crc = INITIALCRC;
         for (int k = 0, n = buffer.length; k < n; ++k) {
@@ -200,8 +207,6 @@ public class Share {
         }
         return crc;
     }
-
-
 
 
     public static byte[] createChecksum(InputStream fis) throws Exception {

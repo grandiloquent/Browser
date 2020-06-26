@@ -233,6 +233,7 @@ bool is_dir(const char *pathname) {
     }
     return S_ISDIR(info.st_mode);
 }
+
 bool ends_with(const char *s1, const char *s2) {
     size_t s1_length = strlen(s1);
     size_t s2_length = strlen(s2);
@@ -251,10 +252,96 @@ int starts_with(const char *str, const char *prefix) {
         else if (*str != *prefix)
             return 0;
 }
+
 int istarts_with(const char *str, const char *prefix) {
     for (;; str++, prefix++)
         if (!*prefix)
             return 1;
         else if (tolower(*str) != tolower(*prefix))
             return 0;
+}
+
+int copy_fd(int ifd, int ofd) {
+    while (1) {
+        char buffer[8192];
+        ssize_t len = read(ifd, buffer, sizeof(buffer));
+        if (!len)
+            break;
+        if (len < 0)
+            return COPY_READ_ERROR;
+        if (write(ofd, buffer, len) < 0)
+            return COPY_WRITE_ERROR;
+    }
+    return 0;
+}
+
+int copy_file(const char *dst, const char *src, int mode) {
+    int fdi, fdo, status;
+
+    //mode = (mode & 0111) ? 0777 : 0666;
+    if ((fdi = open(src, O_RDONLY)) < 0) {
+        LOGE("open() error on %s", src);
+        return fdi;
+    }
+    //open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)
+    if ((fdo = open(dst, O_WRONLY | O_CREAT | O_EXCL, mode)) < 0) {
+        close(fdi);
+        LOGE("open() error on %s %s", dst, strerror(errno));
+        return fdo;
+    }
+    status = copy_fd(fdi, fdo);
+    switch (status) {
+        case COPY_READ_ERROR:
+            LOGE("copy-fd: read returned");
+            break;
+        case COPY_WRITE_ERROR:
+            LOGE("copy-fd: write returned");
+            break;
+    }
+    close(fdi);
+    if (close(fdo) != 0) {
+        LOGE("%s: close error", dst);
+        return -1;//error_errno("%s: close error", dst);
+    }
+    return status;
+
+}
+
+void copy_directory(const char *src, const char *dest) {
+    char destpath[256] = {0};   //目的路径
+    char srcpath[256] = {0};    //源路径
+    strcpy(destpath, dest);
+    int ret;
+    struct stat state;
+
+    DIR *dir = NULL;
+    struct dirent *entry = NULL;
+
+    ret = stat(destpath, &state);
+    if (ret == -1)
+        ret = mkdir(destpath, 0755);
+    dir = opendir(src);
+    if (dir == NULL) {
+        perror("open dir error");
+        return;
+    }
+    while (1) {
+        entry = readdir(dir);
+        if (entry == NULL)
+            break;
+        if ((strcmp(entry->d_name, ".") == 0) || (strcmp(entry->d_name, "..") == 0))
+            continue;
+
+        sprintf(destpath, "%s/%s", dest, entry->d_name);  //des路径
+        sprintf(srcpath, "%s/%s", src, entry->d_name);  //src文件路径
+        stat(srcpath, &state);
+
+        if (S_ISDIR(state.st_mode)) {
+            copy_directory(srcpath, destpath);
+        } else {
+            copy_file(srcpath, destpath, 0666);
+        }
+    }
+    closedir(dir);
+    return;
 }

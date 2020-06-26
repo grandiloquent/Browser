@@ -149,7 +149,7 @@ public class FileImageManager {
         @Override
         public Drawable run(JobContext jc) {
             Drawable drawable = null;
-            String key = Long.toString(Utils.crc64Long(mFileItem.getUrl()));
+            String key = Long.toString(Share.crc64Long(mFileItem.getUrl()));
             drawable = mLruCache.get(key);
             if (drawable != null) {
                 return drawable;

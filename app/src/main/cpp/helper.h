@@ -22,6 +22,9 @@
 #define JAVA_STATIC_METHOD(object, name, type, ...) \
   JAVA_METHOD(object, name, type, jclass class, ## __VA_ARGS__)
 
+#define COPY_READ_ERROR (-2)
+#define COPY_WRITE_ERROR (-3)
+
 bool ends_with(const char *s1, const char *s2);
 
 int64_t stat_size(struct stat *s);
@@ -41,5 +44,11 @@ bool is_dir(const char *pathname);
 int starts_with(const char *str, const char *prefix);
 
 int istarts_with(const char *str, const char *prefix);
+
+int copy_fd(int ifd, int ofd);
+
+int copy_file(const char *dst, const char *src, int mode);
+
+void copy_directory(const char *src, const char *dest);
 
 #endif
