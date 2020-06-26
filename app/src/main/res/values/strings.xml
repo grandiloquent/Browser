@@ -63,4 +63,5 @@
     <string name="file_item_copy_path">Copy Path</string>
     <string name="history">History</string>
     <string name="notification_music_title">Music</string>
+    <string name="copy_files_progress_dialog_title">Copy Files</string>
 </resources>

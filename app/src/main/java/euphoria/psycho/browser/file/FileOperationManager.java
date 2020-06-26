@@ -3,7 +3,6 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -27,10 +26,9 @@ public class FileOperationManager implements OnClickListener {
         @Override
         public void onCompleted(boolean success) {
             if (success) mFileManager.getFileAdapter().initialize();
-            clear();
+            clearSelections();
         }
     };
-
 
     public FileOperationManager(FileManager fileManager) {
         mFileManager = fileManager;
@@ -46,6 +44,7 @@ public class FileOperationManager implements OnClickListener {
 
     private void actionPaste() {
         if (mIsCopy) {
+            new CopySelections(mFileManager, mSelections, mCallback).action();
         } else {
             new MoveSelections(mFileManager, mSelections, mCallback).action();
         }
@@ -68,7 +67,7 @@ public class FileOperationManager implements OnClickListener {
         mClearButton.setVisibility(View.VISIBLE);
     }
 
-    private void clear() {
+    private void clearSelections() {
         mSelections.clear();
         mPasteButton.setVisibility(View.INVISIBLE);
         mClearButton.setVisibility(View.INVISIBLE);
@@ -78,7 +77,7 @@ public class FileOperationManager implements OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.clear:
-                clear();
+                clearSelections();
                 break;
             case R.id.paste:
                 actionPaste();
@@ -89,6 +88,98 @@ public class FileOperationManager implements OnClickListener {
 
     interface Callback {
         void onCompleted(boolean success);
+    }
+
+    private static class CopySelections {
+        private final Callback mCallback;
+        private final FileManager mFileManager;
+        private final ProgressDialog mProgressDialog;
+        private final List<FileItem> mSelections;
+
+        public CopySelections(FileManager fileManager, List<FileItem> selections, Callback callback) {
+
+            mFileManager = fileManager;
+            mSelections = selections;
+            mCallback = callback;
+            mProgressDialog = new ProgressDialog(fileManager.getActivity());
+            mProgressDialog.setTitle(R.string.copy_files_progress_dialog_title);
+        }
+
+        public void action() {
+            mProgressDialog.show();
+            Thread thread = new Thread(() -> {
+                String targetDirectory = mFileManager.getDirectory();
+
+                for (FileItem f : mSelections) {
+                    File sourceFile = new File(f.getUrl());
+                    File targetFile = new File(targetDirectory, f.getTitle());
+                    if (f.getUrl().equals(targetFile.getAbsolutePath())) continue;
+
+                    // 移动文件到另一个硬件
+                    if (sourceFile.isFile()) {
+                        updateProgress(targetFile.getName());
+                        boolean result = NativeHelper.copyFile(sourceFile.getAbsolutePath(), targetFile.getAbsolutePath());
+                        if (!result) {
+                            updateFailure();
+                            return;
+                        }
+                        result = sourceFile.delete();
+                        if (!result) {
+                            updateFailure();
+                            return;
+                        }
+                    } else {
+                        moveDirectory(sourceFile, targetFile);
+                    }
+
+                }
+                updateSuccess();
+            });
+            thread.start();
+        }
+
+
+        private void moveDirectory(final File srcDir, final File destDir) {
+            if (!destDir.isDirectory()) {
+                destDir.mkdir();
+            }
+            File[] files = srcDir.listFiles();
+            if (files == null || files.length == 0) return;
+            for (File f : files) {
+                if (f.isFile()) {
+                    File target = new File(destDir, f.getName());
+                    updateProgress(target.getName());
+                    NativeHelper.copyFile(f.getAbsolutePath(), target.getAbsolutePath());
+                } else if (f.isDirectory()) {
+                    moveDirectory(f, new File(destDir, f.getName()));
+                }
+            }
+        }
+
+        private void runOnUi(Runnable r) {
+            mFileManager.getActivity().runOnUiThread(r);
+        }
+
+        private void updateFailure() {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mProgressDialog.dismiss();
+                mCallback.onCompleted(false);
+            });
+        }
+
+        // 使用 UI 线程更新 ProgressDialog
+        private void updateProgress(String message) {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mProgressDialog.setMessage(message);
+            });
+        }
+
+        private void updateSuccess() {
+            mFileManager.getActivity().runOnUiThread(() -> {
+                mCallback.onCompleted(true);
+                mProgressDialog.dismiss();
+            });
+        }
     }
 
     private static class MoveSelections {
