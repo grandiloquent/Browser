@@ -1,7 +1,9 @@
 package euphoria.psycho.browser.file;
 
 import android.Manifest.permission;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.video.MovieActivity;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -28,6 +31,10 @@ public class FileActivity extends AppCompatActivity {
         FrameLayout container = findViewById(R.id.container);
         mFileManager = new FileManager(this);
         container.addView(mFileManager.getView(), 0);
+
+//        Intent intent = new Intent(this, MovieActivity.class);
+//        intent.setData(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "/Videos/231.mp4")));
+//        startActivity(intent);
     }
 
     @Override

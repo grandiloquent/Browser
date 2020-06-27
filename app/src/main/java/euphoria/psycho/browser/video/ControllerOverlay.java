@@ -20,43 +20,47 @@ import android.view.View;
 
 public interface ControllerOverlay {
 
-  /**
-   * @return The overlay view that should be added to the player.
-   */
-  View getView();
+    /**
+     * @return The overlay view that should be added to the player.
+     */
+    View getView();
 
-  void setCanReplay(boolean canReplay);
+    void setCanReplay(boolean canReplay);
 
-  void setListener(Listener listener);
+    void setListener(Listener listener);
 
-  void setTimes(int currentTime, int totalTime,
-                int trimStartTime, int trimEndTime);
+    void setTimes(int currentTime, int totalTime,
+                  int trimStartTime, int trimEndTime);
 
-  void show();
+    void show();
 
-  void showEnded();
+    void showEnded();
 
-  void showErrorMessage(String message);
+    void showErrorMessage(String message);
 
-  void showLoading();
+    void showLoading();
 
-  void showPaused();
+    void showPaused();
 
-  void showPlaying();
+    void showPlaying();
 
-  interface Listener {
-    void onHidden();
+    interface Listener {
+        void onHidden();
 
-    void onPlayPause();
+        void onPlayPause();
 
-    void onReplay();
+        void onReplay();
 
-    void onSeekEnd(int time, int trimStartTime, int trimEndTime);
+        void onSeekEnd(int time, int trimStartTime, int trimEndTime);
 
-    void onSeekMove(int time);
+        void onSeekMove(int time);
 
-    void onSeekStart();
+        void onSeekStart();
 
-    void onShown();
-  }
+        void onShown();
+
+        void onPlayNext();
+
+        void onPlayPrevious();
+    }
 }

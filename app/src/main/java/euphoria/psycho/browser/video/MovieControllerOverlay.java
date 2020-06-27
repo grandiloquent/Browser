@@ -89,7 +89,7 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
     private void startHiding() {
         startHideAnimation(mBackground);
         startHideAnimation(mTimeBar);
-        startHideAnimation(mPlayPauseReplayView);
+       // startHideAnimation(mPlayPauseReplayView);
     }
 
     private void startHideAnimation(View view) {
@@ -102,7 +102,7 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         handler.removeCallbacks(startHidingRunnable);
         mBackground.setAnimation(null);
         mTimeBar.setAnimation(null);
-        mPlayPauseReplayView.setAnimation(null);
+        //mPlayPauseReplayView.setAnimation(null);
     }
 
     @Override

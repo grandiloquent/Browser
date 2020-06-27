@@ -439,6 +439,16 @@ public class MoviePlayer implements
         showSystemUi(true);
     }
 
+    @Override
+    public void onPlayNext() {
+
+    }
+
+    @Override
+    public void onPlayPrevious() {
+
+    }
+
     // We want to pause when the headset is unplugged.
     private class AudioBecomingNoisyReceiver extends BroadcastReceiver {
 

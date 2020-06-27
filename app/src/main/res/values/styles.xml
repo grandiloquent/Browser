@@ -213,6 +213,7 @@
         <item name="android:layout_marginTop">2dp</item>
         <item name="android:background">@color/modern_grey_600</item>
     </style>
+
     <style name="Base.Theme.Chromium.WithActionBar">
         <!-- With ActionBar -->
         <item name="windowActionBar">true</item>
@@ -221,6 +222,7 @@
         <!-- Window properties -->
         <item name="android:windowBackground">@drawable/action_bar_activity_bg</item>
     </style>
+
     <style name="Theme.Chromium.WithActionBar" parent="Base.Theme.Chromium.WithActionBar" />
     <!-- AlertDialog styles -->
     <style name="Base.Theme.Chromium.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
@@ -238,11 +240,13 @@
         <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
         <item name="spinnerStyle">@style/SpinnerStyle</item>
     </style>
+
     <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
 
     <style name="AlertDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
     </style>
+
     <style name="PreferenceTheme">
         <item name="preferenceStyle">@style/PreferenceItem</item>
         <item name="preferenceFragmentCompatStyle">@style/SettingsFragment</item>
@@ -283,6 +287,7 @@
     <style name="SettingsActionBarModern" parent="@style/Widget.AppCompat.Light.ActionBar.Solid">
         <item name="titleTextStyle">@style/TextAppearance.Headline.Primary</item>
     </style>
+
     <style name="PreferenceScreenLayout">
         <item name="android:paddingTop">16dp</item>
 
@@ -291,21 +296,33 @@
         <item name="android:paddingStart">@dimen/pref_autofill_content_spacing</item>
         <item name="android:paddingEnd">@dimen/pref_autofill_content_spacing</item>
     </style>
+
     <style name="TextAppearance.AccessibilityTextPreference">
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
+
     <style name="Base.Theme.Chromium.Settings" parent="Theme.Chromium.WithActionBar">
         <item name="actionBarStyle">@style/SettingsActionBarModern</item>
         <item name="preferenceTheme">@style/PreferenceTheme</item>
         <item name="alertDialogTheme">@style/Theme.Chromium.AlertDialog</item>
     </style>
 
-    <style name="TextAppearance.AlertDialogTitleStyle"
-        parent="RtlOverlay.DialogWindowTitle.AppCompat">
+    <style name="TextAppearance.AlertDialogTitleStyle" parent="RtlOverlay.DialogWindowTitle.AppCompat">
         <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">@dimen/headline_size</item>
         <item name="android:fontFamily">@font/accent_font</item>
         <item name="android:textStyle">normal</item>
     </style>
+
     <style name="Theme.Chromium.Settings" parent="Base.Theme.Chromium.Settings" />
+
+    <style name="ExoMediaButton">
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">@dimen/exo_media_button_width</item>
+        <item name="android:layout_height">@dimen/exo_media_button_height</item>
+    </style>
+    <style name="ExoMediaButton.Next">
+        <item name="android:src">@drawable/exo_controls_next</item>
+        <item name="android:contentDescription">@string/exo_controls_next_description</item>
+    </style>
 </resources>

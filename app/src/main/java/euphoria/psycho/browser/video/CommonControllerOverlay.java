@@ -18,21 +18,28 @@ package euphoria.psycho.browser.video;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Rect;
+import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.base.Share;
 
 
 /**
@@ -47,7 +54,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     protected final View mBackground;
     protected final TextView mErrorView;
     protected final LinearLayout mLoadingView;
-    protected final ImageView mPlayPauseReplayView;
+    //protected final ImageView mPlayPauseReplayView;
     // The paddings of 4 sides which covered by system components. E.g.
     // +-----------------+\
     // | Action Bar | insets.top
@@ -64,8 +71,15 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     protected TimeBar mTimeBar;
     protected View mMainView;
     protected State mState;
-
+    protected LinearLayout mBottomContainer;
     protected boolean mCanReplay = true;
+    private int mButtonHeight;
+    private int mButtonWidth;
+    private ImageButton mPreviousImageButton;
+
+    //["previous","pause","next"]
+    private ImageButton mPauseImageButton;
+    private ImageButton mNextImageButton;
 
     public CommonControllerOverlay(Context context) {
         super(context);
@@ -97,17 +111,44 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         loadingText.setText(R.string.loading_video);
         mLoadingView.addView(loadingText, wrapContent);
         addView(mLoadingView, wrapContent);
+//
+//        mPlayPauseReplayView = new ImageView(context);
+//        mPlayPauseReplayView.setImageResource(R.drawable.ic_vidcontrol_play);
+//        mPlayPauseReplayView.setContentDescription(
+//                context.getResources().getString(R.string.accessibility_play_video));
+//        mPlayPauseReplayView.setBackgroundResource(R.drawable.bg_vidcontrol);
+//        mPlayPauseReplayView.setScaleType(ScaleType.CENTER);
+//        mPlayPauseReplayView.setFocusable(true);
+//        mPlayPauseReplayView.setClickable(true);
+//        mPlayPauseReplayView.setOnClickListener(this);
+//
+//        addView(mPlayPauseReplayView, wrapContent);
+        mBottomContainer = new LinearLayout(getContext());
+        mBottomContainer.setBackgroundColor(0xCC000000);
+        mBottomContainer.setOrientation(LinearLayout.HORIZONTAL);
+        mBottomContainer.setGravity(Gravity.CENTER);
 
-        mPlayPauseReplayView = new ImageView(context);
-        mPlayPauseReplayView.setImageResource(R.drawable.ic_vidcontrol_play);
-        mPlayPauseReplayView.setContentDescription(
-                context.getResources().getString(R.string.accessibility_play_video));
-        mPlayPauseReplayView.setBackgroundResource(R.drawable.bg_vidcontrol);
-        mPlayPauseReplayView.setScaleType(ScaleType.CENTER);
-        mPlayPauseReplayView.setFocusable(true);
-        mPlayPauseReplayView.setClickable(true);
-        mPlayPauseReplayView.setOnClickListener(this);
-        addView(mPlayPauseReplayView, wrapContent);
+        if (mButtonHeight == 0) {
+            mButtonHeight = Share.dpToPixel(52);
+            mButtonWidth = Share.dpToPixel(71);
+        }
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(mButtonWidth, mButtonHeight);
+
+
+        mPreviousImageButton = createButton(R.drawable.exo_controls_previous);
+        mPreviousImageButton.setOnClickListener(this);
+        mBottomContainer.addView(mPreviousImageButton, layoutParams);
+
+        mPauseImageButton = createButton(R.drawable.exo_controls_pause);
+        mPauseImageButton.setOnClickListener(this);
+        mBottomContainer.addView(mPauseImageButton, layoutParams);
+
+        mNextImageButton = createButton(R.drawable.exo_controls_next);
+        mNextImageButton.setOnClickListener(this);
+        mBottomContainer.addView(mNextImageButton, layoutParams);
+
+
+        addView(mBottomContainer, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mErrorView = createOverlayTextView(context);
         addView(mErrorView, matchParent);
@@ -120,7 +161,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     }
 
     public void hide() {
-        mPlayPauseReplayView.setVisibility(View.INVISIBLE);
+        //mPlayPauseReplayView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.INVISIBLE);
         mBackground.setVisibility(View.INVISIBLE);
         mTimeBar.setVisibility(View.INVISIBLE);
@@ -142,20 +183,28 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         int imageResource = R.drawable.ic_vidcontrol_reload;
         String contentDescription = resources.getString(R.string.accessibility_reload_video);
         if (mState == State.PAUSED) {
-            imageResource = R.drawable.ic_vidcontrol_play;
+            imageResource = R.drawable.exo_controls_play;
             contentDescription = resources.getString(R.string.accessibility_play_video);
         } else if (mState == State.PLAYING) {
-            imageResource = R.drawable.ic_vidcontrol_pause;
+            imageResource = R.drawable.exo_controls_pause;
             contentDescription = resources.getString(R.string.accessibility_pause_video);
         }
+        mPauseImageButton.setImageResource(imageResource);
+//
+//        mPlayPauseReplayView.setImageResource(imageResource);
+//        mPlayPauseReplayView.setContentDescription(contentDescription);
+//        mPlayPauseReplayView.setVisibility(
+//                (mState != State.LOADING && mState != State.ERROR &&
+//                        !(mState == State.ENDED && !mCanReplay))
+//                        ? View.VISIBLE : View.GONE);
+        // requestLayout();
+    }
 
-        mPlayPauseReplayView.setImageResource(imageResource);
-        mPlayPauseReplayView.setContentDescription(contentDescription);
-        mPlayPauseReplayView.setVisibility(
-                (mState != State.LOADING && mState != State.ERROR &&
-                !(mState == State.ENDED && !mCanReplay))
-                ? View.VISIBLE : View.GONE);
-        requestLayout();
+    private ImageButton createButton(int resId) {
+        ImageButton nextButton = new ImageButton(getContext());
+        nextButton.setBackgroundResource(android.R.drawable.list_selector_background);
+        nextButton.setImageResource(resId);
+        return nextButton;
     }
 
     private TextView createOverlayTextView(Context context) {
@@ -178,8 +227,8 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         mMainView = view;
         mErrorView.setVisibility(mMainView == mErrorView ? View.VISIBLE : View.INVISIBLE);
         mLoadingView.setVisibility(mMainView == mLoadingView ? View.VISIBLE : View.INVISIBLE);
-        mPlayPauseReplayView.setVisibility(
-                mMainView == mPlayPauseReplayView ? View.VISIBLE : View.INVISIBLE);
+//        mPlayPauseReplayView.setVisibility(
+//                mMainView == mPlayPauseReplayView ? View.VISIBLE : View.INVISIBLE);
         show();
     }
 
@@ -203,16 +252,20 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         int w = right - left;
         boolean error = mErrorView.getVisibility() == View.VISIBLE;
 
+
         int y = h - pb;
         // Put both TimeBar and Background just above the bottom system
         // component.
         // But extend the background to the width of the screen, since we don't
         // care if it will be covered by a system component and it looks better.
         mBackground.layout(0, y - mTimeBar.getBarHeight(), w, y);
+
+
+        mBottomContainer.layout(pl, y - mTimeBar.getPreferredHeight() - mBottomContainer.getMeasuredHeight(), w - pr, y - mTimeBar.getPreferredHeight());
         mTimeBar.layout(pl, y - mTimeBar.getPreferredHeight(), w - pr, y);
 
         // Put the play/pause/next/ previous button in the center of the screen
-        layoutCenteredView(mPlayPauseReplayView, 0, 0, w, h);
+        //layoutCenteredView(mPlayPauseReplayView, 0, 0, w, h);
 
         if (mMainView != null) {
             layoutCenteredView(mMainView, 0, 0, w, h);
@@ -233,7 +286,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     @Override
     public void onClick(View view) {
         if (mListener != null) {
-            if (view == mPlayPauseReplayView) {
+            if (view == mPauseImageButton) {
                 if (mState == State.ENDED) {
                     if (mCanReplay) {
                         mListener.onReplay();
@@ -241,7 +294,9 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
                 } else if (mState == State.PAUSED || mState == State.PLAYING) {
                     mListener.onPlayPause();
                 }
+                updateViews();
             }
+
         }
     }
 
@@ -285,7 +340,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
 
     @Override
     public void setTimes(int currentTime, int totalTime,
-            int trimStartTime, int trimEndTime) {
+                         int trimStartTime, int trimEndTime) {
         mTimeBar.setTime(currentTime, totalTime, trimStartTime, trimEndTime);
     }
 
@@ -299,7 +354,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     @Override
     public void showEnded() {
         mState = State.ENDED;
-        if (mCanReplay) showMainView(mPlayPauseReplayView);
+        // if (mCanReplay) showMainView(mPlayPauseReplayView);
     }
 
     @Override
@@ -323,13 +378,13 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     @Override
     public void showPaused() {
         mState = State.PAUSED;
-        showMainView(mPlayPauseReplayView);
+        // showMainView(mPlayPauseReplayView);
     }
 
     @Override
     public void showPlaying() {
         mState = State.PLAYING;
-        showMainView(mPlayPauseReplayView);
+        //showMainView(mPlayPauseReplayView);
     }
 
     protected enum State {
