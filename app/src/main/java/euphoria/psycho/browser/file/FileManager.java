@@ -144,6 +144,10 @@ public class FileManager implements OnMenuItemClickListener,
         return mSortType;
     }
 
+    public void rename(FileItem item) {
+        FileHelper.rename(this,item);
+    }
+
     public void setSortType(int i) {
         mSortType = i;
     }

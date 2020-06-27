@@ -92,6 +92,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                 case R.string.file_item_extract_zip:
                     mFileManager.extractZipFile(getItem());
                     return;
+                case R.string.file_item_rename:
+                    mFileManager.rename(getItem());
+                    return;
             }
         };
         return new BasicListMenu(getContext(), listItems, delegate);

@@ -484,6 +484,33 @@ public class FileHelper {
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
 
+    public static void rename(FileManager fileManager, FileItem item) {
+        EditText editText = new EditText(fileManager.getActivity());
+
+        editText.setText(item.getTitle());
+        editText.requestFocus();
+        String fileName = item.getTitle();
+        int index = 0;
+        if ((index = fileName.lastIndexOf(".")) != -1) {
+            editText.setSelection(0, index);
+        }
+        AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
+                .setTitle(R.string.rename_file_item)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    File src = new File(item.getUrl());
+                    String targetFileName = editText.getText().toString();
+                    File target = new File(fileManager.getDirectory(), targetFileName);
+                    src.renameTo(target);
+                    fileManager.getFileAdapter().initialize();
+                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
+    }
+
     public static void selectSameType(FileManager fileManager) {
         List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
         if (fileItems.size() > 0) {

@@ -77,4 +77,5 @@
     <string name="resume_playing_restart">Start over</string>
     <string name="share">Share</string>
     <string name="movie_view_label">Video player</string>
+    <string name="rename_file_item">Rename File</string>
 </resources>
