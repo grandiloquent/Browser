@@ -1,10 +1,13 @@
 package euphoria.psycho.browser.app;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -22,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+
 import androidx.annotation.NonNull;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.file.FileHelper;

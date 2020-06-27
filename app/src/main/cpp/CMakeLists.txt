@@ -44,6 +44,11 @@ add_library(json
         STATIC
         cJSON.c
         )
+add_library(
+        minzip
+        STATIC
+        zip/zip.c)
+
 ##　target_compile_definitions(lib_exe1 PRIVATE -DForExe1)
 
 # Searches for a specified prebuilt library and stores the path as a
@@ -63,9 +68,12 @@ find_library( # Sets the name of the path variable.
 # build script, prebuilt third-party libraries, or system libraries.
 add_library(tmd5 STATIC ${CMAKE_CURRENT_SOURCE_DIR}/tmd5/tmd5.c)
 
+include_directories(zip)
+
 target_link_libraries( # Specifies the target library.
         native-lib
         mongoose
         tmd5
         json
+        minzip
         ${log-lib})

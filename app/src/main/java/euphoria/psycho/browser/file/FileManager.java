@@ -3,7 +3,6 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -14,17 +13,11 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.FileHandler;
-import java.util.stream.Stream;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
-import androidx.preference.Preference;
-import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -53,6 +46,7 @@ public class FileManager implements OnMenuItemClickListener,
     private boolean mIsShowHiddenFiles;
     private FileOperationManager mFileOperationManager;
     private LinkedList<String> mHistoryList = new LinkedList<>();
+    private String mSearchText;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -95,6 +89,10 @@ public class FileManager implements OnMenuItemClickListener,
         FileHelper.delete(this, item);
     }
 
+    public void extractZipFile(FileItem item) {
+        FileHelper.extractZipFile(this, item);
+    }
+
     public Activity getActivity() {
         return mActivity;
     }
@@ -130,6 +128,10 @@ public class FileManager implements OnMenuItemClickListener,
         return mHistoryList;
     }
 
+    public String getSearchText() {
+        return mSearchText;
+    }
+
     public SelectionDelegate<FileItem> getSelectionDelegate() {
         return mSelectionDelegate;
     }
@@ -151,6 +153,7 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     public boolean onBackPressed() {
+        mToolbar.hideSearchView();
         String parent = Share.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
                 || parent.startsWith(FileHelper.getSDPath())) {
@@ -209,7 +212,7 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     private void loadPrefer() {
-        
+
 
         Log.e("TAG/", "Debug: loadPrefer, \n");
 
@@ -230,6 +233,7 @@ public class FileManager implements OnMenuItemClickListener,
 
     @Override
     public void onEndSearch() {
+        mSearchText = null;
         mFileAdapter.onEndSearch();
         mSelectableListLayout.onEndSearch();
         mIsSearching = false;
@@ -243,11 +247,7 @@ public class FileManager implements OnMenuItemClickListener,
                 FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity), this);
                 return true;
             case R.id.selection_mode_delete_menu_id:
-                for (FileItem i : mSelectionDelegate.getSelectedItems()) {
-                    mFileAdapter.markItemForRemoval(i);
-                }
-                mFileAdapter.removeItems();
-                mSelectionDelegate.clearSelection();
+                FileHelper.deleteSelections(this);
                 return true;
             case R.id.search_menu_id:
                 mToolbar.showSearchView();
@@ -267,7 +267,6 @@ public class FileManager implements OnMenuItemClickListener,
                 FileHelper.cutSelections(this);
                 return true;
             case R.id.history_menu_id:
-
                 showHistoryDialog();
                 return true;
 
@@ -281,7 +280,9 @@ public class FileManager implements OnMenuItemClickListener,
 
     @Override
     public void onSearchTextChanged(String query) {
-        mFileAdapter.search(query);
+        mIsSearching = true;
+        mSearchText = query;
+        mFileAdapter.initialize();
     }
 
     @Override

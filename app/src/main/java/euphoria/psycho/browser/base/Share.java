@@ -26,7 +26,6 @@ import android.system.Os;
 import android.system.StructStat;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.util.Pair;
 import android.view.WindowManager;
 import android.widget.TextView;
 
@@ -64,6 +63,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+
+import static android.os.Environment.DIRECTORY_MUSIC;
 
 public class Share {
     private static final int BUFFER_SIZE = 8192;
@@ -208,6 +209,17 @@ public class Share {
         return crc;
     }
 
+    public static String getExternalStorageDirectory() {
+        File directory = Environment.getExternalStorageDirectory();
+        if (directory != null) {
+            return directory.getAbsolutePath();
+        }
+        directory = sApplicationContext.getExternalFilesDir(DIRECTORY_MUSIC);
+        if (directory != null) {
+            return substringBefore(directory.getAbsolutePath(), "/Android/");
+        }
+        return null;
+    }
 
     public static byte[] createChecksum(InputStream fis) throws Exception {
 

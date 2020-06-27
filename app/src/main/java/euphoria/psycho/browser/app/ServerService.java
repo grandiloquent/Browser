@@ -1,4 +1,5 @@
 package euphoria.psycho.browser.app;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +10,7 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
+
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;

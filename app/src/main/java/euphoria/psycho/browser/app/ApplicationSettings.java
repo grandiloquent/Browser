@@ -1,7 +1,10 @@
 package euphoria.psycho.browser.app;
+
 import android.os.Bundle;
 import android.os.Environment;
+
 import java.io.File;
+
 import androidx.preference.EditTextPreference;
 import androidx.preference.PreferenceFragmentCompat;
 import euphoria.psycho.browser.R;

@@ -1,4 +1,5 @@
 package euphoria.psycho.browser.app;
+
 import android.Manifest.permission;
 import android.os.Bundle;
 import android.os.Handler;
@@ -6,8 +7,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
+
 import java.io.IOException;
 import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;

@@ -2,9 +2,7 @@ package euphoria.psycho.browser.file;
 
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -34,7 +32,11 @@ public class FileProviderImpl implements FileProvider {
         if (dir.isDirectory()) {
             File[] files = fileManager.getShowHidden() ? dir.listFiles() : dir.listFiles((file, s) -> !s.startsWith("."));
             if (files != null) {
+                String searchText = fileManager.getSearchText();
                 for (File file : files) {
+                    if (searchText != null) {
+                        if (!file.getName().contains(searchText)) continue;
+                    }
                     FileItem fileItem = new FileItem(file.getName(),
                             file.getAbsolutePath(),
                             file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden()));

@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
@@ -22,7 +22,6 @@ import android.widget.EditText;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -40,7 +39,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-import androidx.core.graphics.PathUtils;
 import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -256,6 +254,24 @@ public class FileHelper {
         }
     }
 
+    public static void deleteSelections(FileManager fileManager) {
+        AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
+                .setTitle(R.string.question_dialog_title)
+                .setMessage(fileManager.getActivity().getString(R.string.question_delete_selections_file_item_message,
+                        fileManager.getSelectionDelegate().getSelectedItemsAsList().get(0).getTitle()))
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    for (FileItem fileItem : fileManager.getSelectionDelegate().getSelectedItems()) {
+                        fileManager.getFileAdapter().markItemForRemoval(fileItem);
+                    }
+                    fileManager.getFileAdapter().removeItems();
+                    fileManager.getSelectionDelegate().clearSelection();
+                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialog.show();
+    }
+
     public static void downloadFromUrl(Context context, String youtubeDlUrl, String downloadTitle, String fileName) {
         Uri uri = Uri.parse(youtubeDlUrl);
         DownloadManager.Request request = new DownloadManager.Request(uri);
@@ -292,6 +308,17 @@ public class FileHelper {
             }
         }).start();
     }
+
+    public static void extractZipFile(FileManager fileManager, FileItem item) {
+        File targetDirectory = new File(fileManager.getDirectory(), item.getTitle());
+        if (!targetDirectory.exists()) {
+            targetDirectory.mkdir();
+        }
+
+        NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
+        fileManager.getFileAdapter().initialize();
+    }
+
 
     public static void forceDelete(final File file) throws IOException {
 //        final Counters.PathCounters deleteCounters;
@@ -330,10 +357,6 @@ public class FileHelper {
             return files == null ? 0 : (isShowHidden ? files.length : countFiles(files));
         }
         return file.length();
-    }
-
-    public static boolean isMusic(File f) {
-        return sMusicPattern.matcher(f.getName()).find();
     }
 
     public static int getFileType(File file) {
@@ -396,6 +419,10 @@ public class FileHelper {
 
     public static void initialize(Context context) {
         sIsHasSD = (sSDPath = getExternalStoragePath(context)) != null;
+    }
+
+    public static boolean isMusic(File f) {
+        return sMusicPattern.matcher(f.getName()).find();
     }
 
     public static boolean isSymlink(final File file) {

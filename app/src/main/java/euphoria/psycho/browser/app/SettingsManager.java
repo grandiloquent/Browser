@@ -1,7 +1,5 @@
 package euphoria.psycho.browser.app;
 
-import android.content.SharedPreferences;
-
 import java.io.File;
 
 import euphoria.psycho.browser.base.Share;

@@ -1,6 +1,5 @@
 package euphoria.psycho.browser.file;
 
-import android.Manifest;
 import android.Manifest.permission;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,14 +11,11 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.Preference;
-import androidx.preference.Preference.OnPreferenceChangeListener;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
 
@@ -32,6 +28,10 @@ public class FileActivity extends AppCompatActivity {
         FrameLayout container = findViewById(R.id.container);
         mFileManager = new FileManager(this);
         container.addView(mFileManager.getView(), 0);
+
+
+        Log.e("TAG/", "Debug: initialize, \n"+Share.getExternalStorageDirectory());
+
     }
 
     @Override
@@ -46,7 +46,7 @@ public class FileActivity extends AppCompatActivity {
         } else {
             initialize();
         }
-       //createDebugFiles();
+        //createDebugFiles();
     }
 
     @Override
@@ -65,6 +65,7 @@ public class FileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+
         if (!mFileManager.onBackPressed())
             super.onBackPressed();
     }

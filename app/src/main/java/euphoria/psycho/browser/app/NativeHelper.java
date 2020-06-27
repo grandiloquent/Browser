@@ -17,4 +17,9 @@ public class NativeHelper {
     public static native long dirSize(String path);
 
     public static native boolean copyFile(String source, String target);
+
+    public static native void createZipFromDirectory(String dir, String filename);
+
+    public static native void extractToDirectory(String filename, String directory);
+
 }

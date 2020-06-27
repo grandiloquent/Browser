@@ -64,4 +64,6 @@
     <string name="history">History</string>
     <string name="notification_music_title">Music</string>
     <string name="copy_files_progress_dialog_title">Copy Files</string>
+    <string name="question_delete_selections_file_item_message">Are you sure delete \"%s\" files?</string>
+    <string name="file_item_extract_zip">Extract</string>
 </resources>

@@ -1,7 +1,6 @@
 package euphoria.psycho.browser.file;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -53,7 +52,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_copy_path, 0, 0));
-
+        if (getItem().getType() == FileHelper.TYPE_ZIP) {
+            listItems.add(buildMenuListItem(R.string.file_item_extract_zip, 0, 0));
+        }
 
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
@@ -87,6 +88,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     return;
                 case R.string.file_item_copy_path:
                     Share.setClipboardString(getItem().getUrl());
+                    return;
+                case R.string.file_item_extract_zip:
+                    mFileManager.extractZipFile(getItem());
                     return;
             }
         };

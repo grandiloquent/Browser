@@ -1,4 +1,5 @@
 #include <jni.h>
+#include <zip.h>
 #include "android/log.h"
 #include "mongoose.h"
 #include "dynarray.h"
@@ -290,4 +291,80 @@ JAVA_STATIC_METHOD(CLASS, copyFile, jboolean, jstring source_, jstring target_) 
     (*env)->ReleaseStringUTFChars(env, source_, source);
     (*env)->ReleaseStringUTFChars(env, target_, target);
     return ret == 0 ? true : false;
+}
+
+struct files {
+    char **files_name;
+    size_t capacity;
+    size_t index;
+};
+
+int list_directory_files(char *path, struct files *list);
+
+int list_directory_files(char *path, struct files *list) {
+    DIR *dir = opendir(path);
+    if (dir) {
+        struct dirent *dp;
+        struct stat s;
+        while ((dp = readdir(dir))) {
+            if (strcmp(dp->d_name, ".") == 0
+                || strcmp(dp->d_name, "..") == 0)
+                continue;
+            size_t len = strlen(path) + 2 + strlen(dp->d_name);
+            char *buf = malloc(len);
+            memset(buf, 0, len);
+            strcat(buf, path);
+            strcat(buf, "/");
+            strcat(buf, dp->d_name);
+            if (stat(buf, &s) == -1) {
+                free(buf);
+                continue;
+            }
+            if (S_ISDIR(s.st_mode)) {
+                list_directory(buf, list);
+            } else {
+                if (list->index + 1 >= list->capacity) {
+                    list->capacity = list->capacity * 2;
+                    list->files_name = realloc(list->files_name, sizeof(char *) * list->capacity);
+                }
+                //printf("%d %s\n", list->index, buf);
+                *(list->files_name + list->index++) = buf;
+            }
+        }
+        closedir(dir);
+    }
+    free(path);
+    return 0;
+}
+
+JAVA_STATIC_METHOD(CLASS, createZipFromDirectory, void, jstring dir_, jstring filename_) {
+    const char *dir = (*env)->GetStringUTFChars(env, dir_, 0);
+    const char *filename = (*env)->GetStringUTFChars(env, filename_, 0);
+    struct zip_t *zip = zip_open(filename, ZIP_DEFAULT_COMPRESSION_LEVEL, 'w');
+    size_t cap = 128;
+    struct files list = {
+            .files_name = malloc(sizeof(char *) * cap),
+            .capacity = cap,
+            .index = 0,
+    };
+    char *p = strdup(dir);
+    list_directory_files(p, &list);
+    for (size_t i = 0; i < list.index; i++) {
+        zip_entry_open(zip, *(list.files_name + i) + strlen(dir) + 1);
+        zip_entry_fwrite(zip, *(list.files_name + i));
+        zip_entry_close(zip);
+        free(*(list.files_name + i));
+    }
+    free(list.files_name);
+    zip_close(zip);
+    (*env)->ReleaseStringUTFChars(env, dir_, dir);
+    (*env)->ReleaseStringUTFChars(env, filename_, filename);
+}
+
+JAVA_STATIC_METHOD(CLASS, extractToDirectory, void, jstring filename_, jstring directory_) {
+    const char *filename = (*env)->GetStringUTFChars(env, filename_, 0);
+    const char *directory = (*env)->GetStringUTFChars(env, directory_, 0);
+    zip_extract(filename, directory, NULL, NULL);
+    (*env)->ReleaseStringUTFChars(env, filename_, filename);
+    (*env)->ReleaseStringUTFChars(env, directory_, directory);
 }

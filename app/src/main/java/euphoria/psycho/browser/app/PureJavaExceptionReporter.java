@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package euphoria.psycho.browser.app;
+
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningAppProcessInfo;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.regex.Pattern;
+
 import androidx.annotation.VisibleForTesting;
 import euphoria.psycho.browser.base.ApiCompatibilityUtils;
 import euphoria.psycho.browser.base.Share;

@@ -1,4 +1,5 @@
 package euphoria.psycho.browser.app;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -8,11 +9,13 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;

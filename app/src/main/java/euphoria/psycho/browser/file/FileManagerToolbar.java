@@ -1,6 +1,8 @@
 package euphoria.psycho.browser.file;
+
 import android.content.Context;
 import android.util.AttributeSet;
+
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.widget.SelectableListToolbar;
 public class FileManagerToolbar extends SelectableListToolbar<FileItem> {

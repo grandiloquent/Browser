@@ -1,4 +1,5 @@
 package euphoria.psycho.browser.app;
+
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.Context;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
 import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;

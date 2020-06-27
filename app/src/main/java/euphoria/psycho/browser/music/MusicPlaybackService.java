@@ -2,7 +2,6 @@ package euphoria.psycho.browser.music;
 
 import android.app.Notification;
 import android.app.Notification.Builder;
-import android.app.Notification.MediaStyle;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,26 +11,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.DrmInfo;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.media.MediaPlayer.OnDrmConfigHelper;
-import android.media.MediaPlayer.OnDrmInfoListener;
-import android.media.MediaPlayer.OnDrmPreparedListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnInfoListener;
-import android.media.MediaPlayer.OnMediaTimeDiscontinuityListener;
 import android.media.MediaPlayer.OnPreparedListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
-import android.media.MediaPlayer.OnSubtitleDataListener;
 import android.media.MediaPlayer.OnTimedMetaDataAvailableListener;
 import android.media.MediaPlayer.OnTimedTextListener;
-import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.media.MediaTimestamp;
-import android.media.SubtitleData;
 import android.media.TimedMetaData;
 import android.media.TimedText;
 import android.os.Build.VERSION;
@@ -39,21 +29,17 @@ import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.provider.CalendarContract.Colors;
 import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.BitmapUtils;
 import euphoria.psycho.browser.base.Share;
 
 public class MusicPlaybackService extends Service implements

@@ -1,8 +1,11 @@
 package euphoria.psycho.browser.app;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
