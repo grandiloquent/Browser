@@ -43,33 +43,29 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         OnClickListener,
         TimeBar.Listener {
 
-    protected enum State {
-        PLAYING,
-        PAUSED,
-        ENDED,
-        ERROR,
-        LOADING
-    }
-
     private static final float ERROR_MESSAGE_RELATIVE_PADDING = 1.0f / 6;
-
-    protected Listener mListener;
-
     protected final View mBackground;
-    protected TimeBar mTimeBar;
-
-    protected View mMainView;
-    protected final LinearLayout mLoadingView;
     protected final TextView mErrorView;
+    protected final LinearLayout mLoadingView;
     protected final ImageView mPlayPauseReplayView;
-
+    // The paddings of 4 sides which covered by system components. E.g.
+    // +-----------------+\
+    // | Action Bar | insets.top
+    // +-----------------+/
+    // | |
+    // | Content Area | insets.right = insets.left = 0
+    // | |
+    // +-----------------+\
+    // | Navigation Bar | insets.bottom
+    // +-----------------+/
+    // Please see View.fitSystemWindows() for more details.
+    private final Rect mWindowInsets = new Rect();
+    protected Listener mListener;
+    protected TimeBar mTimeBar;
+    protected View mMainView;
     protected State mState;
 
     protected boolean mCanReplay = true;
-
-    public void setSeekable(boolean canSeek) {
-        mTimeBar.setSeekable(canSeek);
-    }
 
     public CommonControllerOverlay(Context context) {
         super(context);
@@ -123,71 +119,6 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         hide();
     }
 
-    abstract protected void createTimeBar(Context context);
-
-    private TextView createOverlayTextView(Context context) {
-        TextView view = new TextView(context);
-        view.setGravity(Gravity.CENTER);
-        view.setTextColor(0xFFFFFFFF);
-        view.setPadding(0, 15, 0, 15);
-        return view;
-    }
-
-    @Override
-    public void setListener(Listener listener) {
-        this.mListener = listener;
-    }
-
-    @Override
-    public void setCanReplay(boolean canReplay) {
-        this.mCanReplay = canReplay;
-    }
-
-    @Override
-    public View getView() {
-        return this;
-    }
-
-    @Override
-    public void showPlaying() {
-        mState = State.PLAYING;
-        showMainView(mPlayPauseReplayView);
-    }
-
-    @Override
-    public void showPaused() {
-        mState = State.PAUSED;
-        showMainView(mPlayPauseReplayView);
-    }
-
-    @Override
-    public void showEnded() {
-        mState = State.ENDED;
-        if (mCanReplay) showMainView(mPlayPauseReplayView);
-    }
-
-    @Override
-    public void showLoading() {
-        mState = State.LOADING;
-        showMainView(mLoadingView);
-    }
-
-    @Override
-    public void showErrorMessage(String message) {
-        mState = State.ERROR;
-        int padding = (int) (getMeasuredWidth() * ERROR_MESSAGE_RELATIVE_PADDING);
-        mErrorView.setPadding(
-                padding, mErrorView.getPaddingTop(), padding, mErrorView.getPaddingBottom());
-        mErrorView.setText(message);
-        showMainView(mErrorView);
-    }
-
-    @Override
-    public void setTimes(int currentTime, int totalTime,
-            int trimStartTime, int trimEndTime) {
-        mTimeBar.setTime(currentTime, totalTime, trimStartTime, trimEndTime);
-    }
-
     public void hide() {
         mPlayPauseReplayView.setVisibility(View.INVISIBLE);
         mLoadingView.setVisibility(View.INVISIBLE);
@@ -198,6 +129,51 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         requestFocus();
     }
 
+    public void setSeekable(boolean canSeek) {
+        mTimeBar.setSeekable(canSeek);
+    }
+
+    abstract protected void createTimeBar(Context context);
+
+    protected void updateViews() {
+        mBackground.setVisibility(View.VISIBLE);
+        mTimeBar.setVisibility(View.VISIBLE);
+        Resources resources = getContext().getResources();
+        int imageResource = R.drawable.ic_vidcontrol_reload;
+        String contentDescription = resources.getString(R.string.accessibility_reload_video);
+        if (mState == State.PAUSED) {
+            imageResource = R.drawable.ic_vidcontrol_play;
+            contentDescription = resources.getString(R.string.accessibility_play_video);
+        } else if (mState == State.PLAYING) {
+            imageResource = R.drawable.ic_vidcontrol_pause;
+            contentDescription = resources.getString(R.string.accessibility_pause_video);
+        }
+
+        mPlayPauseReplayView.setImageResource(imageResource);
+        mPlayPauseReplayView.setContentDescription(contentDescription);
+        mPlayPauseReplayView.setVisibility(
+                (mState != State.LOADING && mState != State.ERROR &&
+                !(mState == State.ENDED && !mCanReplay))
+                ? View.VISIBLE : View.GONE);
+        requestLayout();
+    }
+
+    private TextView createOverlayTextView(Context context) {
+        TextView view = new TextView(context);
+        view.setGravity(Gravity.CENTER);
+        view.setTextColor(0xFFFFFFFF);
+        view.setPadding(0, 15, 0, 15);
+        return view;
+    }
+
+    private void layoutCenteredView(View view, int l, int t, int r, int b) {
+        int cw = view.getMeasuredWidth();
+        int ch = view.getMeasuredHeight();
+        int cl = (r - l - cw) / 2;
+        int ct = (b - t - ch) / 2;
+        view.layout(cl, ct, cl + cw, ct + ch);
+    }
+
     private void showMainView(View view) {
         mMainView = view;
         mErrorView.setVisibility(mMainView == mErrorView ? View.VISIBLE : View.INVISIBLE);
@@ -206,54 +182,6 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
                 mMainView == mPlayPauseReplayView ? View.VISIBLE : View.INVISIBLE);
         show();
     }
-
-    @Override
-    public void show() {
-        updateViews();
-        setVisibility(View.VISIBLE);
-        setFocusable(false);
-    }
-
-    @Override
-    public void onClick(View view) {
-        if (mListener != null) {
-            if (view == mPlayPauseReplayView) {
-                if (mState == State.ENDED) {
-                    if (mCanReplay) {
-                        mListener.onReplay();
-                    }
-                } else if (mState == State.PAUSED || mState == State.PLAYING) {
-                    mListener.onPlayPause();
-                }
-            }
-        }
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return super.onKeyDown(keyCode, event);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (super.onTouchEvent(event)) {
-            return true;
-        }
-        return false;
-    }
-
-    // The paddings of 4 sides which covered by system components. E.g.
-    // +-----------------+\
-    // | Action Bar | insets.top
-    // +-----------------+/
-    // | |
-    // | Content Area | insets.right = insets.left = 0
-    // | |
-    // +-----------------+\
-    // | Navigation Bar | insets.bottom
-    // +-----------------+/
-    // Please see View.fitSystemWindows() for more details.
-    private final Rect mWindowInsets = new Rect();
 
     @Override
     protected boolean fitSystemWindows(Rect insets) {
@@ -291,48 +219,40 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         }
     }
 
-    private void layoutCenteredView(View view, int l, int t, int r, int b) {
-        int cw = view.getMeasuredWidth();
-        int ch = view.getMeasuredHeight();
-        int cl = (r - l - cw) / 2;
-        int ct = (b - t - ch) / 2;
-        view.layout(cl, ct, cl + cw, ct + ch);
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         measureChildren(widthMeasureSpec, heightMeasureSpec);
     }
 
-    protected void updateViews() {
-        mBackground.setVisibility(View.VISIBLE);
-        mTimeBar.setVisibility(View.VISIBLE);
-        Resources resources = getContext().getResources();
-        int imageResource = R.drawable.ic_vidcontrol_reload;
-        String contentDescription = resources.getString(R.string.accessibility_reload_video);
-        if (mState == State.PAUSED) {
-            imageResource = R.drawable.ic_vidcontrol_play;
-            contentDescription = resources.getString(R.string.accessibility_play_video);
-        } else if (mState == State.PLAYING) {
-            imageResource = R.drawable.ic_vidcontrol_pause;
-            contentDescription = resources.getString(R.string.accessibility_pause_video);
-        }
-
-        mPlayPauseReplayView.setImageResource(imageResource);
-        mPlayPauseReplayView.setContentDescription(contentDescription);
-        mPlayPauseReplayView.setVisibility(
-                (mState != State.LOADING && mState != State.ERROR &&
-                !(mState == State.ENDED && !mCanReplay))
-                ? View.VISIBLE : View.GONE);
-        requestLayout();
+    @Override
+    public View getView() {
+        return this;
     }
 
-    // TimeBar listener
+    @Override
+    public void onClick(View view) {
+        if (mListener != null) {
+            if (view == mPlayPauseReplayView) {
+                if (mState == State.ENDED) {
+                    if (mCanReplay) {
+                        mListener.onReplay();
+                    }
+                } else if (mState == State.PAUSED || mState == State.PLAYING) {
+                    mListener.onPlayPause();
+                }
+            }
+        }
+    }
 
     @Override
-    public void onScrubbingStart() {
-        mListener.onSeekStart();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onScrubbingEnd(int time, int trimStartTime, int trimEndTime) {
+        mListener.onSeekEnd(time, trimStartTime, trimEndTime);
     }
 
     @Override
@@ -341,7 +261,82 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     }
 
     @Override
-    public void onScrubbingEnd(int time, int trimStartTime, int trimEndTime) {
-        mListener.onSeekEnd(time, trimStartTime, trimEndTime);
+    public void onScrubbingStart() {
+        mListener.onSeekStart();
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (super.onTouchEvent(event)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void setCanReplay(boolean canReplay) {
+        this.mCanReplay = canReplay;
+    }
+
+    @Override
+    public void setListener(Listener listener) {
+        this.mListener = listener;
+    }
+
+    @Override
+    public void setTimes(int currentTime, int totalTime,
+            int trimStartTime, int trimEndTime) {
+        mTimeBar.setTime(currentTime, totalTime, trimStartTime, trimEndTime);
+    }
+
+    @Override
+    public void show() {
+        updateViews();
+        setVisibility(View.VISIBLE);
+        setFocusable(false);
+    }
+
+    @Override
+    public void showEnded() {
+        mState = State.ENDED;
+        if (mCanReplay) showMainView(mPlayPauseReplayView);
+    }
+
+    @Override
+    public void showErrorMessage(String message) {
+        mState = State.ERROR;
+        int padding = (int) (getMeasuredWidth() * ERROR_MESSAGE_RELATIVE_PADDING);
+        mErrorView.setPadding(
+                padding, mErrorView.getPaddingTop(), padding, mErrorView.getPaddingBottom());
+        mErrorView.setText(message);
+        showMainView(mErrorView);
+    }
+
+    @Override
+    public void showLoading() {
+        mState = State.LOADING;
+        showMainView(mLoadingView);
+    }
+
+    // TimeBar listener
+
+    @Override
+    public void showPaused() {
+        mState = State.PAUSED;
+        showMainView(mPlayPauseReplayView);
+    }
+
+    @Override
+    public void showPlaying() {
+        mState = State.PLAYING;
+        showMainView(mPlayPauseReplayView);
+    }
+
+    protected enum State {
+        PLAYING,
+        PAUSED,
+        ENDED,
+        ERROR,
+        LOADING
     }
 }

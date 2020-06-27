@@ -54,16 +54,72 @@ import euphoria.psycho.browser.base.Utils;
  * the original activity.
  */
 public class MovieActivity extends Activity {
-    @SuppressWarnings("unused")
-    private static final String TAG = "MovieActivity";
     public static final String KEY_LOGO_BITMAP = "logo-bitmap";
     public static final String KEY_TREAT_UP_AS_BACK = "treat-up-as-back";
-
+    @SuppressWarnings("unused")
+    private static final String TAG = "MovieActivity";
     private MoviePlayer mPlayer;
     private boolean mFinishOnCompletion;
     private Uri mUri;
     private boolean mTreatUpAsBack;
     private PowerManager.WakeLock mWakeLock = null;
+
+    private Intent createShareIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("video/*");
+        intent.putExtra(Intent.EXTRA_STREAM, mUri);
+        return intent;
+    }
+
+    private void initializeActionBar(Intent intent) {
+        mUri = intent.getData();
+        final ActionBar actionBar = getActionBar();
+        if (actionBar == null) {
+            return;
+        }
+        setActionBarLogoFromIntent(intent);
+        actionBar.setDisplayOptions(
+                ActionBar.DISPLAY_HOME_AS_UP,
+                ActionBar.DISPLAY_HOME_AS_UP);
+
+        String title = intent.getStringExtra(Intent.EXTRA_TITLE);
+        if (title != null) {
+            actionBar.setTitle(title);
+        } else {
+            // Displays the filename as title, reading the filename from the
+            // interface: {@link android.provider.OpenableColumns#DISPLAY_NAME}.
+            AsyncQueryHandler queryHandler =
+                    new AsyncQueryHandler(getContentResolver()) {
+                        @Override
+                        protected void onQueryComplete(int token, Object cookie,
+                                                       Cursor cursor) {
+                            try {
+                                if ((cursor != null) && cursor.moveToFirst()) {
+                                    String displayName = cursor.getString(0);
+
+                                    // Just show empty title if other apps don't set
+                                    // DISPLAY_NAME
+                                    actionBar.setTitle((displayName == null) ? "" :
+                                            displayName);
+                                }
+                            } finally {
+                                Utils.closeSilently(cursor);
+                            }
+                        }
+                    };
+            queryHandler.startQuery(0, null, mUri,
+                    new String[]{OpenableColumns.DISPLAY_NAME}, null, null,
+                    null);
+        }
+    }
+
+    private void setActionBarLogoFromIntent(Intent intent) {
+        Bitmap logo = intent.getParcelableExtra(KEY_LOGO_BITMAP);
+        if (logo != null) {
+            getActionBar().setLogo(
+                    new BitmapDrawable(getResources(), logo));
+        }
+    }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     private void setSystemUiVisibility(View rootView) {
@@ -72,6 +128,16 @@ public class MovieActivity extends Activity {
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
+    }
+
+    @Override
+    protected void onStop() {
+        ((AudioManager) getSystemService(AUDIO_SERVICE))
+                .abandonAudioFocus(null);
+        super.onStop();
+
+        mWakeLock.release();
+
     }
 
     @Override
@@ -119,56 +185,6 @@ public class MovieActivity extends Activity {
         win.setBackgroundDrawable(null);
     }
 
-    private void setActionBarLogoFromIntent(Intent intent) {
-        Bitmap logo = intent.getParcelableExtra(KEY_LOGO_BITMAP);
-        if (logo != null) {
-            getActionBar().setLogo(
-                    new BitmapDrawable(getResources(), logo));
-        }
-    }
-
-    private void initializeActionBar(Intent intent) {
-        mUri = intent.getData();
-        final ActionBar actionBar = getActionBar();
-        if (actionBar == null) {
-            return;
-        }
-        setActionBarLogoFromIntent(intent);
-        actionBar.setDisplayOptions(
-                ActionBar.DISPLAY_HOME_AS_UP,
-                ActionBar.DISPLAY_HOME_AS_UP);
-
-        String title = intent.getStringExtra(Intent.EXTRA_TITLE);
-        if (title != null) {
-            actionBar.setTitle(title);
-        } else {
-            // Displays the filename as title, reading the filename from the
-            // interface: {@link android.provider.OpenableColumns#DISPLAY_NAME}.
-            AsyncQueryHandler queryHandler =
-                    new AsyncQueryHandler(getContentResolver()) {
-                        @Override
-                        protected void onQueryComplete(int token, Object cookie,
-                                                       Cursor cursor) {
-                            try {
-                                if ((cursor != null) && cursor.moveToFirst()) {
-                                    String displayName = cursor.getString(0);
-
-                                    // Just show empty title if other apps don't set
-                                    // DISPLAY_NAME
-                                    actionBar.setTitle((displayName == null) ? "" :
-                                            displayName);
-                                }
-                            } finally {
-                                Utils.closeSilently(cursor);
-                            }
-                        }
-                    };
-            queryHandler.startQuery(0, null, mUri,
-                    new String[]{OpenableColumns.DISPLAY_NAME}, null, null,
-                    null);
-        }
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -177,7 +193,7 @@ public class MovieActivity extends Activity {
         // Document says EXTRA_STREAM should be a content: Uri
         // So, we only share the video if it's "content:".
         MenuItem shareItem = menu.findItem(R.id.action_share);
-        if (ContentResolver.SCHEME_CONTENT.equals(mUri.getScheme())) {
+        if ("file".equals(mUri.getScheme())) {
             shareItem.setVisible(true);
             ((ShareActionProvider) shareItem.getActionProvider())
                     .setShareIntent(createShareIntent());
@@ -187,11 +203,22 @@ public class MovieActivity extends Activity {
         return true;
     }
 
-    private Intent createShareIntent() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("video/*");
-        intent.putExtra(Intent.EXTRA_STREAM, mUri);
-        return intent;
+    @Override
+    public void onDestroy() {
+        mPlayer.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        return mPlayer.onKeyDown(keyCode, event)
+                || super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        return mPlayer.onKeyUp(keyCode, event)
+                || super.onKeyUp(keyCode, event);
     }
 
     @Override
@@ -206,29 +233,6 @@ public class MovieActivity extends Activity {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onStart() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .requestAudioFocus(null, AudioManager.STREAM_MUSIC,
-                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        super.onStart();
-
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Gallery:WAKE_LOCK");
-        mWakeLock.acquire();
-
-    }
-
-    @Override
-    protected void onStop() {
-        ((AudioManager) getSystemService(AUDIO_SERVICE))
-                .abandonAudioFocus(null);
-        super.onStop();
-
-        mWakeLock.release();
-
     }
 
     @Override
@@ -250,20 +254,15 @@ public class MovieActivity extends Activity {
     }
 
     @Override
-    public void onDestroy() {
-        mPlayer.onDestroy();
-        super.onDestroy();
-    }
+    public void onStart() {
+        ((AudioManager) getSystemService(AUDIO_SERVICE))
+                .requestAudioFocus(null, AudioManager.STREAM_MUSIC,
+                        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        super.onStart();
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return mPlayer.onKeyDown(keyCode, event)
-                || super.onKeyDown(keyCode, event);
-    }
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        mWakeLock = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "Gallery:WAKE_LOCK");
+        mWakeLock.acquire();
 
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        return mPlayer.onKeyUp(keyCode, event)
-                || super.onKeyUp(keyCode, event);
     }
 }

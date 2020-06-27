@@ -33,6 +33,7 @@ import euphoria.psycho.browser.R;
 public class MovieControllerOverlay extends CommonControllerOverlay implements
         AnimationListener {
 
+    private static final long START_HIDING_DELAY = 5000;
     private boolean hidden;
 
     private final Handler handler;
@@ -43,12 +44,7 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         super(context);
 
         handler = new Handler();
-        startHidingRunnable = new Runnable() {
-                @Override
-            public void run() {
-                startHiding();
-            }
-        };
+        startHidingRunnable = () -> startHiding();
 
         hideAnimation = AnimationUtils.loadAnimation(context, R.anim.player_out);
         hideAnimation.setAnimationListener(this);
@@ -86,7 +82,7 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
     private void maybeStartHiding() {
         cancelHiding();
         if (mState == State.PLAYING) {
-            handler.postDelayed(startHidingRunnable, 2500);
+            handler.postDelayed(startHidingRunnable, START_HIDING_DELAY);
         }
     }
 
