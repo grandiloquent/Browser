@@ -9,6 +9,7 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -114,6 +115,10 @@ public class Share {
         return inSampleSize;
     }
 
+    public static boolean checkSelfPermission(Context context, String permission) {
+        return context.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
     public static void closeQuietly(Closeable closeable) {
         try {
             if (closeable != null)
@@ -207,18 +212,6 @@ public class Share {
             crc = sCrcTable[(((int) crc) ^ buffer[k]) & 0xff] ^ (crc >> 8);
         }
         return crc;
-    }
-
-    public static String getExternalStorageDirectory() {
-        File directory = Environment.getExternalStorageDirectory();
-        if (directory != null) {
-            return directory.getAbsolutePath();
-        }
-        directory = sApplicationContext.getExternalFilesDir(DIRECTORY_MUSIC);
-        if (directory != null) {
-            return substringBefore(directory.getAbsolutePath(), "/Android/");
-        }
-        return null;
     }
 
     public static byte[] createChecksum(InputStream fis) throws Exception {
@@ -449,9 +442,22 @@ public class Share {
         }
     }
 
+    public static String getExternalStorageDirectory() {
+        File directory = Environment.getExternalStorageDirectory();
+        if (directory != null) {
+            return directory.getAbsolutePath();
+        }
+        directory = sApplicationContext.getExternalFilesDir(DIRECTORY_MUSIC);
+        if (directory != null) {
+            return substringBefore(directory.getAbsolutePath(), "/Android/");
+        }
+        return null;
+    }
+
     public static String getExternalStoragePath(String fileName) {
         return Environment.getExternalStorageDirectory() + "/" + fileName;
     }
+
 
     public static String getMD5Checksum(InputStream fis) throws Exception {
         byte[] b = createChecksum(fis);

@@ -20,7 +20,7 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.base.Share;
 
 public class FileActivity extends AppCompatActivity {
-    private static final int REQUEST_PERMISSIONS_CODE = 0;
+    private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
     private FileManager mFileManager;
 
     private void initialize() {
@@ -28,17 +28,13 @@ public class FileActivity extends AppCompatActivity {
         FrameLayout container = findViewById(R.id.container);
         mFileManager = new FileManager(this);
         container.addView(mFileManager.getView(), 0);
-
-
-        Log.e("TAG/", "Debug: initialize, \n"+Share.getExternalStorageDirectory());
-
     }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         List<String> needPermissions = new ArrayList<>();
-        if (checkSelfPermission(permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        if (!Share.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.WRITE_EXTERNAL_STORAGE);
         }
         if (needPermissions.size() > 0) {

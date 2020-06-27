@@ -52,6 +52,7 @@ import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.music.MusicPlaybackService;
+import euphoria.psycho.browser.video.MovieActivity;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -81,6 +82,9 @@ public class FileHelper {
     // https://developer.android.com/guide/topics/media/media-formats
     // 匹配文件名是否为音频格式
     private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3|m4a|aac|flac|gsm|mid|xmf|mxmf|rtttl|rtx|ota|imy|wav|ogg)$", Pattern.CASE_INSENSITIVE);
+    private static Pattern sVideoPattern = Pattern.compile("\\.(?:mp4|3gp|webm|ts|mkv)$", Pattern.CASE_INSENSITIVE);
+
+
     private static String sSDPath;
     /*
     ["apk",
@@ -310,7 +314,7 @@ public class FileHelper {
     }
 
     public static void extractZipFile(FileManager fileManager, FileItem item) {
-        File targetDirectory = new File(fileManager.getDirectory(), item.getTitle());
+        File targetDirectory = new File(fileManager.getDirectory(), Share.substringBeforeLast(item.getTitle(), '.'));
         if (!targetDirectory.exists()) {
             targetDirectory.mkdir();
         }
@@ -345,7 +349,7 @@ public class FileHelper {
             appInfo.publicSourceDir = apkPath;
             try {
                 return appInfo.loadIcon(pm);
-            } catch (OutOfMemoryError e) {
+            } catch (OutOfMemoryError ignored) {
             }
         }
         return null;
@@ -425,6 +429,10 @@ public class FileHelper {
         return sMusicPattern.matcher(f.getName()).find();
     }
 
+    public static boolean isVideo(File f) {
+        return sVideoPattern.matcher(f.getName()).find();
+    }
+
     public static boolean isSymlink(final File file) {
         Objects.requireNonNull(file, "file");
         return Files.isSymbolicLink(file.toPath());
@@ -459,6 +467,13 @@ public class FileHelper {
             activity.startService(service);
             return;
         }
+        if (sVideoPattern.matcher(fileItem.getTitle()).find()) {
+            Intent movieActivity = new Intent(activity, MovieActivity.class);
+            movieActivity.setData(Uri.fromFile(new File(fileItem.getUrl())));
+            activity.startActivity(movieActivity);
+            return;
+        }
+
         String url = fileItem.getUrl();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
