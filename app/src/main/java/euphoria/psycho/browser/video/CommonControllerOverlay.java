@@ -80,6 +80,7 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
     //["previous","pause","next"]
     private ImageButton mPauseImageButton;
     private ImageButton mNextImageButton;
+    private Rect mVideoRect = new Rect();
 
     public CommonControllerOverlay(Context context) {
         super(context);
@@ -169,6 +170,8 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         setFocusable(true);
         requestFocus();
     }
+
+
 
     public void setSeekable(boolean canSeek) {
         mTimeBar.setSeekable(canSeek);
@@ -261,6 +264,10 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         mBackground.layout(0, y - mTimeBar.getBarHeight(), w, y);
 
 
+        mVideoRect.set(left, top, right, bottom - mTimeBar.getPreferredHeight() - mBottomContainer.getMeasuredHeight());
+
+
+
         mBottomContainer.layout(pl, y - mTimeBar.getPreferredHeight() - mBottomContainer.getMeasuredHeight(), w - pr, y - mTimeBar.getPreferredHeight());
         mTimeBar.layout(pl, y - mTimeBar.getPreferredHeight(), w - pr, y);
 
@@ -270,6 +277,10 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         if (mMainView != null) {
             layoutCenteredView(mMainView, 0, 0, w, h);
         }
+    }
+
+    public Rect getVideoRect() {
+        return mVideoRect;
     }
 
     @Override

@@ -165,7 +165,6 @@ public class MoviePlayer implements
         mAudioBecomingNoisyReceiver.register();
 
 
-
         if (savedInstance != null) { // this is a resumed activity
             mVideoPosition = savedInstance.getInt(KEY_VIDEO_POSITION, 0);
             mResumeableTime = savedInstance.getLong(KEY_RESUMEABLE_TIME, Long.MAX_VALUE);
@@ -419,6 +418,18 @@ public class MoviePlayer implements
     public void onPlayPrevious() {
 
     }
+
+    @Override
+    public void onSeekBy(int time) {
+
+
+        int targetTime = time + mVideoView.getCurrentPosition();
+        if (targetTime > mVideoView.getDuration()) {
+            return;
+        }
+        mVideoView.seekTo(targetTime);
+    }
+
 
     @Override
     public void onReplay() {

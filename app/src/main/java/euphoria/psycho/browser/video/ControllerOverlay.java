@@ -62,5 +62,7 @@ public interface ControllerOverlay {
         void onPlayNext();
 
         void onPlayPrevious();
+
+        void onSeekBy(int time);
     }
 }

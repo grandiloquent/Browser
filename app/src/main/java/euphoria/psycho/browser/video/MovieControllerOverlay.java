@@ -19,7 +19,6 @@ package euphoria.psycho.browser.video;
 import android.content.Context;
 import android.os.Handler;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -31,13 +30,14 @@ import euphoria.psycho.browser.R;
  * The playback controller for the Movie Player.
  */
 public class MovieControllerOverlay extends CommonControllerOverlay implements
-        AnimationListener {
+        AnimationListener { //
 
     private static final long START_HIDING_DELAY = 5000;
     private final Handler handler;
     private final Animation hideAnimation;
     private final Runnable startHidingRunnable;
     private boolean hidden;
+
 
     public MovieControllerOverlay(Context context) {
         super(context);
@@ -49,6 +49,21 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         hideAnimation.setAnimationListener(this);
 
         hide();
+        setOnTouchListener(new MovieGestureDetector(getContext(), this));
+    }
+
+
+    public void onSeekBy(int targetTime) {
+        mListener.onSeekBy(targetTime);
+    }
+
+
+    public boolean onSingleTap() {
+        if (hidden) {
+            show();
+            return true;
+        }
+        return false;
     }
 
     private void cancelHiding() {
@@ -74,7 +89,7 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
     private void startHiding() {
         startHideAnimation(mBackground);
         startHideAnimation(mTimeBar);
-       // startHideAnimation(mPlayPauseReplayView);
+        // startHideAnimation(mPlayPauseReplayView);
     }
 
     @Override
@@ -143,29 +158,26 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         super.onScrubbingStart();
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (super.onTouchEvent(event)) {
-            return true;
-        }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent event) {
+//        if (super.onTouchEvent(event)) {
+//            return true;
+//        }
+//
 
-        if (hidden) {
-            show();
-            return true;
-        }
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                cancelHiding();
-                if (mState == State.PLAYING || mState == State.PAUSED) {
-                    mListener.onPlayPause();
-                }
-                break;
-            case MotionEvent.ACTION_UP:
-                maybeStartHiding();
-                break;
-        }
-        return true;
-    }
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                cancelHiding();
+//                if (mState == State.PLAYING || mState == State.PAUSED) {
+//                    mListener.onPlayPause();
+//                }
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                maybeStartHiding();
+//                break;
+//        }
+//        return true;
+//    }
 
     @Override
     public void show() {
