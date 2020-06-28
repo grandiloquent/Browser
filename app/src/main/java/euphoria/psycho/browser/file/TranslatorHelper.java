@@ -3,19 +3,14 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.AlertDialog;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.ThreadUtils;
 
 public class TranslatorHelper {
-    static ExecutorService sSingleThreadExecutor;
 
     public static void youdaoChinese(Activity activity) {
-        if (sSingleThreadExecutor == null)
-            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-        sSingleThreadExecutor.submit(() -> {
+        ThreadUtils.postOnBackgroundThread(() -> {
             CharSequence q = ContextUtils.getClipboardString();
             if (q == null) return;
             String query = q.toString().trim();
@@ -33,9 +28,8 @@ public class TranslatorHelper {
     }
 
     public static void google(Activity activity) {
-        if (sSingleThreadExecutor == null)
-            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-        sSingleThreadExecutor.submit(() -> {
+
+        ThreadUtils.postOnBackgroundThread(() -> {
             CharSequence q = ContextUtils.getClipboardString();
             if (q == null) return;
             String query = q.toString().trim();
