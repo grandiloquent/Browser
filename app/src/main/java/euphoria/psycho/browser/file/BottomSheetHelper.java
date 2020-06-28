@@ -1,0 +1,76 @@
+package euphoria.psycho.browser.file;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Environment;
+import android.util.Pair;
+
+import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.BottomSheet;
+import euphoria.psycho.browser.app.SettingsActivity;
+
+import static euphoria.psycho.browser.file.FileConstantsHelper.sIsHasSD;
+import static euphoria.psycho.browser.file.FileConstantsHelper.sSDPath;
+import static euphoria.psycho.browser.file.FileHelper.*;
+
+public class BottomSheetHelper {
+    public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
+        if (sIsHasSD) {
+            return new Pair[]{
+                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
+                    Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
+                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
+                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
+                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
+            };
+        } else {
+            return new Pair[]{
+                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
+                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
+                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
+                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
+                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
+            };
+        }
+    }
+
+
+    public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
+        BottomSheet bottomSheet = new BottomSheet(activity)
+                .setOnClickListener(item -> {
+                    switch (item.first) {
+                        case R.drawable.ic_storage:
+                            fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
+                            break;
+                        case R.drawable.ic_sd_storage:
+                            fileManager.openDirectory(sSDPath);
+                            break;
+                        case R.drawable.ic_settings:
+                            Intent settingsActivity = new Intent(activity, SettingsActivity.class);
+                            activity.startActivity(settingsActivity);
+                            break;
+                        case R.drawable.ic_info:
+                            showDirectoryInfo(activity, fileManager.getDirectory());
+                            break;
+                        case R.drawable.ic_more_vert:
+                            createFunctionsMenu(activity, fileManager);
+                            break;
+                        case R.drawable.ic_create_new_folder:
+                            createNewDirectory(activity, fileManager);
+                            break;
+                        case R.drawable.ic_sort:
+                            showSortDialog(activity, fileManager);
+                            break;
+                    }
+                    fileManager.setBottomSheet(null);
+                });
+        fileManager.setBottomSheet(bottomSheet);
+        bottomSheet.showDialog(items);
+    }
+
+
+}

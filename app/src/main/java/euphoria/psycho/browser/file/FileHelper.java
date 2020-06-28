@@ -13,6 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.util.Log;
@@ -39,6 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -55,37 +57,13 @@ import euphoria.psycho.browser.music.MusicPlaybackService;
 import euphoria.psycho.browser.video.MovieActivity;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+import static euphoria.psycho.browser.file.FileConstantsHelper.*;
 
 public class FileHelper {
-    public static final int SORT_BY_ASCENDING = 1 << 5;
-    public static final int SORT_BY_DATA_MODIFIED = 1 << 1;
-    public static final int SORT_BY_NAME = 1 << 2;
-    public static final int SORT_BY_SIZE = 1 << 3;
-    public static final int SORT_BY_TYPE = 1 << 4;
-    // ["name","size","type","data_modified"]
-    public static final int SORT_TYPE_DEFAULT = 33;
 
-    public static final int TYPE_APK = 0;
-    public static final int TYPE_EXCEL = 1;
-    public static final int TYPE_FOLDER = 2;
-    public static final int TYPE_IMAGE = 3;
-    public static final int TYPE_MUSIC = 4;
-    public static final int TYPE_OTHERS = 5;
-    public static final int TYPE_PDF = 6;
-    public static final int TYPE_PPS = 7;
-    public static final int TYPE_TEXT = 8;
-    public static final int TYPE_VCF = 9;
-    public static final int TYPE_VIDEO = 10;
-    public static final int TYPE_WORD = 11;
-    public static final int TYPE_ZIP = 12;
-    private static boolean sIsHasSD;
     // https://developer.android.com/guide/topics/media/media-formats
     // 匹配文件名是否为音频格式
-    private static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3|m4a|aac|flac|gsm|mid|xmf|mxmf|rtttl|rtx|ota|imy|wav|ogg)$", Pattern.CASE_INSENSITIVE);
-    private static Pattern sVideoPattern = Pattern.compile("\\.(?:mp4|3gp|webm|ts|mkv)$", Pattern.CASE_INSENSITIVE);
 
-
-    private static String sSDPath;
     /*
     ["apk",
 "excel",
@@ -121,6 +99,7 @@ public class FileHelper {
         }
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     public static void copyDirectory(final File srcDir, final File destDir,
                                      final FileFilter filter, final boolean preserveFileDate) throws IOException {
         if (!srcDir.isDirectory()) {
@@ -145,10 +124,12 @@ public class FileHelper {
         doCopyDirectory(srcDir, destDir, filter, preserveFileDate, exclusionList);
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     public static void copyDirectory(final File srcDir, final File destDir) throws IOException {
         copyDirectory(srcDir, destDir, true);
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     public static void copyDirectory(final File srcDir, final File destDir,
                                      final boolean preserveFileDate) throws IOException {
         copyDirectory(srcDir, destDir, null, preserveFileDate);
@@ -160,28 +141,6 @@ public class FileHelper {
         fileManager.getSelectionDelegate().clearSelection();
     }
 
-    public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
-        if (sIsHasSD) {
-            return new Pair[]{
-                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
-                    Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
-                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
-                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
-                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
-                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
-                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
-            };
-        } else {
-            return new Pair[]{
-                    Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
-                    Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
-                    Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
-                    Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
-                    Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
-                    Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
-            };
-        }
-    }
 
     public static void createFunctionsMenu(Activity activity, FileManager fileManager) {
         FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
@@ -218,6 +177,28 @@ public class FileHelper {
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
         };
+    }
+
+    public static void createNewDirectory(Activity activity, FileManager fileManager) {
+        EditText editText = new EditText(activity);
+        editText.requestFocus();
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(R.string.create_new_folder)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    String filename = editText.getText().toString();
+                    File dir = new File(fileManager.getDirectory(), filename);
+                    if (!dir.isDirectory()) {
+                        dir.mkdir();
+                    }
+                    fileManager.refresh();
+                    dialogInterface.dismiss();
+                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 
     public static void cutSelections(FileManager fileManager) {
@@ -322,7 +303,6 @@ public class FileHelper {
         NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
         fileManager.getFileAdapter().initialize();
     }
-
 
     public static void forceDelete(final File file) throws IOException {
 //        final Counters.PathCounters deleteCounters;
@@ -429,15 +409,17 @@ public class FileHelper {
         return sMusicPattern.matcher(f.getName()).find();
     }
 
-    public static boolean isVideo(File f) {
-        return sVideoPattern.matcher(f.getName()).find();
-    }
-
+    @RequiresApi(api = VERSION_CODES.O)
     public static boolean isSymlink(final File file) {
         Objects.requireNonNull(file, "file");
         return Files.isSymbolicLink(file.toPath());
     }
 
+    public static boolean isVideo(File f) {
+        return sVideoPattern.matcher(f.getName()).find();
+    }
+
+    @RequiresApi(api = VERSION_CODES.O)
     public static void moveDirectory(final File srcDir, final File destDir) throws IOException {
         if (!srcDir.isDirectory()) {
             throw new IOException("Source '" + srcDir + "' is not a directory");
@@ -517,9 +499,9 @@ public class FileHelper {
             FileItem fileItem = fileItems.get(0);
             List<FileItem> items = fileManager.getFileAdapter().getFileItems();
             Set<FileItem> fileItemSet = new HashSet<>();
-            if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
+            if (fileItem.getType() == TYPE_FOLDER) {
                 for (FileItem f : items) {
-                    if (f.getType() == FileHelper.TYPE_FOLDER) {
+                    if (f.getType() == TYPE_FOLDER) {
                         fileItemSet.add(f);
                     }
                 }
@@ -535,37 +517,30 @@ public class FileHelper {
         }
     }
 
-    public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
-        BottomSheet bottomSheet = new BottomSheet(activity)
-                .setOnClickListener(item -> {
-                    switch (item.first) {
-                        case R.drawable.ic_storage:
-                            fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
-                            break;
-                        case R.drawable.ic_sd_storage:
-                            fileManager.openDirectory(sSDPath);
-                            break;
-                        case R.drawable.ic_settings:
-                            Intent settingsActivity = new Intent(activity, SettingsActivity.class);
-                            activity.startActivity(settingsActivity);
-                            break;
-                        case R.drawable.ic_info:
-                            showDirectoryInfo(activity, fileManager.getDirectory());
-                            break;
-                        case R.drawable.ic_more_vert:
-                            createFunctionsMenu(activity, fileManager);
-                            break;
-                        case R.drawable.ic_create_new_folder:
-                            createNewDirectory(activity, fileManager);
-                            break;
-                        case R.drawable.ic_sort:
-                            showSortDialog(activity, fileManager);
-                            break;
-                    }
-                    fileManager.setBottomSheet(null);
-                });
-        fileManager.setBottomSheet(bottomSheet);
-        bottomSheet.showDialog(items);
+    public static void showDirectoryInfo(Activity activity, String directory) {
+//            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
+        File[] files = new File(directory).listFiles(File::isDirectory);
+        if (files == null) return;
+        List<Pair<Long, String>> pairList = new ArrayList<>();
+        for (File f : files) {
+            pairList.add(Pair.create(NativeHelper.dirSize(f.getAbsolutePath()), f.getName()));
+        }
+        Collections.sort(pairList, (o1, o2) -> {
+            long a = o1.first - o2.first;
+            if (a > 0) return -1;
+            if (a < 0) return 1;
+            return 0;
+        });
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Pair<Long, String> p : pairList) {
+            stringBuilder.append(Share.formatFileSize(p.first))
+                    .append(" = ")
+                    .append(p.second)
+                    .append('\n');
+        }
+        new AlertDialog.Builder(activity)
+                .setMessage(stringBuilder.toString())
+                .show();
     }
 
     public static void startVideoServer(Activity activity) {
@@ -595,28 +570,7 @@ public class FileHelper {
         return i;
     }
 
-    private static void createNewDirectory(Activity activity, FileManager fileManager) {
-        EditText editText = new EditText(activity);
-        editText.requestFocus();
-        AlertDialog dialog = new AlertDialog.Builder(activity)
-                .setTitle(R.string.create_new_folder)
-                .setView(editText)
-                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
-                    String filename = editText.getText().toString();
-                    File dir = new File(fileManager.getDirectory(), filename);
-                    if (!dir.isDirectory()) {
-                        dir.mkdir();
-                    }
-                    fileManager.refresh();
-                    dialogInterface.dismiss();
-                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
-                    dialogInterface.dismiss();
-                })
-                .create();
-        dialog.getWindow().setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-        dialog.show();
-    }
-
+    @RequiresApi(api = VERSION_CODES.O)
     private static void doCopyDirectory(final File srcDir, final File destDir, final FileFilter filter,
                                         final boolean preserveFileDate, final List<String> exclusionList)
             throws IOException {
@@ -654,6 +608,7 @@ public class FileHelper {
         }
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     private static void doCopyFile(final File srcFile, final File destFile, final boolean preserveFileDate)
             throws IOException {
         if (destFile.exists() && destFile.isDirectory()) {
@@ -720,33 +675,7 @@ public class FileHelper {
         });
     }
 
-    private static void showDirectoryInfo(Activity activity, String directory) {
-//            Log.e("TAG/", "Debug: showDirectoryInfo, \n" + Files.walk(new File(Environment.getExternalStorageDirectory(),"Videos").toPath()).mapToLong(p -> p.toFile().length()).sum());
-        File[] files = new File(directory).listFiles(File::isDirectory);
-        if (files == null) return;
-        List<Pair<Long, String>> pairList = new ArrayList<>();
-        for (File f : files) {
-            pairList.add(Pair.create(NativeHelper.dirSize(f.getAbsolutePath()), f.getName()));
-        }
-        Collections.sort(pairList, (o1, o2) -> {
-            long a = o1.first - o2.first;
-            if (a > 0) return -1;
-            if (a < 0) return 1;
-            return 0;
-        });
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Pair<Long, String> p : pairList) {
-            stringBuilder.append(Share.formatFileSize(p.first))
-                    .append(" = ")
-                    .append(p.second)
-                    .append('\n');
-        }
-        new AlertDialog.Builder(activity)
-                .setMessage(stringBuilder.toString())
-                .show();
-    }
-
-    private static void showSortDialog(Activity activity, FileManager fileManager) {
+    public static void showSortDialog(Activity activity, FileManager fileManager) {
         if (sSortItems == null) {
             sSortItems = new ArrayList<>();
             // ["name","size","type","data_modified","ascending","descending"]
@@ -762,19 +691,19 @@ public class FileHelper {
                 .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
                     switch (i) {
                         case 0:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_NAME);
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_NAME);
                             break;
                         case 1:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_SIZE);
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_SIZE);
                             break;
                         case 2:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_TYPE);
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_TYPE);
                             break;
                         case 3:
-                            fileManager.setSortType((fileManager.getSortType() & FileHelper.SORT_BY_ASCENDING) | FileHelper.SORT_BY_DATA_MODIFIED);
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_DATA_MODIFIED);
                             break;
                         case 4:
-                            fileManager.setSortType((fileManager.getSortType() & 31) | FileHelper.SORT_BY_ASCENDING);
+                            fileManager.setSortType((fileManager.getSortType() & 31) | SORT_BY_ASCENDING);
                             break;
                         case 5:
                             fileManager.setSortType((fileManager.getSortType() & 31));

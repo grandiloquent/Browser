@@ -29,6 +29,8 @@ import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
 
+import static euphoria.psycho.browser.file.FileConstantsHelper.TYPE_FOLDER;
+
 public class FileManager implements OnMenuItemClickListener,
         SelectionObserver<FileItem>, SearchDelegate, OnSharedPreferenceChangeListener {
     private static final int FAVICON_MAX_CACHE_SIZE_BYTES =
@@ -144,10 +146,6 @@ public class FileManager implements OnMenuItemClickListener,
         return mSortType;
     }
 
-    public void rename(FileItem item) {
-        FileHelper.rename(this,item);
-    }
-
     public void setSortType(int i) {
         mSortType = i;
     }
@@ -187,7 +185,7 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     public void openUrl(FileItem fileItem) {
-        if (fileItem.getType() == FileHelper.TYPE_FOLDER) {
+        if (fileItem.getType() == TYPE_FOLDER) {
             mDirectory = fileItem.getUrl();
             mFileAdapter.initialize();
             return;
@@ -200,6 +198,10 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     public void removeItem(FileItem fileItem) {
+    }
+
+    public void rename(FileItem item) {
+        FileHelper.rename(this, item);
     }
 
     public void setBottomSheet(BottomSheet bottomSheet) {
@@ -248,7 +250,7 @@ public class FileManager implements OnMenuItemClickListener,
         mToolbar.hideOverflowMenu();
         switch (item.getItemId()) {
             case R.id.menu_id:
-                FileHelper.showBottomSheet(mActivity, FileHelper.createBottomSheetItems(mActivity), this);
+                BottomSheetHelper.showBottomSheet(mActivity, BottomSheetHelper.createBottomSheetItems(mActivity), this);
                 return true;
             case R.id.selection_mode_delete_menu_id:
                 FileHelper.deleteSelections(this);
