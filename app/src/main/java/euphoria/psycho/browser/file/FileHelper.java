@@ -44,10 +44,11 @@ import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.music.MusicPlaybackService;
 import euphoria.psycho.browser.video.MovieActivity;
-import euphoria.psycho.browser.widget.SelectionDelegate;
+import euphoria.psycho.share.FormatUtils;
+import euphoria.psycho.share.StringUtils;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
@@ -190,7 +191,7 @@ public class FileHelper {
     public static void delete(FileManager fileManager, FileItem item) {
         AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
                 .setTitle(R.string.question_dialog_title)
-                .setMessage(fileManager.getActivity().getString(R.string.question_delete_file_item_message, Share.substringAfterLast(item.getUrl(), '/')))
+                .setMessage(fileManager.getActivity().getString(R.string.question_delete_file_item_message, StringUtils.substringAfterLast(item.getUrl(), '/')))
                 .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                     NativeHelper.deleteFileSystem(item.getUrl());
@@ -254,10 +255,10 @@ public class FileHelper {
         dialog.show();
         new Thread(() -> {
             try {
-                CharSequence twitterUrl = Share.getClipboardString();
+                CharSequence twitterUrl = ContextUtils.getClipboardString();
                 if (twitterUrl != null) {
-                    String id = Share.substringAfterLast(twitterUrl.toString(), "/");
-                    if (Share.isDigits(id)) {
+                    String id = StringUtils.substringAfterLast(twitterUrl.toString(), "/");
+                    if (StringUtils.isDigits(id)) {
                         List<TwitterVideo> twitterVideos = TwitterHelper.extractTwitterVideo(id);
                         activity.runOnUiThread(() -> {
                             dialog.dismiss();
@@ -268,14 +269,14 @@ public class FileHelper {
             } catch (Exception e) {
                 activity.runOnUiThread(() -> {
                     dialog.dismiss();
-                    Share.showExceptionDialog(activity, e);
+                    ContextUtils.showExceptionDialog(activity, e);
                 });
             }
         }).start();
     }
 
     public static void extractZipFile(FileManager fileManager, FileItem item) {
-        File targetDirectory = new File(fileManager.getDirectory(), Share.substringBeforeLast(item.getTitle(), '.'));
+        File targetDirectory = new File(fileManager.getDirectory(), StringUtils.substringBeforeLast(item.getTitle(), '.'));
         if (!targetDirectory.exists()) {
             targetDirectory.mkdir();
         }
@@ -330,7 +331,7 @@ public class FileHelper {
         if (isMusic(file)) {
             return TYPE_MUSIC;
         }
-        String extension = Share.substringAfterLast(file.getName(), '.');
+        String extension = StringUtils.substringAfterLast(file.getName(), '.');
         switch (extension) {
             case "apk":
                 return TYPE_APK;
@@ -441,7 +442,7 @@ public class FileHelper {
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         intent.setDataAndType(Uri.fromFile(new File(url)),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                        Share.substringAfterLast(url, '.')
+                        StringUtils.substringAfterLast(url, '.')
                 ));
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
@@ -486,9 +487,9 @@ public class FileHelper {
                     }
                 }
             } else {
-                String extension = Share.substringAfterLast(fileItem.getUrl(), ".");
+                String extension = StringUtils.substringAfterLast(fileItem.getUrl(), ".");
                 for (FileItem f : items) {
-                    if (Share.substringAfterLast(f.getUrl(), ".").equals(extension)) {
+                    if (StringUtils.substringAfterLast(f.getUrl(), ".").equals(extension)) {
                         fileItemSet.add(f);
                     }
                 }
@@ -513,7 +514,7 @@ public class FileHelper {
         });
         StringBuilder stringBuilder = new StringBuilder();
         for (Pair<Long, String> p : pairList) {
-            stringBuilder.append(Share.formatFileSize(p.first))
+            stringBuilder.append(FormatUtils.formatFileSize(p.first))
                     .append(" = ")
                     .append(p.second)
                     .append('\n');

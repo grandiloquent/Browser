@@ -20,7 +20,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.ViewUtils;
+import euphoria.psycho.share.ViewUtils;
 
 /**
  * Utilities and common methods to handle settings managed by policies.

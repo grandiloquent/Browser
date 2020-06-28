@@ -18,10 +18,7 @@ package euphoria.psycho.browser.video;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.util.Log;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -30,16 +27,13 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 
 
 /**
@@ -130,8 +124,8 @@ public abstract class CommonControllerOverlay extends FrameLayout implements
         mBottomContainer.setGravity(Gravity.CENTER);
 
         if (mButtonHeight == 0) {
-            mButtonHeight = Share.dpToPixel(52);
-            mButtonWidth = Share.dpToPixel(71);
+            mButtonHeight = ContextUtils.dpToPixel(52);
+            mButtonWidth = ContextUtils.dpToPixel(71);
         }
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(mButtonWidth, mButtonHeight);
 

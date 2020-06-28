@@ -4,7 +4,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.StringUtils;
 
 public class FileItemComparator implements Comparator<FileItem> {
     private final int mSortType;
@@ -40,7 +40,7 @@ public class FileItemComparator implements Comparator<FileItem> {
                 if (o1.getType() == FileConstantsHelper.TYPE_FOLDER) {
                     return mCollator.compare(o1.getTitle(), o2.getTitle()) * (mIsAscending ? 1 : -1);
                 } else {
-                    return mCollator.compare(Share.substringAfterLast(o1.getTitle(), '.'), Share.substringAfterLast(o2.getTitle(), '.')) * (mIsAscending ? 1 : -1);
+                    return mCollator.compare(StringUtils.substringAfterLast(o1.getTitle(), '.'), StringUtils.substringAfterLast(o2.getTitle(), '.')) * (mIsAscending ? 1 : -1);
                 }
             } else {
                 return mCollator.compare(o1.getTitle(), o2.getTitle()) * (mIsAscending ? 1 : -1);

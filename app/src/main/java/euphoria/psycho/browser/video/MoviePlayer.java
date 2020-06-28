@@ -27,7 +27,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.audiofx.AudioEffect;
 import android.media.audiofx.Virtualizer;
 import android.net.Uri;
 import android.os.Build;
@@ -47,7 +46,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.FormatUtils;
 
 public class MoviePlayer implements
         MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener,
@@ -319,7 +318,7 @@ public class MoviePlayer implements
         builder.setTitle(R.string.resume_playing_title);
         builder.setMessage(String.format(
                 context.getString(R.string.resume_playing_message),
-                Share.formatDuration(context, bookmark / 1000)));
+                FormatUtils.formatDuration(context, bookmark / 1000)));
         builder.setOnCancelListener(new OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
@@ -427,6 +426,7 @@ public class MoviePlayer implements
         if (targetTime > mVideoView.getDuration()) {
             return;
         }
+        if (targetTime < 0) targetTime = 0;
         mVideoView.seekTo(targetTime);
     }
 

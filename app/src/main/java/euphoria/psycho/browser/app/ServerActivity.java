@@ -18,85 +18,19 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.FileUtils;
+import euphoria.psycho.share.NetUtils;
+
+import static euphoria.psycho.share.BitmapUtils.compressToBytes;
+import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
+import static euphoria.psycho.share.KeyUtils.md5;
+
 public class ServerActivity extends Activity {
     private TextView mTextView;
     private Handler mHandler;
     private ProgressBar mProgressBar;
-    private void checkStaticFiles() {
-        String[] files = new String[]{
-                "share.js",
-                "video.css",
-                "video.js",
-                "videos.html",
-        };
-        Share.createDirectoryIfNotExists(Share.getExternalStoragePath("FileServer"));
-        for (String f : files) {
-            String fileName = Share.getExternalStoragePath("FileServer/" + f);
-            if (Share.isFile(fileName)) {
-                if (!fileName.endsWith(".css")
-                        && !fileName.endsWith(".js")
-                        && !fileName.endsWith(".html")) {
-                    continue;
-                }
-                try {
-                    String assetMd5 = Share.getMD5Checksum(getAssets().open("static/" + f));
-                    if (Share.getMD5Checksum(fileName).equals(assetMd5)) {
-                        continue;
-                    }
-                } catch (Exception e) {
-                }
-            }
-            try {
-                Share.copyAssetFile(this, "static/" + f, fileName);
-            } catch (IOException e) {
-            }
-        }
-    }
-    private void initialize() {
-        mHandler = new Handler();
-        new Thread(() -> {
-            String ip = Share.getDeviceIP(ServerActivity.this);
-            checkStaticFiles();
-            Intent serverService = new Intent(this, ServerService.class);
-            startService(serverService);
-            mHandler.post(() -> {
-                mProgressBar.setVisibility(View.GONE);
-                mTextView.setText(String.format("http://%s:%s", ip, "12345"));
-                mTextView.setVisibility(View.VISIBLE);
-            });
-        }).start();
-    }
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_server);
-        mTextView = findViewById(R.id.title);
-        mProgressBar = findViewById(R.id.progress_circular);
-        this.initialize();
-        File videoDirectory = new File(Environment.getExternalStorageDirectory(), "Videos");
-        if (!videoDirectory.isDirectory()) {
-            return;
-        }
-        List<File> files = listFilesRecursive(videoDirectory);
-        File imagesDirectory = new File(Share.getExternalStoragePath("FileServer"), "images");
-        if (!imagesDirectory.isDirectory()) {
-            imagesDirectory.mkdirs();
-        }
-        for (File file : files) {
-            if (file.getName().endsWith(".mp4")) {
-                try {
-                    String filename = Share.md5(file.getAbsolutePath());
-                    File target = new File(imagesDirectory, filename + ".jpg");
-                    if (!target.isFile()) {
-                        Bitmap bitmap = Share.createVideoThumbnail(file.getAbsolutePath());
-                        Share.writeAllBytes(target.getAbsolutePath(), Share.compressToBytes(bitmap));
-                    }
-                } catch (Exception e) {
-                }
-            }
-        }
-    }
+
     static List<File> listFilesRecursive(File startDir) {
         final ArrayList<File> files = new ArrayList<>();
         final LinkedList<File> dirs = new LinkedList<File>();
@@ -115,6 +49,84 @@ public class ServerActivity extends Activity {
         }
         return files;
     }
+
+    private void checkStaticFiles() {
+        String[] files = new String[]{
+                "share.js",
+                "video.css",
+                "video.js",
+                "videos.html",
+        };
+        FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
+        for (String f : files) {
+            String fileName = ContextUtils.getExternalStoragePath("FileServer/" + f);
+            if (FileUtils.isFile(fileName)) {
+                if (!fileName.endsWith(".css")
+                        && !fileName.endsWith(".js")
+                        && !fileName.endsWith(".html")) {
+                    continue;
+                }
+                try {
+                    String assetMd5 = FileUtils.getMD5Checksum(getAssets().open("static/" + f));
+                    if (FileUtils.getMD5Checksum(fileName).equals(assetMd5)) {
+                        continue;
+                    }
+                } catch (Exception e) {
+                }
+            }
+            try {
+                FileUtils.copyAssetFile(this, "static/" + f, fileName);
+            } catch (IOException e) {
+            }
+        }
+    }
+
+    private void initialize() {
+        mHandler = new Handler();
+        new Thread(() -> {
+            String ip = NetUtils.getDeviceIP(ServerActivity.this);
+            checkStaticFiles();
+            Intent serverService = new Intent(this, ServerService.class);
+            startService(serverService);
+            mHandler.post(() -> {
+                mProgressBar.setVisibility(View.GONE);
+                mTextView.setText(String.format("http://%s:%s", ip, "12345"));
+                mTextView.setVisibility(View.VISIBLE);
+            });
+        }).start();
+    }
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_server);
+        mTextView = findViewById(R.id.title);
+        mProgressBar = findViewById(R.id.progress_circular);
+        this.initialize();
+        File videoDirectory = new File(Environment.getExternalStorageDirectory(), "Videos");
+        if (!videoDirectory.isDirectory()) {
+            return;
+        }
+        List<File> files = listFilesRecursive(videoDirectory);
+        File imagesDirectory = new File(ContextUtils.getExternalStoragePath("FileServer"), "images");
+        if (!imagesDirectory.isDirectory()) {
+            imagesDirectory.mkdirs();
+        }
+        for (File file : files) {
+            if (file.getName().endsWith(".mp4")) {
+                try {
+                    String filename = md5(file.getAbsolutePath());
+                    File target = new File(imagesDirectory, filename + ".jpg");
+                    if (!target.isFile()) {
+                        Bitmap bitmap = createVideoThumbnail(file.getAbsolutePath());
+                        FileUtils.writeAllBytes(target.getAbsolutePath(), compressToBytes(bitmap));
+                    }
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();

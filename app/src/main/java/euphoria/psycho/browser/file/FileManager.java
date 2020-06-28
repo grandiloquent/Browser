@@ -22,12 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.SettingsManager;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.widget.ConversionUtils;
 import euphoria.psycho.browser.widget.SelectableListLayout;
 import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
+import euphoria.psycho.share.StringUtils;
 
 import static euphoria.psycho.browser.file.FileConstantsHelper.TYPE_FOLDER;
 
@@ -81,7 +82,7 @@ public class FileManager implements OnMenuItemClickListener,
         mFileAdapter.initialize();
         FileHelper.initialize(activity);
         mFileOperationManager = new FileOperationManager(this);
-        Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
     public void copySelection(FileItem item) {
@@ -117,7 +118,7 @@ public class FileManager implements OnMenuItemClickListener,
 
     public FileImageManager getFileImageManager() {
         if (mFileImageManager == null) {
-            ActivityManager activityManager = ((ActivityManager) Share
+            ActivityManager activityManager = ((ActivityManager) ContextUtils
                     .getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE));
             int maxSize = Math.min(
                     (activityManager.getMemoryClass() / 4) * ConversionUtils.BYTES_PER_MEGABYTE,
@@ -161,7 +162,7 @@ public class FileManager implements OnMenuItemClickListener,
 
     public boolean onBackPressed() {
         mToolbar.hideSearchView();
-        String parent = Share.substringBeforeLast(mDirectory, '/');
+        String parent = StringUtils.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
                 || parent.startsWith(FileHelper.getSDPath())) {
             mDirectory = parent;
@@ -174,7 +175,7 @@ public class FileManager implements OnMenuItemClickListener,
     public void onDestroy() {
         mSelectableListLayout.onDestroyed();
         mFileAdapter.onDestroyed();
-        Share.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }
 
     public void onPause() {

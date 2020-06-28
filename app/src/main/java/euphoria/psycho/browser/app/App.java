@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.os.StrictMode;
 
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 public class App extends Application {
     @Override
     public void onCreate() {
@@ -15,7 +15,7 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        Share.initApplicationContext(this);
-        Share.initialize(this);
+        ContextUtils.initApplicationContext(this);
+        ContextUtils.initialize(this);
     }
 }

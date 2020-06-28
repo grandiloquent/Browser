@@ -40,7 +40,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.StringUtils;
 
 public class MusicPlaybackService extends Service implements
         OnTimedTextListener, OnTimedMetaDataAvailableListener, OnSeekCompleteListener, OnPreparedListener, OnErrorListener, OnCompletionListener, OnBufferingUpdateListener, OnInfoListener {
@@ -283,8 +283,8 @@ public class MusicPlaybackService extends Service implements
     private void setArtistName(MediaMetadataRetriever metadataRetriever) {
         String artist = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST);
         if (artist == null) {
-            artist = Share.substringAfterLast(mMusics[mIndex].getName(), '-');
-            artist = Share.substringBeforeLast(artist, '.');
+            artist = StringUtils.substringAfterLast(mMusics[mIndex].getName(), '-');
+            artist = StringUtils.substringBeforeLast(artist, '.');
         }
         mRemoteViews.setTextViewText(R.id.notificationArtist, artist);
     }
@@ -292,7 +292,7 @@ public class MusicPlaybackService extends Service implements
     private void setSongName(MediaMetadataRetriever metadataRetriever) {
         String songName = metadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
         if (songName == null) {
-            songName = Share.substringBefore(mMusics[mIndex].getName(), '-');
+            songName = StringUtils.substringBefore(mMusics[mIndex].getName(), '-');
         }
         mRemoteViews.setTextViewText(R.id.notificationSongName, songName);
     }

@@ -2,9 +2,8 @@ package euphoria.psycho.browser.app;
 
 import java.io.File;
 
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.file.FileConstantsHelper;
-import euphoria.psycho.browser.file.FileHelper;
 
 public class SettingsManager {
     private static final String KEY_LAST_ACCESS_DIRECTORY = "last_access_directory";
@@ -21,37 +20,37 @@ public class SettingsManager {
     }
 
     public String getLastAccessDirectory() {
-        return Share.getAppSharedPreferences().getString(KEY_LAST_ACCESS_DIRECTORY, null);
+        return ContextUtils.getAppSharedPreferences().getString(KEY_LAST_ACCESS_DIRECTORY, null);
     }
 
     public void setLastAccessDirectory(String path) {
-        Share.getAppSharedPreferences().edit().putString(KEY_LAST_ACCESS_DIRECTORY, path).apply();
+        ContextUtils.getAppSharedPreferences().edit().putString(KEY_LAST_ACCESS_DIRECTORY, path).apply();
     }
 
     public int getSortType() {
-        return Share.getAppSharedPreferences().getInt(KEY_SORT_TYPE, FileConstantsHelper.SORT_TYPE_DEFAULT);
+        return ContextUtils.getAppSharedPreferences().getInt(KEY_SORT_TYPE, FileConstantsHelper.SORT_TYPE_DEFAULT);
     }
 
     public String getVideoDirectory() {
-        String videoDirectory = Share.getAppSharedPreferences().getString(KEY_VIDEOS_DIRECTORY, null);
+        String videoDirectory = ContextUtils.getAppSharedPreferences().getString(KEY_VIDEOS_DIRECTORY, null);
         if (videoDirectory == null) {
-            return Share.getExternalStoragePath("Videos");
+            return ContextUtils.getExternalStoragePath("Videos");
         }
         File dir = new File(videoDirectory);
         if (dir.isDirectory()) {
             return videoDirectory;
         }
-        return Share.getExternalStoragePath("Videos");
+        return ContextUtils.getExternalStoragePath("Videos");
     }
 
     public void setSortType(int sortType) {
-        Share.getAppSharedPreferences()
+        ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putInt(KEY_SORT_TYPE, sortType)
                 .apply();
     }
 
     public boolean getDisplayHiddenFiles() {
-        return Share.getAppSharedPreferences().getBoolean(KEY_DISPLAY_HIDDEN_FILES, false);
+        return ContextUtils.getAppSharedPreferences().getBoolean(KEY_DISPLAY_HIDDEN_FILES, false);
     }
 }

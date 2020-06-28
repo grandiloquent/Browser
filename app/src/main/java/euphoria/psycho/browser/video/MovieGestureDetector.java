@@ -30,12 +30,12 @@ public class MovieGestureDetector extends PlayerViewGestureDetector {
             adjustPercent = 1.0f;
         }
 
-        double positiveAdjustPercent = Math.max(adjustPercent, -adjustPercent);
+         double positiveAdjustPercent = Math.max(adjustPercent, -adjustPercent);
         int targetTime = (int) (MAX_VIDEO_STEP_TIME * adjustPercent * (positiveAdjustPercent / 0.1));
 
-        if (targetTime < 0) {
-            targetTime = 0;
-        }
+//        if (targetTime < 0) {
+//            targetTime = 0;
+//        }
         mMovieControllerOverlay.onSeekBy(targetTime);
     }
 

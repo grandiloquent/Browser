@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import euphoria.psycho.browser.app.NativeHelper;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 
 public class TranslatorHelper {
     static ExecutorService sSingleThreadExecutor;
@@ -16,7 +16,7 @@ public class TranslatorHelper {
         if (sSingleThreadExecutor == null)
             sSingleThreadExecutor = Executors.newSingleThreadExecutor();
         sSingleThreadExecutor.submit(() -> {
-            CharSequence q = Share.getClipboardString();
+            CharSequence q = ContextUtils.getClipboardString();
             if (q == null) return;
             String query = q.toString().trim();
             String result = NativeHelper.youdao(query, true, query.contains(" "));
@@ -24,7 +24,7 @@ public class TranslatorHelper {
                 new AlertDialog.Builder(activity)
                         .setMessage(result)
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Share.setClipboardString(result);
+                            ContextUtils.setClipboardString(result);
                             dialog.dismiss();
                         })
                         .show();
@@ -36,7 +36,7 @@ public class TranslatorHelper {
         if (sSingleThreadExecutor == null)
             sSingleThreadExecutor = Executors.newSingleThreadExecutor();
         sSingleThreadExecutor.submit(() -> {
-            CharSequence q = Share.getClipboardString();
+            CharSequence q = ContextUtils.getClipboardString();
             if (q == null) return;
             String query = q.toString().trim();
             String result = NativeHelper.google(query, false);
@@ -44,7 +44,7 @@ public class TranslatorHelper {
                 new AlertDialog.Builder(activity)
                         .setMessage(result)
                         .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Share.setClipboardString(result);
+                            ContextUtils.setClipboardString(result);
                             dialog.dismiss();
                         })
                         .show();

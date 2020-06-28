@@ -16,12 +16,16 @@ import java.io.IOException;
 
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.BitmapUtils;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.BitmapUtils;
+import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.tasks.ThreadPool;
 import euphoria.psycho.browser.tasks.ThreadPool.Job;
 import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
+import euphoria.psycho.share.FileUtils;
+import euphoria.psycho.share.KeyUtils;
+
+import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
 
 public class FileImageManager {
     private final Context mContext;
@@ -147,7 +151,7 @@ public class FileImageManager {
         @Override
         public Drawable run(JobContext jc) {
             Drawable drawable = null;
-            String key = Long.toString(Share.crc64Long(mFileItem.getUrl()));
+            String key = Long.toString(KeyUtils.crc64Long(mFileItem.getUrl()));
             drawable = mLruCache.get(key);
             if (drawable != null) {
                 return drawable;
@@ -161,18 +165,18 @@ public class FileImageManager {
             if (bitmap == null) {
                 switch (mFileItem.getType()) {
                     case FileConstantsHelper.TYPE_VIDEO:
-                        bitmap = Share.createVideoThumbnail(mFileItem.getUrl());
+                        bitmap = createVideoThumbnail(mFileItem.getUrl());
                         break;
                     case FileConstantsHelper.TYPE_IMAGE:
                         final BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inJustDecodeBounds = true;
                         BitmapFactory.decodeFile(mFileItem.getUrl(), options);
-                        options.inSampleSize = Share.calculateInSampleSize(options, mSize, mSize);
+                        options.inSampleSize = BitmapUtils.calculateInSampleSize(options, mSize, mSize);
                         options.inJustDecodeBounds = false;
                         bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
                     case FileConstantsHelper.TYPE_APK:
-                        Drawable ico = FileHelper.getApkIcon(Share.getApplicationContext(), mFileItem.getUrl());
+                        Drawable ico = FileHelper.getApkIcon(ContextUtils.getApplicationContext(), mFileItem.getUrl());
                         if (ico != null)
                             bitmap = BitmapUtils.drawableToBitmap(ico);
                         break;
@@ -180,7 +184,7 @@ public class FileImageManager {
                 if (bitmap != null) {
                     byte[] buffer = BitmapUtils.compressToBytes(bitmap);
                     try {
-                        Share.writeAllBytes(image.getAbsolutePath(), buffer);
+                        FileUtils.writeAllBytes(image.getAbsolutePath(), buffer);
                     } catch (IOException e) {
                         Log.e("TAG/" + ImageJob.this.getClass().getSimpleName(), "Error: run, " + e.getMessage() + " " + e.getCause());
                     }

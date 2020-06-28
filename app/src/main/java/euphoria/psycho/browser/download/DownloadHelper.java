@@ -5,8 +5,8 @@ import java.net.URLConnection;
 import java.util.List;
 import java.util.Map;
 
-import static euphoria.psycho.browser.base.Share.substringAfterLast;
-import static euphoria.psycho.browser.base.Share.substringBefore;
+import static euphoria.psycho.share.StringUtils.substringAfterLast;
+import static euphoria.psycho.share.StringUtils.substringBefore;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
 import static java.net.HttpURLConnection.HTTP_UNAVAILABLE;
 

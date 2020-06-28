@@ -15,7 +15,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.FileUtils;
+
 public class DownloadActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1;
     private Handler mHandler = new Handler();
@@ -26,18 +28,18 @@ public class DownloadActivity extends AppCompatActivity {
                 "video.js",
                 "videos.html",
         };
-        Share.createDirectoryIfNotExists(Share.getExternalStoragePath("FileServer"));
+        FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
         for (String f : files) {
-            String fileName = Share.getExternalStoragePath("FileServer/" + f);
-            if (Share.isFile(fileName)) {
+            String fileName = ContextUtils.getExternalStoragePath("FileServer/" + f);
+            if (FileUtils.isFile(fileName)) {
                 if (!fileName.endsWith(".css")
                         && !fileName.endsWith(".js")
                         && !fileName.endsWith(".html")) {
                     continue;
                 }
                 try {
-                    String assetMd5 = Share.getMD5Checksum(getAssets().open("static/" + f));
-                    if (Share.getMD5Checksum(fileName).equals(assetMd5)) {
+                    String assetMd5 = FileUtils.getMD5Checksum(getAssets().open("static/" + f));
+                    if (FileUtils.getMD5Checksum(fileName).equals(assetMd5)) {
                         continue;
                     }
                 } catch (Exception e) {
@@ -45,7 +47,7 @@ public class DownloadActivity extends AppCompatActivity {
                 }
             } else {
                 try {
-                    Share.copyAssetFile(this, "static/" + f, fileName);
+                    FileUtils.copyAssetFile(this, "static/" + f, fileName);
                 } catch (IOException e) {
                     Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
                 }

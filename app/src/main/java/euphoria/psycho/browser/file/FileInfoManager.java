@@ -4,11 +4,11 @@ import android.os.Handler;
 
 import java.io.File;
 
-import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.tasks.ThreadPool;
 import euphoria.psycho.browser.tasks.ThreadPool.Job;
 import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
+import euphoria.psycho.share.FormatUtils;
 
 public class FileInfoManager {
     private ThreadPool mThreadPool;
@@ -36,7 +36,7 @@ public class FileInfoManager {
             if (file.isDirectory()) {
                 return String.format("%s items", size);
             } else {
-                return Share.formatFileSize(file.length());
+                return FormatUtils.formatFileSize(file.length());
             }
         }
     }

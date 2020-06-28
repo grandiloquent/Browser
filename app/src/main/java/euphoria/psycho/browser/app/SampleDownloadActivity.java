@@ -19,7 +19,7 @@ import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 public class SampleDownloadActivity extends Activity {
     private static String youtubeLink;
     private LinearLayout mainLayout;
@@ -45,7 +45,7 @@ public class SampleDownloadActivity extends Activity {
         } else if (savedInstanceState != null && youtubeLink != null) {
             getYoutubeDownloadUrl(youtubeLink);
         } else {
-            String ytLink = Share.getClipboardString().toString();
+            String ytLink = ContextUtils.getClipboardString().toString();
             if (checkLink(ytLink)) {
                 youtubeLink = ytLink;
                 getYoutubeDownloadUrl(ytLink);

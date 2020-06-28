@@ -13,7 +13,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.NetUtils;
+
 public class ServerService extends Service {
     private static final String TAG = "TAG/" + ServerService.class.getSimpleName();
     private WakeLock mCpuWakeLock;
@@ -34,7 +36,7 @@ public class ServerService extends Service {
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
         mCpuWakeLock.acquire();
-        NativeHelper.startServer(Share.getDeviceIP(this), "12345", Share.getExternalStoragePath("FileServer"), SettingsManager.getInstance().getVideoDirectory());
+        NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer"), SettingsManager.getInstance().getVideoDirectory());
     }
     @Override
     public void onDestroy() {

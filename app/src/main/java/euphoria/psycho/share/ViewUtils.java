@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package euphoria.psycho.browser.base;
+package euphoria.psycho.share;
 
 import android.content.Context;
 import android.content.res.Resources;

@@ -1,9 +1,7 @@
 package euphoria.psycho.browser.file;
 
 import android.Manifest.permission;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -19,8 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
-import euphoria.psycho.browser.video.MovieActivity;
+import euphoria.psycho.share.ContextUtils;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -41,7 +38,7 @@ public class FileActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         List<String> needPermissions = new ArrayList<>();
-        if (!Share.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)) {
+        if (!ContextUtils.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.WRITE_EXTERNAL_STORAGE);
         }
         if (needPermissions.size() > 0) {

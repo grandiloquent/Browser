@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.VisibleForTesting;
 import euphoria.psycho.browser.base.ApiCompatibilityUtils;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 /**
  * Creates a crash report and uploads it to crash server if there is a Java exception.
  * <p>
@@ -95,7 +95,7 @@ public class PureJavaExceptionReporter {
         try {
             String minidumpFileName = FILE_PREFIX + mLocalId + FILE_SUFFIX;
             mMinidumpFile = new File(
-                    new File(Share.getApplicationContext().getCacheDir(), CRASH_DUMP_DIR),
+                    new File(ContextUtils.getApplicationContext().getCacheDir(), CRASH_DUMP_DIR),
                     minidumpFileName);
             mMinidumpFileStream = new FileOutputStream(mMinidumpFile);
         } catch (FileNotFoundException e) {
@@ -135,7 +135,7 @@ public class PureJavaExceptionReporter {
         try {
             int pid = android.os.Process.myPid();
             ActivityManager manager =
-                    (ActivityManager) Share.getApplicationContext().getSystemService(
+                    (ActivityManager) ContextUtils.getApplicationContext().getSystemService(
                             Context.ACTIVITY_SERVICE);
             for (RunningAppProcessInfo processInfo : manager.getRunningAppProcesses()) {
                 if (processInfo.pid == pid) {

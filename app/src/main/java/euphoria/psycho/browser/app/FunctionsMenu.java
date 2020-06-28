@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 public class FunctionsMenu {
     private final PopupWindow mPopupWindow;
     private RecyclerView mRecyclerView;
@@ -28,11 +28,11 @@ public class FunctionsMenu {
         mPopupWindow = new PopupWindow(context);
         mParent = parent;
         mOnClickListener = onClickListener;
-        Log.e("TAG/", "Debug: FunctionsMenu, \n" + Share.dpToPixel(8));
-        mPopupWindow.setWidth(Share.getWidthPixels() - Share.getWidthPixels() / 6);
+        Log.e("TAG/", "Debug: FunctionsMenu, \n" + ContextUtils.dpToPixel(8));
+        mPopupWindow.setWidth(ContextUtils.getWidthPixels() - ContextUtils.getWidthPixels() / 6);
         mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
         mPopupWindow.setOutsideTouchable(true);
-        mPopupWindow.setElevation(Share.dpToPixel(8));
+        mPopupWindow.setElevation(ContextUtils.dpToPixel(8));
     }
     private OnClickListener mListener = new OnClickListener() {
         @Override

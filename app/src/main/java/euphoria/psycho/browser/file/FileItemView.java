@@ -6,7 +6,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.tasks.Future;
 import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.widget.BasicListMenu;
@@ -16,6 +16,7 @@ import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.ListMenuItemProperties;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
+import euphoria.psycho.share.FormatUtils;
 
 import static euphoria.psycho.browser.widget.BasicListMenu.buildMenuListItem;
 
@@ -91,7 +92,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     mFileManager.delete(getItem());
                     return;
                 case R.string.file_item_copy_path:
-                    Share.setClipboardString(getItem().getUrl());
+                    ContextUtils.setClipboardString(getItem().getUrl());
                     return;
                 case R.string.file_item_extract_zip:
                     mFileManager.extractZipFile(getItem());
@@ -147,7 +148,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         if (item.getType() == FileConstantsHelper.TYPE_FOLDER) {
             mDescriptionView.setText(getContext().getString(R.string.items, item.getSize()));
         } else {
-            mDescriptionView.setText(Share.formatFileSize(item.getSize()));
+            mDescriptionView.setText(FormatUtils.formatFileSize(item.getSize()));
         }
         requestIcon();
     }
