@@ -84,7 +84,12 @@ public class FileManager implements OnMenuItemClickListener,
         Share.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
 
-    public void copy(FileItem item) {
+    public void copySelection(FileItem item) {
+        FileHelper.copySelection(this, item);
+    }
+
+    public void cutSelection(FileItem item) {
+        FileHelper.cutSelection(this,item);
     }
 
     public void delete(FileItem item) {

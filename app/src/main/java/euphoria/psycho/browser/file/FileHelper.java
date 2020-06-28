@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.DownloadManager;
-import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -37,23 +36,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.regex.Pattern;
 
 import androidx.annotation.RequiresApi;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
-import euphoria.psycho.browser.app.FunctionsMenu;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
-import euphoria.psycho.browser.app.SettingsActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.base.Share;
 import euphoria.psycho.browser.music.MusicPlaybackService;
 import euphoria.psycho.browser.video.MovieActivity;
+import euphoria.psycho.browser.widget.SelectionDelegate;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
@@ -133,12 +127,19 @@ public class FileHelper {
         copyDirectory(srcDir, destDir, null, preserveFileDate);
     }
 
+    public static void copySelection(FileManager fileManager, FileItem item) {
+        List<FileItem> fileItems = new ArrayList<>();
+        fileItems.add(item);
+        fileManager.getFileOperationManager().addToCopy(fileItems);
+        fileManager.getSelectionDelegate().clearSelection();
+    }
+
+
     public static void copySelections(FileManager fileManager) {
         List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
         fileManager.getFileOperationManager().addToCopy(fileItems);
         fileManager.getSelectionDelegate().clearSelection();
     }
-
 
 
     public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
@@ -173,11 +174,18 @@ public class FileHelper {
         dialog.show();
     }
 
+    public static void cutSelection(FileManager fileManager, FileItem item) {
+        List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
+        fileManager.getFileOperationManager().addToCut(fileItems);
+        fileManager.getSelectionDelegate().clearSelection();
+    }
+
     public static void cutSelections(FileManager fileManager) {
         List<FileItem> fileItems = fileManager.getSelectionDelegate().getSelectedItemsAsList();
         fileManager.getFileOperationManager().addToCut(fileItems);
         fileManager.getSelectionDelegate().clearSelection();
     }
+
 
     public static void delete(FileManager fileManager, FileItem item) {
         AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
@@ -515,6 +523,52 @@ public class FileHelper {
                 .show();
     }
 
+    public static void showSortDialog(Activity activity, FileManager fileManager) {
+        if (sSortItems == null) {
+            sSortItems = new ArrayList<>();
+            // ["name","size","type","data_modified","ascending","descending"]
+            sSortItems.add(activity.getString(R.string.sort_by_name));
+            sSortItems.add(activity.getString(R.string.sort_by_size));
+            sSortItems.add(activity.getString(R.string.sort_by_type));
+            sSortItems.add(activity.getString(R.string.sort_by_data_modified));
+            sSortItems.add(activity.getString(R.string.sort_by_ascending));
+            sSortItems.add(activity.getString(R.string.sort_by_descending));
+        }
+        new Builder(activity)
+                .setTitle(R.string.sort)
+                .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
+                    switch (i) {
+                        case 0:
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_NAME);
+                            break;
+                        case 1:
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_SIZE);
+                            break;
+                        case 2:
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_TYPE);
+                            break;
+                        case 3:
+                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_DATA_MODIFIED);
+                            break;
+                        case 4:
+                            fileManager.setSortType((fileManager.getSortType() & 31) | SORT_BY_ASCENDING);
+                            break;
+                        case 5:
+                            fileManager.setSortType((fileManager.getSortType() & 31));
+                            break;
+                    }
+
+
+                    Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
+
+                    fileManager.sortBy();
+                    //Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
+
+                    dialogInterface.dismiss();
+                })
+                .show();
+    }
+
     public static void startVideoServer(Activity activity) {
         Intent intent = new Intent(activity, ServerActivity.class);
         activity.startActivity(intent);
@@ -627,52 +681,6 @@ public class FileHelper {
         return null;
     }
 
-    public static void showSortDialog(Activity activity, FileManager fileManager) {
-        if (sSortItems == null) {
-            sSortItems = new ArrayList<>();
-            // ["name","size","type","data_modified","ascending","descending"]
-            sSortItems.add(activity.getString(R.string.sort_by_name));
-            sSortItems.add(activity.getString(R.string.sort_by_size));
-            sSortItems.add(activity.getString(R.string.sort_by_type));
-            sSortItems.add(activity.getString(R.string.sort_by_data_modified));
-            sSortItems.add(activity.getString(R.string.sort_by_ascending));
-            sSortItems.add(activity.getString(R.string.sort_by_descending));
-        }
-        new Builder(activity)
-                .setTitle(R.string.sort)
-                .setItems(sSortItems.toArray(new String[0]), (dialogInterface, i) -> {
-                    switch (i) {
-                        case 0:
-                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_NAME);
-                            break;
-                        case 1:
-                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_SIZE);
-                            break;
-                        case 2:
-                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_TYPE);
-                            break;
-                        case 3:
-                            fileManager.setSortType((fileManager.getSortType() & SORT_BY_ASCENDING) | SORT_BY_DATA_MODIFIED);
-                            break;
-                        case 4:
-                            fileManager.setSortType((fileManager.getSortType() & 31) | SORT_BY_ASCENDING);
-                            break;
-                        case 5:
-                            fileManager.setSortType((fileManager.getSortType() & 31));
-                            break;
-                    }
-
-
-                    Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
-
-                    fileManager.sortBy();
-                    //Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
-
-                    dialogInterface.dismiss();
-                })
-                .show();
-    }
-
     private static File[] verifiedListFiles(final File directory) throws IOException {
         if (!directory.exists()) {
             final String message = directory + " does not exist";
@@ -691,7 +699,6 @@ public class FileHelper {
         return files;
     }
     //
-
 
 
 }

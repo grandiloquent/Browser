@@ -49,6 +49,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
 //        }
         ModelList listItems = new ModelList();
         listItems.add(buildMenuListItem(R.string.file_item_copy, 0, 0));
+        listItems.add(buildMenuListItem(R.string.file_item_cut, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_copy_path, 0, 0));
@@ -81,7 +82,10 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         ListMenu.Delegate delegate = item -> {
             switch (item.get(ListMenuItemProperties.TITLE_ID)) {
                 case R.string.file_item_copy:
-                    mFileManager.copy(getItem());
+                    mFileManager.copySelection(getItem());
+                    return;
+                case R.string.file_item_cut:
+                    mFileManager.cutSelection(getItem());
                     return;
                 case R.string.file_item_delete:
                     mFileManager.delete(getItem());

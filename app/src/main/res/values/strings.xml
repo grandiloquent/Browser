@@ -80,4 +80,5 @@
     <string name="movie_view_label">Video player</string>
     <string name="rename_file_item">Rename File</string>
     <string name="exo_controls_next_description">Next track</string>
+    <string name="file_item_cut">Cut</string>
 </resources>
