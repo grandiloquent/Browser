@@ -81,4 +81,6 @@
     <string name="rename_file_item">Rename File</string>
     <string name="exo_controls_next_description">Next track</string>
     <string name="file_item_cut">Cut</string>
+    <string name="progress_dialog_extract_zip_title">Extracting Zip</string>
+    <string name="progress_dialog_extract_zip_content">Extracting</string>
 </resources>

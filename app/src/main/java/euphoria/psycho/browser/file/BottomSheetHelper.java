@@ -65,6 +65,16 @@ public class BottomSheetHelper {
         functionsMenu.showDialog(createFunctionsMenuItems(activity));
     }
 
+    public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
+        return new Pair[]{
+                Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
+                Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
+                Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
+                Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
+                Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+        };
+    }
+
     public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)
                 .setOnClickListener(item -> {

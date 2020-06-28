@@ -3,6 +3,7 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.app.Dialog;
 import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -47,8 +48,10 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.music.MusicPlaybackService;
 import euphoria.psycho.browser.video.MovieActivity;
+import euphoria.psycho.share.DialogUtils;
 import euphoria.psycho.share.FormatUtils;
 import euphoria.psycho.share.StringUtils;
+import euphoria.psycho.share.ThreadUtils;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
@@ -75,58 +78,6 @@ public class FileHelper {
     * */
     private static List<String> sSortItems;
 
-    public static void cleanDirectory(final File directory) throws IOException {
-        final File[] files = verifiedListFiles(directory);
-
-        IOException exception = null;
-        for (final File file : files) {
-            try {
-                forceDelete(file);
-            } catch (final IOException ioe) {
-                exception = ioe;
-            }
-        }
-
-        if (null != exception) {
-            throw exception;
-        }
-    }
-
-    @RequiresApi(api = VERSION_CODES.O)
-    public static void copyDirectory(final File srcDir, final File destDir,
-                                     final FileFilter filter, final boolean preserveFileDate) throws IOException {
-        if (!srcDir.isDirectory()) {
-            throw new IOException("Source '" + srcDir + "' exists but is not a directory");
-        }
-        if (srcDir.getCanonicalPath().equals(destDir.getCanonicalPath())) {
-            throw new IOException("Source '" + srcDir + "' and destination '" + destDir + "' are the same");
-        }
-
-        // Cater for destination being directory within the source directory (see IO-141)
-        List<String> exclusionList = null;
-        if (destDir.getCanonicalPath().startsWith(srcDir.getCanonicalPath())) {
-            final File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
-            if (srcFiles != null && srcFiles.length > 0) {
-                exclusionList = new ArrayList<>(srcFiles.length);
-                for (final File srcFile : srcFiles) {
-                    final File copiedFile = new File(destDir, srcFile.getName());
-                    exclusionList.add(copiedFile.getCanonicalPath());
-                }
-            }
-        }
-        doCopyDirectory(srcDir, destDir, filter, preserveFileDate, exclusionList);
-    }
-
-    @RequiresApi(api = VERSION_CODES.O)
-    public static void copyDirectory(final File srcDir, final File destDir) throws IOException {
-        copyDirectory(srcDir, destDir, true);
-    }
-
-    @RequiresApi(api = VERSION_CODES.O)
-    public static void copyDirectory(final File srcDir, final File destDir,
-                                     final boolean preserveFileDate) throws IOException {
-        copyDirectory(srcDir, destDir, null, preserveFileDate);
-    }
 
     public static void copySelection(FileManager fileManager, FileItem item) {
         List<FileItem> fileItems = new ArrayList<>();
@@ -142,16 +93,6 @@ public class FileHelper {
         fileManager.getSelectionDelegate().clearSelection();
     }
 
-
-    public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
-        return new Pair[]{
-                Pair.create(R.drawable.ic_film, context.getString(R.string.video_server)),
-                Pair.create(R.drawable.ic_twitter, context.getString(R.string.twitter)),
-                Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
-                Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
-                Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
-        };
-    }
 
     public static void createNewDirectory(Activity activity, FileManager fileManager) {
         EditText editText = new EditText(activity);
@@ -204,21 +145,6 @@ public class FileHelper {
         dialog.show();
     }
 
-    public static void deleteDirectory(final File directory) throws IOException {
-        if (!directory.exists()) {
-            return;
-        }
-
-        if (!isSymlink(directory)) {
-            cleanDirectory(directory);
-        }
-
-        if (!directory.delete()) {
-            final String message =
-                    "Unable to delete directory " + directory + ".";
-            throw new IOException(message);
-        }
-    }
 
     public static void deleteSelections(FileManager fileManager) {
         AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
@@ -253,7 +179,7 @@ public class FileHelper {
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage(activity.getText(R.string.extracting));
         dialog.show();
-        new Thread(() -> {
+        ThreadUtils.postOnBackgroundThread(() -> {
             try {
                 CharSequence twitterUrl = ContextUtils.getClipboardString();
                 if (twitterUrl != null) {
@@ -267,39 +193,38 @@ public class FileHelper {
                     }
                 }
             } catch (Exception e) {
-                activity.runOnUiThread(() -> {
+                ThreadUtils.postOnMainThread(() -> {
                     dialog.dismiss();
                     ContextUtils.showExceptionDialog(activity, e);
                 });
             }
-        }).start();
+        });
     }
 
     public static void extractZipFile(FileManager fileManager, FileItem item) {
-        File targetDirectory = new File(fileManager.getDirectory(), StringUtils.substringBeforeLast(item.getTitle(), '.'));
-        if (!targetDirectory.exists()) {
-            targetDirectory.mkdir();
-        }
-
-        NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
-        fileManager.getFileAdapter().initialize();
+        Dialog progress = DialogUtils.buildProgressDialog(fileManager.getActivity(),
+                fileManager.getActivity().getString(R.string.progress_dialog_extract_zip_title),
+                fileManager.getActivity().getString(R.string.progress_dialog_extract_zip_content));
+        progress.show();
+        ThreadUtils.postOnBackgroundThread(() -> {
+            String fileName = StringUtils.substringBeforeLast(item.getTitle(), '.');
+            File targetDirectory = new File(fileManager.getDirectory(), fileName);
+            boolean ret = true;
+            if (!targetDirectory.exists()) {
+                ret = targetDirectory.mkdir();
+            }
+            if (!ret) {
+                progress.dismiss();
+                return;
+            }
+            NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
+            ThreadUtils.postOnMainThread(() -> {
+                progress.dismiss();
+                fileManager.getFileAdapter().initialize();
+            });
+        });
     }
 
-    public static void forceDelete(final File file) throws IOException {
-//        final Counters.PathCounters deleteCounters;
-//        try {
-//            deleteCounters = PathUtils.delete(file.toPath());
-//        } catch (IOException e) {
-//            throw new IOException("Unable to delete file: " + file, e);
-//        }
-//
-//        if (deleteCounters.getFileCounter().get() < 1 && deleteCounters.getDirectoryCounter().get() < 1) {
-//            // didn't find a file to delete.
-//            throw new FileNotFoundException("File does not exist: " + file);
-//        }
-//
-        file.delete();
-    }
 
     public static Drawable getApkIcon(Context context, String apkPath) {
         PackageManager pm = context.getPackageManager();
@@ -390,37 +315,11 @@ public class FileHelper {
         return sMusicPattern.matcher(f.getName()).find();
     }
 
-    @RequiresApi(api = VERSION_CODES.O)
-    public static boolean isSymlink(final File file) {
-        Objects.requireNonNull(file, "file");
-        return Files.isSymbolicLink(file.toPath());
-    }
 
     public static boolean isVideo(File f) {
         return sVideoPattern.matcher(f.getName()).find();
     }
 
-    @RequiresApi(api = VERSION_CODES.O)
-    public static void moveDirectory(final File srcDir, final File destDir) throws IOException {
-        if (!srcDir.isDirectory()) {
-            throw new IOException("Source '" + srcDir + "' is not a directory");
-        }
-        if (destDir.exists()) {
-            throw new IOException("Destination '" + destDir + "' already exists");
-        }
-        final boolean rename = srcDir.renameTo(destDir);
-        if (!rename) {
-            if (destDir.getCanonicalPath().startsWith(srcDir.getCanonicalPath() + File.separator)) {
-                throw new IOException("Cannot move directory: " + srcDir + " to a subdirectory of itself: " + destDir);
-            }
-            copyDirectory(srcDir, destDir);
-            deleteDirectory(srcDir);
-            if (srcDir.exists()) {
-                throw new IOException("Failed to delete original directory '" + srcDir +
-                        "' after copy to '" + destDir + "'");
-            }
-        }
-    }
 
     public static void openUrl(Activity activity, FileItem fileItem) {
         if (sMusicPattern.matcher(fileItem.getTitle()).find()) {
@@ -580,80 +479,16 @@ public class FileHelper {
         activity.startActivity(intent);
     }
 
-    private static void checkEqualSizes(final File srcFile, final File destFile, final long srcLen, final long dstLen)
-            throws IOException {
-        if (srcLen != dstLen) {
-            throw new IOException("Failed to copy full contents from '" + srcFile + "' to '" + destFile
-                    + "' Expected length: " + srcLen + " Actual: " + dstLen);
-        }
-    }
 
     private static int countFiles(File[] files) {
         int i = 0;
-        for (int j = 0; j < files.length; j++) {
-            if (!files[j].getName().startsWith("."))
+        for (File file : files) {
+            if (!file.getName().startsWith("."))
                 i++;
         }
         return i;
     }
 
-    @RequiresApi(api = VERSION_CODES.O)
-    private static void doCopyDirectory(final File srcDir, final File destDir, final FileFilter filter,
-                                        final boolean preserveFileDate, final List<String> exclusionList)
-            throws IOException {
-        // recurse
-        final File[] srcFiles = filter == null ? srcDir.listFiles() : srcDir.listFiles(filter);
-        if (srcFiles == null) {  // null if abstract pathname does not denote a directory, or if an I/O error occurs
-            throw new IOException("Failed to list contents of " + srcDir);
-        }
-        if (destDir.exists()) {
-            if (destDir.isDirectory() == false) {
-                throw new IOException("Destination '" + destDir + "' exists but is not a directory");
-            }
-        } else {
-            if (!destDir.mkdirs() && !destDir.isDirectory()) {
-                throw new IOException("Destination '" + destDir + "' directory cannot be created");
-            }
-        }
-        if (destDir.canWrite() == false) {
-            throw new IOException("Destination '" + destDir + "' cannot be written to");
-        }
-        for (final File srcFile : srcFiles) {
-            final File dstFile = new File(destDir, srcFile.getName());
-            if (exclusionList == null || !exclusionList.contains(srcFile.getCanonicalPath())) {
-                if (srcFile.isDirectory()) {
-                    doCopyDirectory(srcFile, dstFile, filter, preserveFileDate, exclusionList);
-                } else {
-                    doCopyFile(srcFile, dstFile, preserveFileDate);
-                }
-            }
-        }
-
-        // Do this last, as the above has probably affected directory metadata
-        if (preserveFileDate) {
-            destDir.setLastModified(srcDir.lastModified());
-        }
-    }
-
-    @RequiresApi(api = VERSION_CODES.O)
-    private static void doCopyFile(final File srcFile, final File destFile, final boolean preserveFileDate)
-            throws IOException {
-        if (destFile.exists() && destFile.isDirectory()) {
-            throw new IOException("Destination '" + destFile + "' exists but is a directory");
-        }
-
-        final Path srcPath = srcFile.toPath();
-        final Path destPath = destFile.toPath();
-        final long newLastModifed = preserveFileDate ? srcFile.lastModified() : destFile.lastModified();
-        Files.copy(srcPath, destPath, StandardCopyOption.REPLACE_EXISTING);
-
-        // TODO IO-386: Do we still need this check?
-        checkEqualSizes(srcFile, destFile, Files.size(srcPath), Files.size(destPath));
-        // TODO IO-386: Do we still need this check?
-        checkEqualSizes(srcFile, destFile, srcFile.length(), destFile.length());
-
-        destFile.setLastModified(newLastModifed);
-    }
 
     private static String getExternalStoragePath(Context context) {
         StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
@@ -681,25 +516,6 @@ public class FileHelper {
         }
         return null;
     }
-
-    private static File[] verifiedListFiles(final File directory) throws IOException {
-        if (!directory.exists()) {
-            final String message = directory + " does not exist";
-            throw new IllegalArgumentException(message);
-        }
-
-        if (!directory.isDirectory()) {
-            final String message = directory + " is not a directory";
-            throw new IllegalArgumentException(message);
-        }
-
-        final File[] files = directory.listFiles();
-        if (files == null) {  // null if security restricted
-            throw new IOException("Failed to list contents of " + directory);
-        }
-        return files;
-    }
-    //
 
 
 }

@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.DialogUtils;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -32,6 +33,7 @@ public class FileActivity extends AppCompatActivity {
 //        Intent intent = new Intent(this, MovieActivity.class);
 //        intent.setData(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "/Videos/231.mp4")));
 //        startActivity(intent);
+
     }
 
     @Override
