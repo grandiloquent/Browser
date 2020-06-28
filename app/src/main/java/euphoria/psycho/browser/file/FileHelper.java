@@ -13,9 +13,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build.VERSION_CODES;
 import android.os.Environment;
-import android.os.storage.StorageManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager.LayoutParams;
@@ -23,22 +21,12 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
-import androidx.annotation.RequiresApi;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.SampleDownloadActivity;
@@ -226,21 +214,6 @@ public class FileHelper {
     }
 
 
-    public static Drawable getApkIcon(Context context, String apkPath) {
-        PackageManager pm = context.getPackageManager();
-        PackageInfo info = pm.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
-        if (info != null) {
-            ApplicationInfo appInfo = info.applicationInfo;
-            appInfo.sourceDir = apkPath;
-            appInfo.publicSourceDir = apkPath;
-            try {
-                return appInfo.loadIcon(pm);
-            } catch (OutOfMemoryError ignored) {
-            }
-        }
-        return null;
-    }
-
     public static long getFileSize(File file, boolean isShowHidden) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -308,7 +281,7 @@ public class FileHelper {
     }
 
     public static void initialize(Context context) {
-        sIsHasSD = (sSDPath = getExternalStoragePath(context)) != null;
+        sIsHasSD = (sSDPath = ContextUtils.getExternalStoragePath(context)) != null;
     }
 
     public static boolean isMusic(File f) {
@@ -487,34 +460,6 @@ public class FileHelper {
                 i++;
         }
         return i;
-    }
-
-
-    private static String getExternalStoragePath(Context context) {
-        StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-        Class<?> storageVolumeClazz = null;
-        try {
-            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
-            Method getPath = storageVolumeClazz.getMethod("getPath");
-            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
-            Object result = getVolumeList.invoke(mStorageManager);
-            if (result == null) return null;
-            final int length = Array.getLength(result);
-            for (int i = 0; i < length; i++) {
-                Object storageVolumeElement = Array.get(result, i);
-                String path = (String) getPath.invoke(storageVolumeElement);
-                Object removableObject = isRemovable.invoke(storageVolumeElement);
-                if (removableObject == null) return null;
-                boolean removable = (Boolean) removableObject;
-                if (removable) {
-                    return path;
-                }
-            }
-        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
 

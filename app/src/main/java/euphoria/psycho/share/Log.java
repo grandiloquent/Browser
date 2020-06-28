@@ -1,6 +1,3 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 package euphoria.psycho.share;
 
@@ -22,22 +19,34 @@ import androidx.annotation.VisibleForTesting;
  * </p>
  */
 public class Log {
-    /** Convenience property, same as {@link android.util.Log#ASSERT}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#ASSERT}.
+     */
     public static final int ASSERT = android.util.Log.ASSERT;
 
-    /** Convenience property, same as {@link android.util.Log#DEBUG}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#DEBUG}.
+     */
     public static final int DEBUG = android.util.Log.DEBUG;
 
-    /** Convenience property, same as {@link android.util.Log#ERROR}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#ERROR}.
+     */
     public static final int ERROR = android.util.Log.ERROR;
 
-    /** Convenience property, same as {@link android.util.Log#INFO}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#INFO}.
+     */
     public static final int INFO = android.util.Log.INFO;
 
-    /** Convenience property, same as {@link android.util.Log#VERBOSE}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#VERBOSE}.
+     */
     public static final int VERBOSE = android.util.Log.VERBOSE;
 
-    /** Convenience property, same as {@link android.util.Log#WARN}. */
+    /**
+     * Convenience property, same as {@link android.util.Log#WARN}.
+     */
     public static final int WARN = android.util.Log.WARN;
     private static final String sDeprecatedTagPrefix = "cr.";
     private static final String sTagPrefix = "cr_";
@@ -46,28 +55,36 @@ public class Log {
         // Static only access
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 0 args version. */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 0 args version.
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String message) {
         debug(tag, message);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 1 arg version. */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 1 arg version.
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1) {
         debug(tag, messageTemplate, arg1);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 2 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 2 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1, Object arg2) {
         debug(tag, messageTemplate, arg1, arg2);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 3 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 3 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(
@@ -75,47 +92,55 @@ public class Log {
         debug(tag, messageTemplate, arg1, arg2, arg3);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 4 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 4 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4) {
+                         Object arg4) {
         debug(tag, messageTemplate, arg1, arg2, arg3, arg4);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 5 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 5 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5) {
+                         Object arg4, Object arg5) {
         debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 6 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 6 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6) {
+                         Object arg4, Object arg5, Object arg6) {
         debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
-    /** Sends a {@link android.util.Log#DEBUG} log message. 7 args version */
+    /**
+     * Sends a {@link android.util.Log#DEBUG} log message. 7 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void d(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6, Object arg7) {
+                         Object arg4, Object arg5, Object arg6, Object arg7) {
         debug(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     /**
      * Sends an {@link android.util.Log#ERROR} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
      */
     @VisibleForTesting
     public static void e(String tag, String messageTemplate, Object... args) {
@@ -128,7 +153,9 @@ public class Log {
         }
     }
 
-    /** Handy function to get a loggable stack trace from a Throwable. */
+    /**
+     * Handy function to get a loggable stack trace from a Throwable.
+     */
     public static String getStackTraceString(Throwable tr) {
         return android.util.Log.getStackTraceString(tr);
     }
@@ -136,12 +163,12 @@ public class Log {
     /**
      * Sends an {@link android.util.Log#INFO} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
      */
     @VisibleForTesting
     public static void i(String tag, String messageTemplate, Object... args) {
@@ -156,7 +183,7 @@ public class Log {
 
     /**
      * Convenience function, forwards to {@link android.util.Log#isLoggable(String, int)}.
-     *
+     * <p>
      * Note: Has no effect on whether logs are sent or not. Use a method with
      * {@link RemovableInRelease} to log something in Debug builds only.
      */
@@ -168,6 +195,7 @@ public class Log {
      * Returns a normalized tag that will be in the form: "cr_foo". This function is called by the
      * various Log overrides. If using {@link #isLoggable(String, int)}, you might want to call it
      * to get the tag that will actually be used.
+     *
      * @see #sTagPrefix
      */
     public static String normalizeTag(String tag) {
@@ -182,28 +210,36 @@ public class Log {
         return sTagPrefix + tag.substring(unprefixedTagStart, tag.length());
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 0 args version. */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 0 args version.
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String message) {
         verbose(tag, message);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 1 arg version. */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 1 arg version.
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1) {
         verbose(tag, messageTemplate, arg1);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 2 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 2 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1, Object arg2) {
         verbose(tag, messageTemplate, arg1, arg2);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 3 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 3 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(
@@ -211,47 +247,55 @@ public class Log {
         verbose(tag, messageTemplate, arg1, arg2, arg3);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 4 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 4 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4) {
+                         Object arg4) {
         verbose(tag, messageTemplate, arg1, arg2, arg3, arg4);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 5 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 5 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5) {
+                         Object arg4, Object arg5) {
         verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 6 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 6 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6) {
+                         Object arg4, Object arg5, Object arg6) {
         verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6);
     }
 
-    /** Sends a {@link android.util.Log#VERBOSE} log message. 7 args version */
+    /**
+     * Sends a {@link android.util.Log#VERBOSE} log message. 7 args version
+     */
     @RemovableInRelease
     @VisibleForTesting
     public static void v(String tag, String messageTemplate, Object arg1, Object arg2, Object arg3,
-            Object arg4, Object arg5, Object arg6, Object arg7) {
+                         Object arg4, Object arg5, Object arg6, Object arg7) {
         verbose(tag, messageTemplate, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
     }
 
     /**
      * Sends a {@link android.util.Log#WARN} log message.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
      */
     @VisibleForTesting
     public static void w(String tag, String messageTemplate, Object... args) {
@@ -269,14 +313,13 @@ public class Log {
      * the {@link android.util.Log#ASSERT} level. Depending on the configuration, it might
      * terminate the process.
      *
-     * @see android.util.Log#wtf(String, String, Throwable)
-     *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
+     * @see android.util.Log#wtf(String, String, Throwable)
      */
     @VisibleForTesting
     public static void wtf(String tag, String messageTemplate, Object... args) {
@@ -291,17 +334,17 @@ public class Log {
 
     /**
      * Sends a {@link android.util.Log#DEBUG} log message.
-     *
+     * <p>
      * For optimization purposes, only the fixed parameters versions are visible. If you need more
      * than 7 parameters, consider building your log message using a function annotated with
      * {@link RemovableInRelease}.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
      */
     private static void debug(String tag, String messageTemplate, Object... args) {
         String message = formatLogWithStack(messageTemplate, args);
@@ -313,7 +356,9 @@ public class Log {
         }
     }
 
-    /** Returns a formatted log message, using the supplied format and arguments.*/
+    /**
+     * Returns a formatted log message, using the supplied format and arguments.
+     */
     private static String formatLog(String messageTemplate, Object... params) {
         if (params != null && params.length != 0) {
             messageTemplate = String.format(Locale.US, messageTemplate, params);
@@ -330,7 +375,9 @@ public class Log {
         return "[" + getCallOrigin() + "] " + formatLog(messageTemplate, params);
     }
 
-    /** Returns a string form of the origin of the log call, to be used as secondary tag.*/
+    /**
+     * Returns a string form of the origin of the log call, to be used as secondary tag.
+     */
     private static String getCallOrigin() {
         StackTraceElement[] st = Thread.currentThread().getStackTrace();
 
@@ -365,17 +412,17 @@ public class Log {
 
     /**
      * Sends a {@link android.util.Log#VERBOSE} log message.
-     *
+     * <p>
      * For optimization purposes, only the fixed parameters versions are visible. If you need more
      * than 7 parameters, consider building your log message using a function annotated with
      * {@link RemovableInRelease}.
      *
-     * @param tag Used to identify the source of a log message. Might be modified in the output
-     *            (see {@link #normalizeTag(String)})
+     * @param tag             Used to identify the source of a log message. Might be modified in the output
+     *                        (see {@link #normalizeTag(String)})
      * @param messageTemplate The message you would like logged. It is to be specified as a format
      *                        string.
-     * @param args Arguments referenced by the format specifiers in the format string. If the last
-     *             one is a {@link Throwable}, its trace will be printed.
+     * @param args            Arguments referenced by the format specifiers in the format string. If the last
+     *                        one is a {@link Throwable}, its trace will be printed.
      */
     private static void verbose(String tag, String messageTemplate, Object... args) {
         String message = formatLogWithStack(messageTemplate, args);

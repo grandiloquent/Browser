@@ -176,7 +176,7 @@ public class FileImageManager {
                         bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
                     case FileConstantsHelper.TYPE_APK:
-                        Drawable ico = FileHelper.getApkIcon(ContextUtils.getApplicationContext(), mFileItem.getUrl());
+                        Drawable ico = ContextUtils.getApkIcon(ContextUtils.getApplicationContext(), mFileItem.getUrl());
                         if (ico != null)
                             bitmap = BitmapUtils.drawableToBitmap(ico);
                         break;

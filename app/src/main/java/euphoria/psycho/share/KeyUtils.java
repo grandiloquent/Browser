@@ -27,8 +27,8 @@ public class KeyUtils {
 
     public static long crc64Long(byte[] buffer) {
         long crc = INITIALCRC;
-        for (int k = 0, n = buffer.length; k < n; ++k) {
-            crc = sCrcTable[(((int) crc) ^ buffer[k]) & 0xff] ^ (crc >> 8);
+        for (byte b : buffer) {
+            crc = sCrcTable[(((int) crc) ^ b) & 0xff] ^ (crc >> 8);
         }
         return crc;
     }
@@ -47,12 +47,12 @@ public class KeyUtils {
         try {
             java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
             byte[] array = md.digest(md5.getBytes());
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < array.length; ++i) {
-                sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1, 3));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : array) {
+                sb.append(Integer.toHexString((b & 0xFF) | 0x100).substring(1, 3));
             }
             return sb.toString();
-        } catch (java.security.NoSuchAlgorithmException e) {
+        } catch (java.security.NoSuchAlgorithmException ignored) {
         }
         return null;
     }

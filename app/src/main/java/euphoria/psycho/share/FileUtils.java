@@ -1,6 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+
 
 package euphoria.psycho.share;
 
@@ -77,11 +75,11 @@ public class FileUtils {
         return complete.digest();
     }
 
-    public static File createDirectoryIfNotExists(String dirPath) {
-        return createDirectoryIfNotExists(new File(dirPath));
+    public static void createDirectoryIfNotExists(String dirPath) {
+        createDirectoryIfNotExists(new File(dirPath));
     }
 
-    public static File createDirectoryIfNotExists(File dir) {
+    public static void createDirectoryIfNotExists(File dir) {
          /*
          Tests whether the file denoted by this abstract pathname is a
          directory.
@@ -115,7 +113,6 @@ public class FileUtils {
          */
             dir.mkdirs();
         }
-        return dir;
     }
 
     /**

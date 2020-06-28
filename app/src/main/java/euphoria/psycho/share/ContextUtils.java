@@ -9,10 +9,13 @@ import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.os.storage.StorageManager;
@@ -81,6 +84,21 @@ public class ContextUtils {
         return Math.round(dpToPixel((float) dp));
     }
 
+    public static Drawable getApkIcon(Context context, String apkPath) {
+        PackageManager pm = context.getPackageManager();
+        PackageInfo info = pm.getPackageArchiveInfo(apkPath, PackageManager.GET_ACTIVITIES);
+        if (info != null) {
+            ApplicationInfo appInfo = info.applicationInfo;
+            appInfo.sourceDir = apkPath;
+            appInfo.publicSourceDir = apkPath;
+            try {
+                return appInfo.loadIcon(pm);
+            } catch (OutOfMemoryError ignored) {
+            }
+        }
+        return null;
+    }
+
     /**
      * This is used to ensure that we always use the application context to fetch the default shared
      * preferences. This avoids needless I/O for android N and above. It also makes it clear that
@@ -114,6 +132,33 @@ public class ContextUtils {
         ClipData clip = sClipboardManager.getPrimaryClip();
         if (clip != null && clip.getItemCount() > 0) {
             return clip.getItemAt(0).getText();
+        }
+        return null;
+    }
+
+    public static String getExternalStoragePath(Context context) {
+        StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
+        Class<?> storageVolumeClazz = null;
+        try {
+            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
+            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
+            Method getPath = storageVolumeClazz.getMethod("getPath");
+            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
+            Object result = getVolumeList.invoke(mStorageManager);
+            if (result == null) return null;
+            final int length = Array.getLength(result);
+            for (int i = 0; i < length; i++) {
+                Object storageVolumeElement = Array.get(result, i);
+                String path = (String) getPath.invoke(storageVolumeElement);
+                Object removableObject = isRemovable.invoke(storageVolumeElement);
+                if (removableObject == null) return null;
+                boolean removable = (Boolean) removableObject;
+                if (removable) {
+                    return path;
+                }
+            }
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
         }
         return null;
     }
