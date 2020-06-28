@@ -12,7 +12,7 @@ public class FileItemComparator implements Comparator<FileItem> {
     private final boolean mIsAscending;
 
     public FileItemComparator(int sortType) {
-        mIsAscending = (sortType & FileHelper.SORT_BY_ASCENDING) == FileHelper.SORT_BY_ASCENDING;
+        mIsAscending = (sortType & FileConstantsHelper.SORT_BY_ASCENDING) == FileConstantsHelper.SORT_BY_ASCENDING;
         mSortType = sortType;
         mCollator = Collator.getInstance(Locale.CHINA);
     }
@@ -20,24 +20,24 @@ public class FileItemComparator implements Comparator<FileItem> {
     @Override
     public int compare(FileItem o1, FileItem o2) {
         if ((o1.getType() == o2.getType()) || (
-                o1.getType() != FileHelper.TYPE_FOLDER && o2.getType() != FileHelper.TYPE_FOLDER
+                o1.getType() != FileConstantsHelper.TYPE_FOLDER && o2.getType() != FileConstantsHelper.TYPE_FOLDER
         )) {
-            if ((mSortType & FileHelper.SORT_BY_SIZE) == FileHelper.SORT_BY_SIZE) {
+            if ((mSortType & FileConstantsHelper.SORT_BY_SIZE) == FileConstantsHelper.SORT_BY_SIZE) {
                 long dif = o1.getSize() - o2.getSize();
                 int ret = 0;
                 if (dif > 0) ret = 1;
                 if (dif < 0) ret = -1;
                 return ret * (mIsAscending ? 1 : -1);
-            } else if ((mSortType & FileHelper.SORT_BY_DATA_MODIFIED) == FileHelper.SORT_BY_DATA_MODIFIED) {
+            } else if ((mSortType & FileConstantsHelper.SORT_BY_DATA_MODIFIED) == FileConstantsHelper.SORT_BY_DATA_MODIFIED) {
 
                 long dif = o1.getTimestamp() - o2.getTimestamp();
                 int ret = 0;
                 if (dif > 0) ret = 1;
                 if (dif < 0) ret = -1;
                 return ret * (mIsAscending ? 1 : -1);
-            } else if ((mSortType & FileHelper.SORT_BY_TYPE) == FileHelper.SORT_BY_TYPE) {
+            } else if ((mSortType & FileConstantsHelper.SORT_BY_TYPE) == FileConstantsHelper.SORT_BY_TYPE) {
 
-                if (o1.getType() == FileHelper.TYPE_FOLDER) {
+                if (o1.getType() == FileConstantsHelper.TYPE_FOLDER) {
                     return mCollator.compare(o1.getTitle(), o2.getTitle()) * (mIsAscending ? 1 : -1);
                 } else {
                     return mCollator.compare(Share.substringAfterLast(o1.getTitle(), '.'), Share.substringAfterLast(o2.getTitle(), '.')) * (mIsAscending ? 1 : -1);
@@ -45,7 +45,7 @@ public class FileItemComparator implements Comparator<FileItem> {
             } else {
                 return mCollator.compare(o1.getTitle(), o2.getTitle()) * (mIsAscending ? 1 : -1);
             }
-        } else if (o1.getType() == FileHelper.TYPE_FOLDER) {
+        } else if (o1.getType() == FileConstantsHelper.TYPE_FOLDER) {
             return mIsAscending ? -1 : 1;
         }
         return mIsAscending ? 1 : -1;

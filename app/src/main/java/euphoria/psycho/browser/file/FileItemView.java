@@ -52,7 +52,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_copy_path, 0, 0));
-        if (getItem().getType() == FileHelper.TYPE_ZIP) {
+        if (getItem().getType() == FileConstantsHelper.TYPE_ZIP) {
             listItems.add(buildMenuListItem(R.string.file_item_extract_zip, 0, 0));
         }
 
@@ -140,7 +140,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         super.setItem(item);
         mTitleView.setText(item.getTitle());
         setStartIconDrawable(mFileImageManager.getDefaultDrawable(item));
-        if (item.getType() == FileHelper.TYPE_FOLDER) {
+        if (item.getType() == FileConstantsHelper.TYPE_FOLDER) {
             mDescriptionView.setText(getContext().getString(R.string.items, item.getSize()));
         } else {
             mDescriptionView.setText(Share.formatFileSize(item.getSize()));

@@ -8,15 +8,15 @@ import android.util.Pair;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
+import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
+import euphoria.psycho.browser.app.FunctionsMenu;
 import euphoria.psycho.browser.app.SettingsActivity;
 
-import static euphoria.psycho.browser.file.FileConstantsHelper.sIsHasSD;
-import static euphoria.psycho.browser.file.FileConstantsHelper.sSDPath;
 import static euphoria.psycho.browser.file.FileHelper.*;
 
 public class BottomSheetHelper {
     public static Pair<Integer, String>[] createBottomSheetItems(Context context) {
-        if (sIsHasSD) {
+        if (FileConstantsHelper.sIsHasSD) {
             return new Pair[]{
                     Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
                     Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
@@ -38,6 +38,32 @@ public class BottomSheetHelper {
         }
     }
 
+    public static void createFunctionsMenu(Activity activity, FileManager fileManager) {
+        FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
+            @Override
+            public void onClicked(Pair<Integer, String> item) {
+                switch (item.first) {
+                    case R.drawable.ic_twitter:
+                        extractTwitterVideo(activity);
+                        break;
+                    case R.drawable.ic_youtube:
+                        startYouTube(activity);
+                        break;
+                    case R.drawable.ic_film:
+                        startVideoServer(activity);
+                        break;
+                    case R.drawable.ic_translate:
+                        TranslatorHelper.youdaoChinese(activity);
+                        break;
+                    case R.drawable.ic_g_translate:
+                        TranslatorHelper.google(activity);
+                        break;
+
+                }
+            }
+        });
+        functionsMenu.showDialog(createFunctionsMenuItems(activity));
+    }
 
     public static void showBottomSheet(Activity activity, Pair<Integer, String>[] items, FileManager fileManager) {
         BottomSheet bottomSheet = new BottomSheet(activity)
@@ -47,7 +73,7 @@ public class BottomSheetHelper {
                             fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
                             break;
                         case R.drawable.ic_sd_storage:
-                            fileManager.openDirectory(sSDPath);
+                            fileManager.openDirectory(FileConstantsHelper.sSDPath);
                             break;
                         case R.drawable.ic_settings:
                             Intent settingsActivity = new Intent(activity, SettingsActivity.class);
@@ -71,6 +97,5 @@ public class BottomSheetHelper {
         fileManager.setBottomSheet(bottomSheet);
         bottomSheet.showDialog(items);
     }
-
 
 }

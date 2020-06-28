@@ -17,6 +17,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.Environment;
 import android.os.storage.StorageManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.WindowManager.LayoutParams;
 import android.webkit.MimeTypeMap;
 import android.widget.EditText;
@@ -41,9 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.util.Pair;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
 import euphoria.psycho.browser.app.FunctionsMenu;
 import euphoria.psycho.browser.app.NativeHelper;
@@ -79,7 +78,6 @@ public class FileHelper {
 "word",
 "zip"]
     * */
-    static ExecutorService sSingleThreadExecutor;
     private static List<String> sSortItems;
 
     public static void cleanDirectory(final File directory) throws IOException {
@@ -142,32 +140,6 @@ public class FileHelper {
     }
 
 
-    public static void createFunctionsMenu(Activity activity, FileManager fileManager) {
-        FunctionsMenu functionsMenu = new FunctionsMenu(activity, fileManager.getView(), new OnClickListener() {
-            @Override
-            public void onClicked(Pair<Integer, String> item) {
-                switch (item.first) {
-                    case R.drawable.ic_twitter:
-                        extractTwitterVideo(activity);
-                        break;
-                    case R.drawable.ic_youtube:
-                        startYouTube(activity);
-                        break;
-                    case R.drawable.ic_film:
-                        startVideoServer(activity);
-                        break;
-                    case R.drawable.ic_translate:
-                        youdaoChinese(activity);
-                        break;
-                    case R.drawable.ic_g_translate:
-                        google(activity);
-                        break;
-
-                }
-            }
-        });
-        functionsMenu.showDialog(createFunctionsMenuItems(activity));
-    }
 
     public static Pair<Integer, String>[] createFunctionsMenuItems(Context context) {
         return new Pair[]{
@@ -655,26 +627,6 @@ public class FileHelper {
         return null;
     }
 
-    private static void google(Activity activity) {
-        if (sSingleThreadExecutor == null)
-            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-        sSingleThreadExecutor.submit(() -> {
-            CharSequence q = Share.getClipboardString();
-            if (q == null) return;
-            String query = q.toString().trim();
-            String result = NativeHelper.google(query, false);
-            activity.runOnUiThread(() -> {
-                new AlertDialog.Builder(activity)
-                        .setMessage(result)
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Share.setClipboardString(result);
-                            dialog.dismiss();
-                        })
-                        .show();
-            });
-        });
-    }
-
     public static void showSortDialog(Activity activity, FileManager fileManager) {
         if (sSortItems == null) {
             sSortItems = new ArrayList<>();
@@ -738,25 +690,8 @@ public class FileHelper {
         }
         return files;
     }
+    //
 
-    private static void youdaoChinese(Activity activity) {
-        if (sSingleThreadExecutor == null)
-            sSingleThreadExecutor = Executors.newSingleThreadExecutor();
-        sSingleThreadExecutor.submit(() -> {
-            CharSequence q = Share.getClipboardString();
-            if (q == null) return;
-            String query = q.toString().trim();
-            String result = NativeHelper.youdao(query, true, query.contains(" "));
-            activity.runOnUiThread(() -> {
-                new AlertDialog.Builder(activity)
-                        .setMessage(result)
-                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                            Share.setClipboardString(result);
-                            dialog.dismiss();
-                        })
-                        .show();
-            });
-        });
-    }
+
 
 }

@@ -3,6 +3,7 @@ package euphoria.psycho.browser.app;
 import java.io.File;
 
 import euphoria.psycho.browser.base.Share;
+import euphoria.psycho.browser.file.FileConstantsHelper;
 import euphoria.psycho.browser.file.FileHelper;
 
 public class SettingsManager {
@@ -28,7 +29,7 @@ public class SettingsManager {
     }
 
     public int getSortType() {
-        return Share.getAppSharedPreferences().getInt(KEY_SORT_TYPE, FileHelper.SORT_TYPE_DEFAULT);
+        return Share.getAppSharedPreferences().getInt(KEY_SORT_TYPE, FileConstantsHelper.SORT_TYPE_DEFAULT);
     }
 
     public String getVideoDirectory() {

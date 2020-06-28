@@ -58,29 +58,29 @@ public class FileImageManager {
 
     public Drawable getDefaultDrawable(FileItem fileItem) {
         switch (fileItem.getType()) {
-            case FileHelper.TYPE_APK:
+            case FileConstantsHelper.TYPE_APK:
                 return mApkDrawable;
-            case FileHelper.TYPE_EXCEL:
+            case FileConstantsHelper.TYPE_EXCEL:
                 return mExcelDrawable;
-            case FileHelper.TYPE_FOLDER:
+            case FileConstantsHelper.TYPE_FOLDER:
                 return mFolderDrawable;
-            case FileHelper.TYPE_IMAGE:
+            case FileConstantsHelper.TYPE_IMAGE:
                 return mImageDrawable;
-            case FileHelper.TYPE_MUSIC:
+            case FileConstantsHelper.TYPE_MUSIC:
                 return mMusicDrawable;
-            case FileHelper.TYPE_PDF:
+            case FileConstantsHelper.TYPE_PDF:
                 return mPdfDrawable;
-            case FileHelper.TYPE_PPS:
+            case FileConstantsHelper.TYPE_PPS:
                 return mPpsDrawable;
-            case FileHelper.TYPE_TEXT:
+            case FileConstantsHelper.TYPE_TEXT:
                 return mTextDrawable;
-            case FileHelper.TYPE_VCF:
+            case FileConstantsHelper.TYPE_VCF:
                 return mVcfDrawable;
-            case FileHelper.TYPE_VIDEO:
+            case FileConstantsHelper.TYPE_VIDEO:
                 return mVideoDrawable;
-            case FileHelper.TYPE_WORD:
+            case FileConstantsHelper.TYPE_WORD:
                 return mWordDrawable;
-            case FileHelper.TYPE_ZIP:
+            case FileConstantsHelper.TYPE_ZIP:
                 return mZipDrawable;
             default:
                 return mOthersDrawable;
@@ -89,8 +89,8 @@ public class FileImageManager {
 
     public void getDrawable(FileItem fileItem, int size, FutureListener<Drawable> futureListener) {
         switch (fileItem.getType()) {
-            case FileHelper.TYPE_VIDEO:
-            case FileHelper.TYPE_IMAGE:
+            case FileConstantsHelper.TYPE_VIDEO:
+            case FileConstantsHelper.TYPE_IMAGE:
                 mThreadPool.submit(new ImageJob(fileItem, size, mLruCache, mCacheDirectory), futureListener);
                 return;
         }
@@ -160,10 +160,10 @@ public class FileImageManager {
             }
             if (bitmap == null) {
                 switch (mFileItem.getType()) {
-                    case FileHelper.TYPE_VIDEO:
+                    case FileConstantsHelper.TYPE_VIDEO:
                         bitmap = Share.createVideoThumbnail(mFileItem.getUrl());
                         break;
-                    case FileHelper.TYPE_IMAGE:
+                    case FileConstantsHelper.TYPE_IMAGE:
                         final BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inJustDecodeBounds = true;
                         BitmapFactory.decodeFile(mFileItem.getUrl(), options);
@@ -171,7 +171,7 @@ public class FileImageManager {
                         options.inJustDecodeBounds = false;
                         bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
-                    case FileHelper.TYPE_APK:
+                    case FileConstantsHelper.TYPE_APK:
                         Drawable ico = FileHelper.getApkIcon(Share.getApplicationContext(), mFileItem.getUrl());
                         if (ico != null)
                             bitmap = BitmapUtils.drawableToBitmap(ico);
