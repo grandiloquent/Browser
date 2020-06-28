@@ -34,11 +34,10 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         AnimationListener {
 
     private static final long START_HIDING_DELAY = 5000;
-    private boolean hidden;
-
     private final Handler handler;
-    private final Runnable startHidingRunnable;
     private final Animation hideAnimation;
+    private final Runnable startHidingRunnable;
+    private boolean hidden;
 
     public MovieControllerOverlay(Context context) {
         super(context);
@@ -52,9 +51,43 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         hide();
     }
 
+    private void cancelHiding() {
+        handler.removeCallbacks(startHidingRunnable);
+        mBackground.setAnimation(null);
+        mTimeBar.setAnimation(null);
+        //mPlayPauseReplayView.setAnimation(null);
+    }
+
+    private void maybeStartHiding() {
+        cancelHiding();
+        if (mState == State.PLAYING) {
+            handler.postDelayed(startHidingRunnable, START_HIDING_DELAY);
+        }
+    }
+
+    private void startHideAnimation(View view) {
+        if (view.getVisibility() == View.VISIBLE) {
+            view.startAnimation(hideAnimation);
+        }
+    }
+
+    private void startHiding() {
+        startHideAnimation(mBackground);
+        startHideAnimation(mTimeBar);
+       // startHideAnimation(mPlayPauseReplayView);
+    }
+
     @Override
     protected void createTimeBar(Context context) {
         mTimeBar = new TimeBar(context, this);
+    }
+
+    @Override
+    protected void updateViews() {
+        if (hidden) {
+            return;
+        }
+        super.updateViews();
     }
 
     @Override
@@ -67,47 +100,9 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
         }
     }
 
-
     @Override
-    public void show() {
-        boolean wasHidden = hidden;
-        hidden = false;
-        super.show();
-        if (mListener != null && wasHidden != hidden) {
-            mListener.onShown();
-        }
-        maybeStartHiding();
-    }
-
-    private void maybeStartHiding() {
-        cancelHiding();
-        if (mState == State.PLAYING) {
-            handler.postDelayed(startHidingRunnable, START_HIDING_DELAY);
-        }
-    }
-
-    private void startHiding() {
-        startHideAnimation(mBackground);
-        startHideAnimation(mTimeBar);
-       // startHideAnimation(mPlayPauseReplayView);
-    }
-
-    private void startHideAnimation(View view) {
-        if (view.getVisibility() == View.VISIBLE) {
-            view.startAnimation(hideAnimation);
-        }
-    }
-
-    private void cancelHiding() {
-        handler.removeCallbacks(startHidingRunnable);
-        mBackground.setAnimation(null);
-        mTimeBar.setAnimation(null);
-        //mPlayPauseReplayView.setAnimation(null);
-    }
-
-    @Override
-    public void onAnimationStart(Animation animation) {
-        // Do nothing.
+    public void onAnimationEnd(Animation animation) {
+        hide();
     }
 
     @Override
@@ -116,8 +111,8 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
     }
 
     @Override
-    public void onAnimationEnd(Animation animation) {
-        hide();
+    public void onAnimationStart(Animation animation) {
+        // Do nothing.
     }
 
     @Override
@@ -126,6 +121,26 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
             show();
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onScrubbingEnd(int time, int trimStartTime, int trimEndTime) {
+        maybeStartHiding();
+        super.onScrubbingEnd(time, trimStartTime, trimEndTime);
+    }
+
+    @Override
+    public void onScrubbingMove(int time) {
+        cancelHiding();
+        super.onScrubbingMove(time);
+    }
+
+    // TimeBar listener
+
+    @Override
+    public void onScrubbingStart() {
+        cancelHiding();
+        super.onScrubbingStart();
     }
 
     @Override
@@ -153,30 +168,13 @@ public class MovieControllerOverlay extends CommonControllerOverlay implements
     }
 
     @Override
-    protected void updateViews() {
-        if (hidden) {
-            return;
+    public void show() {
+        boolean wasHidden = hidden;
+        hidden = false;
+        super.show();
+        if (mListener != null && wasHidden != hidden) {
+            mListener.onShown();
         }
-        super.updateViews();
-    }
-
-    // TimeBar listener
-
-    @Override
-    public void onScrubbingStart() {
-        cancelHiding();
-        super.onScrubbingStart();
-    }
-
-    @Override
-    public void onScrubbingMove(int time) {
-        cancelHiding();
-        super.onScrubbingMove(time);
-    }
-
-    @Override
-    public void onScrubbingEnd(int time, int trimStartTime, int trimEndTime) {
         maybeStartHiding();
-        super.onScrubbingEnd(time, trimStartTime, trimEndTime);
     }
 }

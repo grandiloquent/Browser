@@ -1,4 +1,5 @@
 <resources>
+    <!--(?<=<string name=")[a-zA-Z_0-9]*?(?=")-->
     <string name="accessibility_cancel_selection">Cancel selection</string>
     <string name="accessibility_toolbar_btn_back">Go back</string>
     <string name="accessibility_toolbar_btn_delete_url">Clear input</string>

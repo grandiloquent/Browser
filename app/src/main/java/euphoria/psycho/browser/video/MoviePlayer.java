@@ -400,6 +400,11 @@ public class MoviePlayer implements
         showSystemUi(false);
     }
 
+    @Override
+    public void onPlayNext() {
+
+    }
+
     // Below are notifications from ControllerOverlay
     @Override
     public void onPlayPause() {
@@ -408,6 +413,11 @@ public class MoviePlayer implements
         } else {
             playVideo();
         }
+    }
+
+    @Override
+    public void onPlayPrevious() {
+
     }
 
     @Override
@@ -437,16 +447,6 @@ public class MoviePlayer implements
         mShowing = true;
         setProgress();
         showSystemUi(true);
-    }
-
-    @Override
-    public void onPlayNext() {
-
-    }
-
-    @Override
-    public void onPlayPrevious() {
-
     }
 
     // We want to pause when the headset is unplugged.
