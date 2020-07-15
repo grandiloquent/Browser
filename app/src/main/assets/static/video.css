@@ -37,7 +37,6 @@ html {
 }
 
 
-
 input {
     background-color: transparent;
     padding-bottom: 4px;
@@ -193,11 +192,6 @@ input[type="checkbox"] {
 }
 
 
-
-
-
-
-
 body:not([engagement-panel-open]) ytm-engagement-panel {
     display: none
 }
@@ -236,7 +230,6 @@ body[faux-fullscreen="true"] ytm-custom-control .player-controls-top {
 
 #app {
     display: block;
-    padding-top: 48px;
 }
 
 .player-size {
@@ -262,7 +255,7 @@ body[faux-fullscreen="true"] ytm-custom-control .player-controls-top {
 
 .player-container {
     position: fixed;
-    top: 48px;
+    top: 0;
     right: 0;
     left: 0;
     overflow: hidden;
@@ -683,29 +676,11 @@ div.compact-media-item > a {
     min-height: 100%;
     margin: auto;
 }
+
 .video-thumbnail-bg {
-    background-color: hsla(0,0%,53.3%,.2);
-}.video-thumbnail-overlay-bottom-group {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    -moz-box-orient: vertical;
-    -webkit-box-orient: vertical;
-    -ms-flex-direction: column;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    -ms-flex-align: end;
-    -moz-box-align: end;
-    -webkit-box-align: end;
-    -webkit-align-items: flex-end;
-    align-items: flex-end;
+    background-color: hsla(0, 0%, 53.3%, .2);
 }
+
 .video-thumbnail-overlay-bottom-group {
     position: absolute;
     bottom: 0;
@@ -727,31 +702,58 @@ div.compact-media-item > a {
     -webkit-align-items: flex-end;
     align-items: flex-end;
 }
+
+.video-thumbnail-overlay-bottom-group {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -moz-box-orient: vertical;
+    -webkit-box-orient: vertical;
+    -ms-flex-direction: column;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-align: end;
+    -moz-box-align: end;
+    -webkit-box-align: end;
+    -webkit-align-items: flex-end;
+    align-items: flex-end;
+}
+
 ytm-thumbnail-overlay-resume-playback-renderer {
     display: block;
     width: 100%;
     height: 4px;
-    background-color: hsla(0,0%,93.3%,.6);
+    background-color: hsla(0, 0%, 93.3%, .6);
 }
+
 .video-thumbnail-overlay-bottom-group ytm-thumbnail-overlay-resume-playback-renderer {
     -webkit-box-ordinal-group: 2;
     -webkit-order: 1;
     -ms-flex-order: 1;
     order: 1;
 }
+
 .thumbnail-overlay-resume-playback-progress {
     background-color: #f00;
     height: 4px;
     left: 0;
 }
+
 ytm-thumbnail-overlay-time-status-renderer {
     margin: 5px;
     padding: 1px 4px;
     border-radius: 2px;
     font-size: 1.2rem;
     color: #eee;
-    background-color: hsla(0,0%,6.7%,.8);
+    background-color: hsla(0, 0%, 6.7%, .8);
 }
+
 .compact-media-item-metadata {
     display: -webkit-box;
     display: -moz-box;
@@ -765,6 +767,7 @@ ytm-thumbnail-overlay-time-status-renderer {
     min-width: 0;
     overflow: visible;
 }
+
 .compact-media-item-metadata-content {
     display: block;
     -webkit-box-flex: 1;
@@ -780,21 +783,25 @@ ytm-thumbnail-overlay-time-status-renderer {
     overflow: hidden;
     margin: 0;
     font-size: 1.4rem;
-        max-height: 3.75em;
+    max-height: 3.75em;
     -webkit-line-clamp: 3;
 }
+
 .subhead {
     opacity: .6;
 }
+
 .small-text {
     font-size: 1.2rem;
 }
+
 .compact-media-item-byline {
     display: block;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
 .compact-media-item-stats {
     display: inline-block;
     max-width: 100%;

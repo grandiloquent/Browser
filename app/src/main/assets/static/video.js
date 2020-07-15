@@ -42,6 +42,21 @@ class Player {
             this.showController();
             this.hiddenController();
         });
+        this.bindNext();
+        this.playIndex = 0;
+    }
+
+    bindNext() {
+        this.buttonNext = document.querySelector('.button-next');
+        this.buttonNext.addEventListener('click', evt => {
+
+            if (this.playIndex + 1 >= this.items.length) {
+                this.playIndex = 0;
+            }
+            // http://192.168.0.101:12345
+            this.video.src = "/watch?v=" + this.items[this.playIndex++];
+            this.playVideo();
+        });
     }
 
     hiddenController() {
@@ -71,6 +86,7 @@ class Player {
                     const element = this.createItem(object);
                     this.singleColumn.appendChild(element);
                 });
+                this.items = items;
             })
     }
 
