@@ -76,6 +76,23 @@ void dirname(char *buf, const char *path) {
     buf[c] = 0;
 }
 
+void file_name(char *buf, const char *path) {
+
+    char *s = path;
+    size_t len = strlen(path);
+    for (int i = len; i > -1; i--) {
+        if (*(s + i) == '/') {
+            s = s + i + 1;
+            break;
+        }
+    }
+    int i = 0;
+    while (*s) {
+        buf[i++] = *s++;
+    }
+    buf[i] = 0;
+}
+
 static void handle_watch(struct mg_connection *nc, int ev, void *p) {
     if (p == NULL)return;
     char filename[PATH_MAX];
@@ -86,6 +103,34 @@ static void handle_watch(struct mg_connection *nc, int ev, void *p) {
     static const struct mg_str video = MG_MK_STR("video/mp4");
     LOGE("%s\n", filename);
     mg_http_serve_file(nc, hm, filename, video, mg_mk_str(""));
+    nc->flags |= MG_F_SEND_AND_CLOSE;
+
+
+}
+
+static void handle_remove(struct mg_connection *nc, int ev, void *p) {
+    if (p == NULL)return;
+    char filename[PATH_MAX];
+
+    struct http_message *hm = (struct http_message *) p;
+
+    mg_get_http_var(&hm->query_string, "v", filename, PATH_MAX);
+
+//    char buf[PATH_MAX];
+//    dirname(buf, filename);
+//
+//    dirname(parent, buf);
+    char parent[PATH_MAX];
+    char f[PATH_MAX];
+
+    strcpy(parent, "/storage/emulated/0/");
+
+    file_name(f, filename);
+    strcat(parent, f);
+    rename(filename, parent);
+    LOGE("%s %s %s\n", filename, parent, strerror(errno));
+
+
     nc->flags |= MG_F_SEND_AND_CLOSE;
 
 
@@ -189,6 +234,8 @@ void *start_server(const char *address) {
     mg_register_http_endpoint(nc, "/api/videos", handle_api_videos);
     mg_register_http_endpoint(nc, "/videos", handle_video);
     mg_register_http_endpoint(nc, "/watch", handle_watch);
+
+    mg_register_http_endpoint(nc, "/remove", handle_remove);
 
 
     mg_set_protocol_http_websocket(nc);

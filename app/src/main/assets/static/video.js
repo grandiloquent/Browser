@@ -43,6 +43,7 @@ class Player {
             this.hiddenController();
         });
         this.bindNext();
+
         this.playIndex = 0;
     }
 
@@ -57,6 +58,10 @@ class Player {
             this.video.src = "/watch?v=" + this.items[this.playIndex++];
             this.playVideo();
         });
+    }
+    bindRemove(){
+    this.buttonRemove=document.querySelector('.icon-disable');
+
     }
 
     hiddenController() {
@@ -78,7 +83,7 @@ class Player {
         fetch('/api/videos')
             .then(res => res.json())
             .then(items => {
-                items.forEach(i => {
+                items.forEach((i,index) => {
                     const object = {};
                     object["title"] = i.substr(i.lastIndexOf('/') + 1);
                     object["href"] = encodeURIComponent(i);
@@ -101,6 +106,7 @@ class Player {
         compactMediaItemImage.className = 'compact-media-item-image';
         compactMediaItemImage.setAttribute('aria-hidden', 'true');
         compactMediaItemImage.setAttribute('href', '/watch?v=' + object["href"]);
+
         compactMediaItemImage.addEventListener('click', this.onItemClick.bind(this));
 
         compactMediaItem.appendChild(compactMediaItemImage);
@@ -114,6 +120,13 @@ class Player {
         coverImage.className = 'cover video-thumbnail-img';
         coverImage.setAttribute('alt', '');
         coverImage.setAttribute('src', object["cover"]);
+        coverImage.setAttribute('data-src', object["href"]);
+        coverImage.addEventListener('click',evt=>{
+            fetch('/remove?v=' +evt.currentTarget.getAttribute('data-src'));
+            evt.preventDefault();
+            evt.stopPropagation();
+            item.remove();
+            });
         videoThumbnailContainerCompact.appendChild(coverImage);
         const videoThumbnailOverlayBottomGroup = document.createElement('div');
         videoThumbnailOverlayBottomGroup.className = 'video-thumbnail-overlay-bottom-group';
@@ -132,6 +145,7 @@ class Player {
         const compactMediaItemMetadataContent = document.createElement('a');
         compactMediaItemMetadataContent.className = 'compact-media-item-metadata-content';
         compactMediaItemMetadataContent.setAttribute('href', '/watch?v=' + object["href"]);
+
         compactMediaItemMetadata.appendChild(compactMediaItemMetadataContent);
         compactMediaItemMetadataContent.addEventListener('click', this.onItemClick.bind(this));
         const compactMediaItemHeadline = document.createElement('h4');
@@ -149,6 +163,8 @@ class Player {
         const href = event.currentTarget.getAttribute('href');
         // this.video.src = "http://192.168.0.101:12345/" + substringAfter(substringAfter(href, ':'), '/')
         this.video.src = href;
+
+        this.playIndex=parseInt(event.currentTarget.getAttribute('data-index'));
         document.title = substringAfterLast(decodeURIComponent(href), '/');
         this.playVideo();
         this.hiddenController();
