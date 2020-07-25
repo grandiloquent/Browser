@@ -24,7 +24,12 @@
         </activity>
         <activity
             android:name=".app.ServerActivity"
-            android:label="文件服务器"></activity>
+            android:label="文件服务器">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".video.MovieActivity"
             android:label="@string/movie_view_label"
@@ -71,10 +76,7 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+
         </activity>
         <activity
             android:name=".app.SampleDownloadActivity"

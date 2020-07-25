@@ -22,9 +22,9 @@ static int is_equal(const struct mg_str *s1, const struct mg_str *s2);
 
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data);
 
-static void handle_api_videos(struct mg_connection *nc, const struct http_message *hm);
+static void handle_api_videos(struct mg_connection *nc, int ev, void *p);
 
-static void handle_video(struct mg_connection *nc, const struct http_message *hm);
+static void handle_video(struct mg_connection *nc, int ev, void *p);
 
 void *start_server(const char *address);
 
@@ -76,37 +76,44 @@ void dirname(char *buf, const char *path) {
     buf[c] = 0;
 }
 
-static void handle_watch(struct mg_connection *nc, struct http_message *hm) {
+static void handle_watch(struct mg_connection *nc, int ev, void *p) {
+    if (p == NULL)return;
     char filename[PATH_MAX];
+
+    struct http_message *hm = (struct http_message *) p;
+
     mg_get_http_var(&hm->query_string, "v", filename, PATH_MAX);
     static const struct mg_str video = MG_MK_STR("video/mp4");
+    LOGE("%s\n", filename);
     mg_http_serve_file(nc, hm, filename, video, mg_mk_str(""));
+    nc->flags |= MG_F_SEND_AND_CLOSE;
+
+
 }
 
 static void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
-    static const struct mg_str api_index = MG_MK_STR("/");
-    static const struct mg_str api_videos = MG_MK_STR("/api/videos");
-    static const struct mg_str watch = MG_MK_STR("/watch");
-    static const struct mg_str video = MG_MK_STR("/video");
-    struct http_message *hm = (struct http_message *) ev_data;
+//    static const struct mg_str api_index = MG_MK_STR("/");
+//    static const struct mg_str api_videos = MG_MK_STR("/api/videos");
+//    static const struct mg_str watch = MG_MK_STR("/watch");
+//    struct http_message *hm = (struct http_message *) ev_data;
+//    if (ev == MG_EV_HTTP_REQUEST) {
+//        if (is_equal(&hm->uri, &api_videos)) {
+//            LOGE("%s\n", "/api/videos");
+//            handle_api_videos(nc, hm);
+//        }
+//        if (is_equal(&hm->uri, &watch)) {
+//            handle_watch(nc, hm);
+//        } else {
+//            LOGE("ev_handler: %s\n", s_http_server_opts.document_root);
+//            mg_serve_http(nc, hm, s_http_server_opts);
+//        }
+//    }
     if (ev == MG_EV_HTTP_REQUEST) {
-        if (is_equal(&hm->uri, &api_videos)) {
-            LOGE("%s\n", "/api/videos");
-            handle_api_videos(nc, hm);
-        }
-        if (is_equal(&hm->uri, &watch)) {
-            handle_watch(nc, hm);
-        } else if (is_equal(&hm->uri, &video)) {
-
-            handle_video(nc, hm);
-        } else {
-            LOGE("ev_handler: %s\n", s_http_server_opts.document_root);
-            mg_serve_http(nc, hm, s_http_server_opts);
-        }
+        mg_serve_http(nc, ev_data, s_http_server_opts);
     }
 }
 
-static void handle_api_videos(struct mg_connection *nc, const struct http_message *hm) {
+static void handle_api_videos(struct mg_connection *nc, int ev, void *p) {
     strlist_t files = STRLIST_INITIALIZER;
 
     int ret = list_directory(video_directory, &files);
@@ -133,16 +140,18 @@ static void handle_api_videos(struct mg_connection *nc, const struct http_messag
     cJSON_Delete(items);
     strlist_done(&files);
     free(buf);
+    nc->flags |= MG_F_SEND_AND_CLOSE;
     return;
     err:
     cJSON_Delete(items);
     strlist_done(&files);
     mg_send_head(nc, 500, 0, NULL);
-    return;
+    nc->flags |= MG_F_SEND_AND_CLOSE;
 
 }
 
-static void handle_video(struct mg_connection *nc, const struct http_message *hm) {
+static void handle_video(struct mg_connection *nc, int ev, void *p) {
+    // 发送 videos.html 文件
     const char *filename = "videos.html";
     char path_buf[PATH_MAX];
     strcpy(path_buf, s_http_server_opts.document_root);
@@ -157,6 +166,7 @@ static void handle_video(struct mg_connection *nc, const struct http_message *hm
     mg_send_head(nc, 200, size, "Content-Type: text/html");
     mg_send(nc, buf, size);
     free(buf);
+    nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
 static int has_prefix(const struct mg_str *uri, const struct mg_str *prefix) {
@@ -168,11 +178,19 @@ static int is_equal(const struct mg_str *s1, const struct mg_str *s2) {
 }
 
 void *start_server(const char *address) {
+
     struct mg_mgr mgr;
     struct mg_connection *nc;
+
     mg_mgr_init(&mgr, NULL);
-    LOGE("%s", address);
+
     nc = mg_bind(&mgr, address, ev_handler);
+
+    mg_register_http_endpoint(nc, "/api/videos", handle_api_videos);
+    mg_register_http_endpoint(nc, "/videos", handle_video);
+    mg_register_http_endpoint(nc, "/watch", handle_watch);
+
+
     mg_set_protocol_http_websocket(nc);
     for (;;) {
         mg_mgr_poll(&mgr, 500);
@@ -187,10 +205,12 @@ Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass cl
     const char *host = (*env)->GetStringUTFChars(env, host_, 0);
     const char *port = (*env)->GetStringUTFChars(env, port_, 0);
     const char *rootDirectory = (*env)->GetStringUTFChars(env, rootDirectory_, 0);
+    // 视频目录
     const char *videoDirectory = (*env)->GetStringUTFChars(env, videoDirectory_, 0);
 
     strcpy(video_directory, videoDirectory);
 
+    // 设置静态资源目录
     char *dir = malloc(strlen(rootDirectory) + 1);
     strcpy(dir, rootDirectory);
     s_http_server_opts.document_root = dir;

@@ -317,6 +317,7 @@ class Player {
         const fraction = (this.video.currentTime / this.video.duration) * 100;
         this.progressBarPlayed.style.width = fraction + '%';
         this.progressBarPlayheadWrapper.style.marginLeft = fraction + '%';
+        if(this.video.buffered)
         this.progressBarLoaded.style.width = this.video.buffered.end(0) / this.video.duration * 100 + '%';
     }
 
