@@ -59,8 +59,9 @@ class Player {
             this.playVideo();
         });
     }
-    bindRemove(){
-    this.buttonRemove=document.querySelector('.icon-disable');
+
+    bindRemove() {
+        this.buttonRemove = document.querySelector('.icon-disable');
 
     }
 
@@ -83,7 +84,7 @@ class Player {
         fetch('/api/videos')
             .then(res => res.json())
             .then(items => {
-                items.forEach((i,index) => {
+                items.forEach((i, index) => {
                     const object = {};
                     object["title"] = i.substr(i.lastIndexOf('/') + 1);
                     object["href"] = encodeURIComponent(i);
@@ -121,12 +122,12 @@ class Player {
         coverImage.setAttribute('alt', '');
         coverImage.setAttribute('src', object["cover"]);
         coverImage.setAttribute('data-src', object["href"]);
-        coverImage.addEventListener('click',evt=>{
-            fetch('/remove?v=' +evt.currentTarget.getAttribute('data-src'));
+        coverImage.addEventListener('click', evt => {
+            fetch('/remove?v=' + evt.currentTarget.getAttribute('data-src'));
             evt.preventDefault();
             evt.stopPropagation();
             item.remove();
-            });
+        });
         videoThumbnailContainerCompact.appendChild(coverImage);
         const videoThumbnailOverlayBottomGroup = document.createElement('div');
         videoThumbnailOverlayBottomGroup.className = 'video-thumbnail-overlay-bottom-group';
@@ -164,7 +165,7 @@ class Player {
         // this.video.src = "http://192.168.0.101:12345/" + substringAfter(substringAfter(href, ':'), '/')
         this.video.src = href;
 
-        this.playIndex=parseInt(event.currentTarget.getAttribute('data-index'));
+        this.playIndex = parseInt(event.currentTarget.getAttribute('data-index'));
         document.title = substringAfterLast(decodeURIComponent(href), '/');
         this.playVideo();
         this.hiddenController();
@@ -333,8 +334,8 @@ class Player {
         const fraction = (this.video.currentTime / this.video.duration) * 100;
         this.progressBarPlayed.style.width = fraction + '%';
         this.progressBarPlayheadWrapper.style.marginLeft = fraction + '%';
-        if(this.video.buffered)
-        this.progressBarLoaded.style.width = this.video.buffered.end(0) / this.video.duration * 100 + '%';
+        if (this.video.buffered)
+            this.progressBarLoaded.style.width = this.video.buffered.end(0) / this.video.duration * 100 + '%';
     }
 
     onVolumechange() {
@@ -460,3 +461,26 @@ function t() {
    array.join('+\n')
 } t();
 */
+(function () {
+    const elements = $0.querySelectorAll('tr');
+    const buffer = [];
+    let maxCount = 0;
+    for (const element of elements) {
+        const children = Array.from(element.querySelectorAll('td'));
+        if (children.length > maxCount) {
+            maxCount = children.length;
+        }
+        const line = children;
+        children.map((currentValue, index) => {
+            if (index === 0) {
+                console.log(currentValue)
+                return '`' + currentValue.innerText + '`';
+            } else {
+                return currentValue.innerText;
+            }
+        }).join('|');
+        buffer.push('|' + line + '|');
+    }
+
+    console.log("|---".repeat(maxCount) + '|\n' + buffer.join('\n'));
+})();

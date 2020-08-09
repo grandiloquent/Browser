@@ -240,6 +240,12 @@ body[faux-fullscreen="true"] ytm-custom-control .player-controls-top {
     background-color: #000;
 }
 
+@media screen and (min-width: 1280px) {
+    .player-size {
+        padding-bottom: 32.25%;
+    }
+}
+
 .single-column {
     display: -webkit-box;
     display: -moz-box;

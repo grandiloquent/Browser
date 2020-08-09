@@ -163,13 +163,19 @@ static void handle_api_videos(struct mg_connection *nc, int ev, void *p) {
 
     int ret = list_directory(video_directory, &files);
     if (ret == -1) {
-        goto err;
+        strlist_done(&files);
+        mg_send_head(nc, 500, 0, NULL);
+        nc->flags |= MG_F_SEND_AND_CLOSE;
+        return;
     }
     cJSON *items = cJSON_CreateArray();
     if (items == NULL) {
         goto err;
     }
     cJSON *item;
+
+    // 排序文件
+    strlist_sort(&files);
 
     STRLIST_FOREACH(&files, filename, {
         item = cJSON_CreateString(filename);
