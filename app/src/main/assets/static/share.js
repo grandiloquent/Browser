@@ -136,6 +136,17 @@ function substringBeforeLast(string, delimiter) {
     return string;
 }
 
+function hmsToSecondsOnly(str) {
+    var p = str.split(':'),
+        s = 0, m = 1;
+
+    while (p.length > 0) {
+        s += m * parseInt(p.pop(), 10);
+        m *= 60;
+    }
+
+    return s;
+}
 /*
 Array.from(document.querySelectorAll('li a'))
     .filter(i => i.textContent.indexOf("substring") !== -1)

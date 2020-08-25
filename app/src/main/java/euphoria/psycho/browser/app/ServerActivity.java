@@ -96,6 +96,10 @@ public class ServerActivity extends Activity {
         }).start();
     }
 
+    private File getVideoDirectory() {
+        return new File(SettingsManager.getInstance().getVideoDirectory());
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +107,7 @@ public class ServerActivity extends Activity {
         mTextView = findViewById(R.id.title);
         mProgressBar = findViewById(R.id.progress_circular);
         this.initialize();
-        File videoDirectory = new File(Environment.getExternalStorageDirectory(), "Videos");
+        File videoDirectory = getVideoDirectory();
         if (!videoDirectory.isDirectory()) {
             return;
         }

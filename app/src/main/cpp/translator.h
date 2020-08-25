@@ -113,6 +113,7 @@ int youdao(const char *word, bool english_to_chinese, const char *api_key, char 
         md5_buf[j++] = HEX_ARRAY[t / 16];
         md5_buf[j++] = HEX_ARRAY[t % 16];
     }
+
     md5_buf[32] = 0;
     memset(buf_path, 0, buf_path_len);
     snprintf(buf_path, buf_path_len, "/api?q=%s&salt=%d&sign=%s&from=%s&appKey=%s&to=%s",

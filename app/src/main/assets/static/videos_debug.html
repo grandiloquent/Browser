@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{{title}}</title>
+    <title>A Simple Go Video Server</title>
     <link rel="stylesheet" href="video.css">
     <script src="share.js"></script>
 </head>
+
 <body>
 <div id="app">
     <div class="page-container">
@@ -29,7 +31,8 @@
 
                 </div>
             </div>
-            {{container}}
+
+
         </div>
     </div>
 </div>
@@ -115,27 +118,7 @@
         </div>
     </div>
 </div>
-<script src="video.js"></script>
+<script src="video_debug.js"></script>
 </body>
-</html>
 
-<div class="item">
-    <div class="compact-media-item"><a class="compact-media-item-image" aria-hidden="true"
-                                       href="/watch?v={{file}}">
-        <div class="video-thumbnail-container-compact center">
-            <div class="cover video-thumbnail-img video-thumbnail-bg"></div>
-            <img class="cover video-thumbnail-img" alt=""
-                 src="/images/{{img}}.jpg">
-            <div class="video-thumbnail-overlay-bottom-group">
-                <div class="thumbnail-overlay-time-status-renderer" data-style="DEFAULT"><span
-                        role="text"></span></div>
-            </div>
-        </div>
-    </a>
-        <div class="compact-media-item-metadata" data-has-badges="false"><a
-                class="compact-media-item-metadata-content"
-                href="/watch?v={{file}}"><h4
-                class="compact-media-item-headline"><span
-                role="text">{{fileName}}</span></h4></a></div>
-    </div>
-</div>
+</html>

@@ -6,6 +6,7 @@
 #include "cJSON.h"
 #include "helper.h"
 #include "translator.h"
+#include "rapidstring.h"
 
 #define YOUDAO_API_KEY "4da34b556074bc9f"
 #define YOUDAO_API_SECRET "Wt5i6HHltTGFAQgSUgofeWdFZyDxKwOy"
@@ -24,7 +25,7 @@ static void ev_handler(struct mg_connection *nc, int ev, void *ev_data);
 
 static void handle_api_videos(struct mg_connection *nc, int ev, void *p);
 
-static void handle_video(struct mg_connection *nc, int ev, void *p);
+static void handle_videos(struct mg_connection *nc, int ev, void *p);
 
 void *start_server(const char *address);
 
@@ -201,22 +202,81 @@ static void handle_api_videos(struct mg_connection *nc, int ev, void *p) {
 
 }
 
-static void handle_video(struct mg_connection *nc, int ev, void *p) {
+static void handle_videos(struct mg_connection *nc, int ev, void *p) {
     // 发送 videos.html 文件
-    const char *filename = "videos.html";
-    char path_buf[PATH_MAX];
-    strcpy(path_buf, s_http_server_opts.document_root);
-    strcat(path_buf, "/");
-    strcat(path_buf, filename);
-    int size = 0;
-    char *buf = read_file(path_buf, &size);
-    if (buf == NULL) {
+//    const char *filename = "videos.html";
+//    char path_buf[PATH_MAX];
+//    strcpy(path_buf, s_http_server_opts.document_root);
+//    strcat(path_buf, "/");
+//    strcat(path_buf, filename);
+//
+//    char *buf = read_file(path_buf, &size);
+//    if (buf == NULL) {
+//        mg_send_head(nc, 500, 0, NULL);
+//        return;
+//    }
+    rapidstring s;
+    rs_init(&s);
+    rs_cat(&s,
+           "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/><title>");
+    rs_cat(&s, "视频");
+    rs_cat(&s,
+           "</title><link rel=\"stylesheet\" href=\"video.css\"/><script src=\"share.js\"></script><body><div id=\"app\"><div class=\"page-container\"><div class=\"player-size\"></div><div class=\"single-column\"><div class=\"item-section-renderer\"><div class=\"autonav-bar cbox\"><h3 class=\"autonav-title\">接下来播放</h3><div class=\"autonav-toggle-wrapper cbox\"><div class=\"autonav-toggle-description\" aria-hidden=\"true\">自动播放</div><c3-material-toggle-button class=\"ytm-autonav-toggle\"> <button class=\"material-toggle-button\" aria-label=\"自动播放\" aria-pressed=\"true\"><div class=\"material-toggle-button-track\"></div><div class=\"material-toggle-button-circle\"></div></button> </c3-material-toggle-button></div></div></div>");
+
+    strlist_t files = STRLIST_INITIALIZER;
+
+    int ret = list_directory(video_directory, &files);
+    if (ret == -1) {
+        rs_free(&s);
+        strlist_done(&files);
         mg_send_head(nc, 500, 0, NULL);
+        nc->flags |= MG_F_SEND_AND_CLOSE;
         return;
     }
-    mg_send_head(nc, 200, size, "Content-Type: text/html");
-    mg_send(nc, buf, size);
-    free(buf);
+
+
+    // 排序文件
+    strlist_sort(&files);
+
+    STRLIST_FOREACH(&files, filename, {
+        rs_cat(&s,
+               "<div class=\"item\"><div class=\"compact-media-item\"><a class=\"compact-media-item-image\" aria-hidden=\"true\" href=\"/watch?v=");
+        rs_cat(&s, filename);
+        rs_cat(&s,
+               "\"><div class=\"video-thumbnail-container-compact center\"><div class=\"cover video-thumbnail-img video-thumbnail-bg\"></div><img class=\"cover video-thumbnail-img\" alt=\"\" src=\"/images/");
+
+        MD5_CTX md5Ctx;
+        MD5Init(&md5Ctx);
+        MD5Update(&md5Ctx, filename, strlen(filename));
+        MD5Final( &md5Ctx);
+
+        char md5string[33];
+        for (int i = 0; i < 16; ++i)
+            sprintf(&md5string[i * 2], "%02x", (unsigned int) md5Ctx.digest[i]);
+        rs_cat(&s, md5string);
+
+        rs_cat(&s,
+               ".jpg\"/><div class=\"video-thumbnail-overlay-bottom-group\"><div class=\"thumbnail-overlay-time-status-renderer\" data-style=\"DEFAULT\"><span role=\"text\"></span></div></div></div></a><div class=\"compact-media-item-metadata\" data-has-badges=\"false\"><a class=\"compact-media-item-metadata-content\" href=\"/watch?v=");
+        rs_cat(&s, filename);
+        rs_cat(&s, "\"><h4 class=\"compact-media-item-headline\"><span role=\"text\">");
+        rs_cat(&s, strrchr(filename, '/') + 1);
+        rs_cat(&s, "</span></h4></a></div></div></div>");
+    }
+
+    );
+
+    strlist_done(&files);
+
+    rs_cat(&s,
+           "</div></div></div><div class=\"player-container\"><div id=\"player\" class=\"player-api player-size\"><div class=\"html5-video-player\"><video class=\"html5-main-video video-stream\" controlslist=\"nodownload\"></video></div></div><div class=\"player-control-container\"><div id=\"player-control-overlay\" class=\"animation-enabled fadein\"><div class=\"player-controls-content\"><div class=\"player-controls-top\"><button class=\"icon-button\"><div class=\"icon\"><svg viewBox=\"0 0 20 20\" preserveAspectRatio=\"xMidYMid meet\" fill=\"\"><path d=\"M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z\">\r\n                                </path></svg></div></button></div><div class=\"player-controls-middle center\"><button class=\"icon-button icon-disable\"><div class=\"icon\"><svg viewBox=\"0 0 36 36\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><path d=\"M9,9 L12,9 L12,27 L9,27 L9,9 Z M14.25,18 L27,27 L27,9 L14.25,18 Z\"></path><polygon points=\"0 0 36 0 36 36 0 36\"></polygon></svg></div></button> <button class=\"icon-button player-control-play-pause-icon\"><div class=\"icon\"><svg viewBox=\"0 0 56 56\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><polygon fill=\"#FFFFFF\" points=\"18.6666667 11.6666667 18.6666667 44.3333333 44.3333333 28\"></polygon><polygon points=\"0 0 56 0 56 56 0 56\"></polygon></svg></div></button> <button class=\"icon-button button-next\"><div class=\"icon\"><svg viewBox=\"0 0 36 36\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><path d=\"M9,27 L21.75,18 L9,9 L9,27 Z M24,9 L24,27 L27,27 L27,9 L24,9 Z\"></path><polygon points=\"0 0 36 0 36 36 0 36\"></polygon></svg></div></button></div><div class=\"player-controls-bottom\"><div class=\"time-display\"><div class=\"time-display-content cbox\"><span class=\"time-first\">0:00</span> <span class=\"time-delimiter\">/</span> <span class=\"time-second\"></span></div></div><div class=\"progress-bar\"><div class=\"progress-bar-line\"><div class=\"progress-bar-background\"></div><div class=\"progress-bar-loaded\"></div><div class=\"progress-bar-played\"></div></div><div class=\"progress-bar-playhead-wrapper\"><div class=\"progress-bar-playhead\"><div class=\"progress-bar-playhead-dot\"></div></div></div></div><button class=\"icon-button\"><div class=\"icon\"><svg viewBox=\"0 0 24 24\" preserveAspectRatio=\"xMidYMid meet\" fill=\"\"><path d=\"M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z\">\r\n                                </path></svg></div></button></div></div></div></div></div><script src=\"video.js\"></script>");
+
+    int size = rs_len(&s);
+    char *buf = rs_data(&s);
+    mg_send_head(nc,
+                 200, size, "Content-Type: text/html");
+    mg_send(nc, buf, size
+    );
+    rs_free(&s);
     nc->flags |= MG_F_SEND_AND_CLOSE;
 }
 
@@ -238,7 +298,7 @@ void *start_server(const char *address) {
     nc = mg_bind(&mgr, address, ev_handler);
 
     mg_register_http_endpoint(nc, "/api/videos", handle_api_videos);
-    mg_register_http_endpoint(nc, "/videos", handle_video);
+    mg_register_http_endpoint(nc, "/videos", handle_videos);
     mg_register_http_endpoint(nc, "/watch", handle_watch);
 
     mg_register_http_endpoint(nc, "/remove", handle_remove);

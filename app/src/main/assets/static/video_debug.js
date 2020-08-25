@@ -32,7 +32,7 @@ class Player {
 
         this.singleColumn = document.querySelector('.single-column');
 
-       // this.fetchData();
+        this.fetchData();
 
         this.playerControlOverlay = document.getElementById('player-control-overlay');
         this.playerControlsMiddle = document.querySelector('.player-controls-middle');
@@ -52,7 +52,7 @@ class Player {
     }
 
     initializeObjects() {
-        this.baseAddress = '';
+        this.baseAddress = 'http://192.168.0.101:12345';
     }
 
     initializeEvents() {
@@ -307,8 +307,6 @@ class Player {
 
     onEnded() {
         console.log('[ended]');
-        this.video.load();
-        this.playVideo();
     }
 
     onError() {

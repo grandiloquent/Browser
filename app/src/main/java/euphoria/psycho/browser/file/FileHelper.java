@@ -269,6 +269,7 @@ public class FileHelper {
                 return TYPE_VIDEO;
             case "word":
                 return TYPE_WORD;
+            case "epub":
             case "zip":
                 return TYPE_ZIP;
             default:
