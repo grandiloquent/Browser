@@ -202,6 +202,20 @@ static void handle_api_videos(struct mg_connection *nc, int ev, void *p) {
 
 }
 
+static void generateMd5(rapidstring *s, const char *filename) {
+    uint8_t *buf = (uint8_t *) strdup(filename);
+    MD5_CTX md5Ctx;
+    MD5Init(&md5Ctx);
+    MD5Update(&md5Ctx, buf, strlen((char *) buf));
+    MD5Final(&md5Ctx);
+
+    char md5string[33];
+    for (int i = 0; i < 16; ++i)
+        sprintf(&md5string[i * 2], "%02x", (unsigned int) md5Ctx.digest[i]);
+    rs_cat(s, md5string);
+    free(buf);
+}
+
 static void handle_videos(struct mg_connection *nc, int ev, void *p) {
     // 发送 videos.html 文件
 //    const char *filename = "videos.html";
@@ -217,11 +231,11 @@ static void handle_videos(struct mg_connection *nc, int ev, void *p) {
 //    }
     rapidstring s;
     rs_init(&s);
-    rs_cat(&s,
-           "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/><title>");
+
+    rs_cat(&s, "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"/><title>");
     rs_cat(&s, "视频");
     rs_cat(&s,
-           "</title><link rel=\"stylesheet\" href=\"video.css\"/><script src=\"share.js\"></script><body><div id=\"app\"><div class=\"page-container\"><div class=\"player-size\"></div><div class=\"single-column\"><div class=\"item-section-renderer\"><div class=\"autonav-bar cbox\"><h3 class=\"autonav-title\">接下来播放</h3><div class=\"autonav-toggle-wrapper cbox\"><div class=\"autonav-toggle-description\" aria-hidden=\"true\">自动播放</div><c3-material-toggle-button class=\"ytm-autonav-toggle\"> <button class=\"material-toggle-button\" aria-label=\"自动播放\" aria-pressed=\"true\"><div class=\"material-toggle-button-track\"></div><div class=\"material-toggle-button-circle\"></div></button> </c3-material-toggle-button></div></div></div>");
+           "</title><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no\"/><link rel=\"stylesheet\" href=\"index.css\"/><script src=\"index.js\"></script><body><div class=\"app\"><div class=\"mobile-topbar-renderer sticky\"><header class=\"mobile-topbar-header cbox\"><button aria-label=\"YouTube\" role=\"link\" class=\"mobile-topbar-header-endpoint\"><div class=\"c3-icon mobile-topbar-logo ringo-logo\" id=\"home-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 380.9 85.1\" fill=\"\"><path fill=\"#FF0000\" d=\"M118.9 13.5c-1.4-5.2-5.5-9.3-10.7-10.7C98.7.3 60.7.3 60.7.3s-38 0-47.5 2.5C8 4.2 3.9 8.3 2.5 13.5 0 23 0 42.7 0 42.7s0 19.8 2.5 29.2c1.4 5.2 5.5 9.3 10.7 10.7 9.5 2.5 47.5 2.5 47.5 2.5s38 0 47.5-2.5c5.2-1.4 9.3-5.5 10.7-10.7 2.5-9.5 2.5-29.2 2.5-29.2s0-19.7-2.5-29.2z\"></path><path fill=\"#FFF\" d=\"M48.5 61l31.6-18.2-31.6-18.3z\"></path><path d=\"M147.1 55.5L133.5 6.2h11.9l4.8 22.3c1.2 5.5 2.1 10.2 2.7 14.1h.3c.4-2.8 1.3-7.4 2.7-14l5-22.4h11.9L159 55.5v23.7h-11.8l-.1-23.7zm29.2 22.1c-2.4-1.6-4.1-4.1-5.1-7.6-1-3.4-1.5-8-1.5-13.6v-7.7c0-5.7.6-10.3 1.7-13.8 1.2-3.5 3-6 5.4-7.6 2.5-1.6 5.7-2.4 9.7-2.4 3.9 0 7.1.8 9.5 2.4s4.1 4.2 5.2 7.6 1.7 8 1.7 13.8v7.7c0 5.7-.5 10.2-1.6 13.7-1.1 3.4-2.8 6-5.2 7.6-2.4 1.6-5.7 2.4-9.8 2.4-4.3-.1-7.6-.9-10-2.5zm13.5-8.3c.7-1.7 1-4.6 1-8.5V44.2c0-3.8-.3-6.6-1-8.4s-1.8-2.6-3.5-2.6c-1.6 0-2.8.9-3.4 2.6-.7 1.8-1 4.6-1 8.4v16.6c0 3.9.3 6.8 1 8.5.6 1.7 1.8 2.6 3.5 2.6 1.5 0 2.7-.9 3.4-2.6zm51.7-43.4v53.3h-9.4l-1-6.5h-.3c-2.5 4.9-6.4 7.4-11.5 7.4-3.5 0-6.1-1.2-7.8-3.5-1.7-2.3-2.5-5.9-2.5-10.9V25.9h12V65c0 2.4.3 4.1.8 5.1s1.4 1.5 2.6 1.5c1 0 2-.3 3-1 1-.6 1.7-1.4 2.1-2.4V25.9h12z\"></path><path d=\"M274.1 15.9h-11.9v63.3h-11.7V16h-11.9V6.4h35.5v9.5z\"></path><path d=\"M303 25.9v53.3h-9.4l-1-6.5h-.3c-2.5 4.9-6.4 7.4-11.5 7.4-3.5 0-6.1-1.2-7.8-3.5-1.7-2.3-2.5-5.9-2.5-10.9V25.9h12V65c0 2.4.3 4.1.8 5.1s1.4 1.5 2.6 1.5c1 0 2-.3 3-1 1-.6 1.7-1.4 2.1-2.4V25.9h12zm39.7 8.5c-.7-3.4-1.9-5.8-3.5-7.3s-3.9-2.3-6.7-2.3c-2.2 0-4.3.6-6.2 1.9-1.9 1.2-3.4 2.9-4.4 4.9h-.1V3.5h-11.6v75.7h9.9l1.2-5h.3c.9 1.8 2.3 3.2 4.2 4.3 1.9 1 3.9 1.6 6.2 1.6 4.1 0 7-1.9 8.9-5.6 1.9-3.7 2.9-9.6 2.9-17.5v-8.4c0-6.2-.4-10.8-1.1-14.2zm-11 21.7c0 3.9-.2 6.9-.5 9.1-.3 2.2-.9 3.8-1.6 4.7-.8.9-1.8 1.4-3 1.4-1 0-1.9-.2-2.7-.7-.8-.5-1.5-1.2-2-2.1V38.3c.4-1.4 1.1-2.6 2.1-3.6 1-.9 2.1-1.4 3.2-1.4 1.2 0 2.2.5 2.8 1.4.7 1 1.1 2.6 1.4 4.8.3 2.3.4 5.5.4 9.6l-.1 7zm29.1.4v2.7c0 3.4.1 6 .3 7.7.2 1.7.6 3 1.3 3.7.6.8 1.6 1.2 3 1.2 1.8 0 3-.7 3.7-2.1.7-1.4 1-3.7 1.1-7l10.3.6c.1.5.1 1.1.1 1.9 0 4.9-1.3 8.6-4 11s-6.5 3.6-11.4 3.6c-5.9 0-10-1.9-12.4-5.6-2.4-3.7-3.6-9.4-3.6-17.2v-9.3c0-8 1.2-13.8 3.7-17.5s6.7-5.5 12.6-5.5c4.1 0 7.3.8 9.5 2.3s3.7 3.9 4.6 7c.9 3.2 1.3 7.6 1.3 13.2v9.1h-20.1v.2zm1.5-22.4c-.6.8-1 2-1.2 3.7s-.3 4.3-.3 7.8v3.8h8.8v-3.8c0-3.4-.1-6-.3-7.8-.2-1.8-.7-3-1.3-3.7-.6-.7-1.6-1.1-2.8-1.1-1.3 0-2.3.4-2.9 1.1z\"></path></svg></div></button><div class=\"mobile-topbar-header-content cbox\"><button class=\"icon-button topbar-menu-button-avatar-button\" aria-label=\"在 YouTube 中搜索\" aria-haspopup=\"false\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z\"></path></svg></div></button></div></header></div><div class=\"pivot-bar-renderer\"><div class=\"pivot-bar-item-renderer\"><div role=\"tab\" aria-selected=\"true\" class=\"pivot-bar-item-tab pivot-w2w\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\"></path></svg></div><div class=\"pivot-bar-item-title\">首页</div></div></div><div class=\"pivot-bar-item-renderer\"><div role=\"tab\" aria-selected=\"false\" class=\"pivot-bar-item-tab pivot-trending\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M14.72 17.64c-.32.28-.83.56-1.23.69-1.14.38-2.27-.07-3.05-.71-.11-.09-.07-.26.06-.31 1.19-.38 1.89-1.3 2.09-2.22.2-.88-.16-1.64-.31-2.51-.12-.72-.11-1.34.12-2 .04-.11.2-.13.25-.02.71 1.59 2.72 2.29 3.07 4.04.03.16.05.32.05.48.03.94-.37 1.95-1.05 2.56m2.83-8.02c-.75-.7-1.63-1.2-2.36-1.93-1.49-1.51-2-3.64-1.34-5.66.11-.33-.2-.63-.51-.49-.71.31-1.39.76-1.98 1.24C8.38 5.2 7.27 9.26 8.65 12.92c.03.13.08.26.08.39 0 .26-.16.5-.39.6-.26.12-.54.04-.74-.15-.06-.06-.12-.12-.17-.19-.96-1.26-1.32-2.95-1.05-4.52.07-.4-.43-.62-.67-.31-1.21 1.57-1.81 3.67-1.69 5.65.04.59.13 1.18.29 1.75.2.71.49 1.4.88 2.03 1.21 2.01 3.34 3.46 5.63 3.75 2.43.31 5.06-.14 6.94-1.87 2.09-1.93 2.85-5 1.73-7.68-.04-.11-.09-.21-.14-.32-.25-.52-.55-1.01-.91-1.45-.27-.36-.57-.68-.89-.98z\"></path></svg></div><div class=\"pivot-bar-item-title\">时下流行</div></div></div><div class=\"pivot-bar-item-renderer\"><div role=\"tab\" aria-selected=\"false\" class=\"pivot-bar-item-tab pivot-subs\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M20 8H4V6h16v2zm-2-6H6v2h12V2zm4 10v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2v-8c0-1.1.9-2 2-2h16c1.1 0 2 .9 2 2zm-6 4l-6-3.27v6.53L16 16z\"></path></svg></div><div class=\"pivot-bar-item-title\">订阅内容</div></div></div><div class=\"pivot-bar-item-renderer\"><div role=\"tab\" aria-selected=\"false\" class=\"pivot-bar-item-tab pivot-library\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8 12.5v-9l6 4.5-6 4.5z\"></path></svg></div><div class=\"pivot-bar-item-title\">媒体库</div></div></div></div><div class=\"page-container\">");
 
     strlist_t files = STRLIST_INITIALIZER;
 
@@ -240,27 +254,18 @@ static void handle_videos(struct mg_connection *nc, int ev, void *p) {
 
     STRLIST_FOREACH(&files, filename, {
         rs_cat(&s,
-               "<div class=\"item\"><div class=\"compact-media-item\"><a class=\"compact-media-item-image\" aria-hidden=\"true\" href=\"/watch?v=");
+               "<div class=\"item-section-renderer\"><div class=\"item\"><div class=\"large-media-item\"><a target=\"_blank\" href=\"/watch?v=");
         rs_cat(&s, filename);
         rs_cat(&s,
-               "\"><div class=\"video-thumbnail-container-compact center\"><div class=\"cover video-thumbnail-img video-thumbnail-bg\"></div><img class=\"cover video-thumbnail-img\" alt=\"\" src=\"/images/");
-
-        MD5_CTX md5Ctx;
-        MD5Init(&md5Ctx);
-        MD5Update(&md5Ctx, filename, strlen(filename));
-        MD5Final( &md5Ctx);
-
-        char md5string[33];
-        for (int i = 0; i < 16; ++i)
-            sprintf(&md5string[i * 2], "%02x", (unsigned int) md5Ctx.digest[i]);
-        rs_cat(&s, md5string);
-
+               "\"><div class=\"video-thumbnail-container-large center\"><div class=\"cover video-thumbnail-img video-thumbnail-bg\"></div><img alt=\"\" class=\"cover video-thumbnail-img\" src=\"/images/");
+        generateMd5(&s, filename);
         rs_cat(&s,
-               ".jpg\"/><div class=\"video-thumbnail-overlay-bottom-group\"><div class=\"thumbnail-overlay-time-status-renderer\" data-style=\"DEFAULT\"><span role=\"text\"></span></div></div></div></a><div class=\"compact-media-item-metadata\" data-has-badges=\"false\"><a class=\"compact-media-item-metadata-content\" href=\"/watch?v=");
+               ".jpg\"/></div></a><div class=\"details\"><div class=\"large-media-item-info cbox\"><div class=\"large-media-item-metadata\"><a target=\"_blank\" href=\"/watch?v=");
         rs_cat(&s, filename);
-        rs_cat(&s, "\"><h4 class=\"compact-media-item-headline\"><span role=\"text\">");
+        rs_cat(&s, "\"><h3><span aria-label=\"\" role=\"text\">");
         rs_cat(&s, strrchr(filename, '/') + 1);
-        rs_cat(&s, "</span></h4></a></div></div></div>");
+        rs_cat(&s,
+               "</span></h3></a></div><div class=\"menu-renderer large-media-item-menu\"><div class=\"menu\"><button class=\"icon-button\" aria-label=\"操作菜单\" aria-haspopup=\"true\"><div class=\"c3-icon\" flip-for-rtl=\"false\"><svg viewBox=\"0 0 24 24\" fill=\"\"><path d=\"M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z\"></path></svg></div></button></div></div></div></div></div></div></div>");
     }
 
     );
@@ -268,7 +273,7 @@ static void handle_videos(struct mg_connection *nc, int ev, void *p) {
     strlist_done(&files);
 
     rs_cat(&s,
-           "</div></div></div><div class=\"player-container\"><div id=\"player\" class=\"player-api player-size\"><div class=\"html5-video-player\"><video class=\"html5-main-video video-stream\" controlslist=\"nodownload\"></video></div></div><div class=\"player-control-container\"><div id=\"player-control-overlay\" class=\"animation-enabled fadein\"><div class=\"player-controls-content\"><div class=\"player-controls-top\"><button class=\"icon-button\"><div class=\"icon\"><svg viewBox=\"0 0 20 20\" preserveAspectRatio=\"xMidYMid meet\" fill=\"\"><path d=\"M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z\">\r\n                                </path></svg></div></button></div><div class=\"player-controls-middle center\"><button class=\"icon-button icon-disable\"><div class=\"icon\"><svg viewBox=\"0 0 36 36\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><path d=\"M9,9 L12,9 L12,27 L9,27 L9,9 Z M14.25,18 L27,27 L27,9 L14.25,18 Z\"></path><polygon points=\"0 0 36 0 36 36 0 36\"></polygon></svg></div></button> <button class=\"icon-button player-control-play-pause-icon\"><div class=\"icon\"><svg viewBox=\"0 0 56 56\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><polygon fill=\"#FFFFFF\" points=\"18.6666667 11.6666667 18.6666667 44.3333333 44.3333333 28\"></polygon><polygon points=\"0 0 56 0 56 56 0 56\"></polygon></svg></div></button> <button class=\"icon-button button-next\"><div class=\"icon\"><svg viewBox=\"0 0 36 36\" preserveAspectRatio=\"xMidYMid meet\" fill=\"none\"><path d=\"M9,27 L21.75,18 L9,9 L9,27 Z M24,9 L24,27 L27,27 L27,9 L24,9 Z\"></path><polygon points=\"0 0 36 0 36 36 0 36\"></polygon></svg></div></button></div><div class=\"player-controls-bottom\"><div class=\"time-display\"><div class=\"time-display-content cbox\"><span class=\"time-first\">0:00</span> <span class=\"time-delimiter\">/</span> <span class=\"time-second\"></span></div></div><div class=\"progress-bar\"><div class=\"progress-bar-line\"><div class=\"progress-bar-background\"></div><div class=\"progress-bar-loaded\"></div><div class=\"progress-bar-played\"></div></div><div class=\"progress-bar-playhead-wrapper\"><div class=\"progress-bar-playhead\"><div class=\"progress-bar-playhead-dot\"></div></div></div></div><button class=\"icon-button\"><div class=\"icon\"><svg viewBox=\"0 0 24 24\" preserveAspectRatio=\"xMidYMid meet\" fill=\"\"><path d=\"M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z\">\r\n                                </path></svg></div></button></div></div></div></div></div><script src=\"video.js\"></script>");
+           "</div><div hidden class=\"spinner\"></div></div><div id=\"menu\" class=\"menu-container\" style=\"display:none\"><div role=\"dialog\" aria-modal=\"true\" class=\"menu-content\" tabindex=\"-1\"><div class=\"menu-service-item-renderer\"><div class=\"menu-item\"><button class=\"menu-item-button\">删除</button></div></div><div class=\"menu-item\"><button class=\"menu-item-button\"><div class=\"menu-cancel-button\">取消</div></button></div></div><div class=\"c3-overlay\"><button class=\"hidden-button\" aria-label=\"close\"></button></div></div>");
 
     int size = rs_len(&s);
     char *buf = rs_data(&s);

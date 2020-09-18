@@ -52,10 +52,8 @@ public class ServerActivity extends Activity {
 
     private void checkStaticFiles() {
         String[] files = new String[]{
-                "share.js",
-                "video.css",
-                "video.js",
-                "videos.html",
+                "index.js",
+                "index.css"
         };
         FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
         for (String f : files) {
