@@ -53,7 +53,12 @@ public class ServerActivity extends Activity {
     private void checkStaticFiles() {
         String[] files = new String[]{
                 "index.js",
-                "index.css"
+                "index.css",
+                "normalize.css",
+                "manger.css",
+                "manger.js",
+                "icon-file-m.svg",
+                "icon-nor-m.svg"
         };
         FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
         for (String f : files) {

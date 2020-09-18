@@ -13,6 +13,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.file.FileHelper;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.NetUtils;
 
@@ -20,14 +21,17 @@ public class ServerService extends Service {
     private static final String TAG = "TAG/" + ServerService.class.getSimpleName();
     private WakeLock mCpuWakeLock;
     NotificationManager mNotificationManager;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
+
     @Override
     public void onCreate() {
         super.onCreate();
+        FileHelper.initialize(getApplicationContext());
         mNotificationManager = (NotificationManager)
                 getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         updateForegroundNotification(R.string.server_running);
@@ -36,8 +40,11 @@ public class ServerService extends Service {
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
         mCpuWakeLock.acquire();
-        NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer"), SettingsManager.getInstance().getVideoDirectory());
+        NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer")
+                , SettingsManager.getInstance().getVideoDirectory()
+                , FileHelper.getSDPath());
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -45,11 +52,13 @@ public class ServerService extends Service {
             mCpuWakeLock.release();
         }
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e("TAG/", "Debug: onStartCommand, \n");
         return START_STICKY;
     }
+
     private void updateForegroundNotification(final int message) {
         final String NOTIFICATION_CHANNEL_ID = "Server";
         mNotificationManager.createNotificationChannel(new NotificationChannel(

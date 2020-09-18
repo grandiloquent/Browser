@@ -5,7 +5,7 @@ public class NativeHelper {
         System.loadLibrary("native-lib");
     }
 
-    public static native void startServer(String host, String port, String rootDirectory, String videoDirectory);
+    public static native void startServer(String host, String port, String rootDirectory, String videoDirectory, String sdcardDirectory);
 
     public static native String youdao(String query, boolean isEnglishToChinese, boolean isTranslate);
 
