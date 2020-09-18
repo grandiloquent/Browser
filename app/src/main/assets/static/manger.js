@@ -15,9 +15,13 @@ dropZone.addEventListener('drop', function (e) {
 });
 
 function uploadFiles(files) {
-    const formData = new FormData();
     for (let file of files) {
-        console.log(file)
+        console.log(file);
+        const formData = new FormData();
         formData.append('files', file, file.name);
+        fetch("/api/sdcard",{
+        method:"POST",
+        body:formData});
+        }
     }
-}
+

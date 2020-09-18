@@ -34,7 +34,7 @@ add_library( # Sets the name of the library.
 
 #add_definitions(-DMG_DISABLE_HTTP_KEEP_ALIVE)
 
-add_definitions(-DMG_MAX_HTTP_SEND_MBUF=8092)
+add_definitions(-DMG_MAX_HTTP_SEND_MBUF=8092 -DMG_ENABLE_HTTP_STREAMING_MULTIPART)
 
 add_library(mongoose
         STATIC
