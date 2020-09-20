@@ -120,7 +120,7 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
         dynarray_done(&files);
 
         rs_cat(&s,
-               "</div></div><div class=\"dialog dialog-show\" style=\"display:none\"><div class=\"dialog-mask\"></div><div class=\"dialog-wrapper\"><div class=\"dialog-container\"><div class=\"dialog-container-wrapper\"><div class=\"dialog-content\"><div class=\"spinner\"></div>正在上传文件...</div><div class=\"dialog-footer\" style=\"display:none\"><div class=\"dialog-button\">确认</div><div class=\"dialog-button\" style=\"color:rgb(219,68,55)\">删除</div></div></div></div></div></div><script src=\"manger.js\"></script>");
+               "</div></div><div class=\"dialog\"><div class=\"dialog-mask\"></div><div class=\"dialog-wrapper\"><div class=\"dialog-container\"><div class=\"dialog-container-wrapper\"><div class=\"dialog-content\"><div class=\"spinner\"></div><span>正在上传文件...</span></div><div class=\"dialog-footer\" style=\"display:none\"><div class=\"dialog-button\">确认</div><div class=\"dialog-button\" style=\"color:rgb(219,68,55)\">删除</div></div></div></div></div></div><script src=\"manger.js\"></script>");
 
         int size = rs_len(&s);
         char *buf = rs_data(&s);

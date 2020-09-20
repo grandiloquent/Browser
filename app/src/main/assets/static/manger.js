@@ -27,7 +27,12 @@ dropZone.addEventListener('drop', function (e) {
 });
 
 async function uploadFiles(files) {
+document.querySelector('.dialog').className='dialog dialog-show';
+const dialogContext=document.querySelector('.dialog-content span');
+const length=files.length;
+let i=1;
     for (let file of files) {
+    dialogContext.textContent=`正在上传 (${i++}/${length}) ${file.name} ...`;
         const formData = new FormData();
         formData.append('files', file, file.name);
        const v=document.querySelector('[data-directory]').getAttribute('data-directory');
@@ -36,5 +41,6 @@ async function uploadFiles(files) {
         body:formData})
         .then(res=>console.log(res));
         }
+            window.location.reload();
     }
 

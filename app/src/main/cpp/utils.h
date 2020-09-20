@@ -62,7 +62,11 @@ typedef struct {
 static int files_compare(const void *a, const void *b) {
     const file_t *sa = *(const file_t **) a;
     const file_t *sb = *(const file_t **) b;
-    return sa->type - sb->type;
+    int r = sa->type - sb->type;
+    if (r == 0) {
+        r = sb->length - sa->length;
+    }
+    return r;
 }
 
 void files_sort(dynarray_t *list) {
