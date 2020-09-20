@@ -24,6 +24,7 @@ void *start_server(const char *address);
 ///////////////////////////
 
 
+
 static void handle_watch(struct mg_connection *nc, int ev, void *p) {
     if (p == NULL)return;
     char filename[PATH_MAX];
@@ -151,6 +152,14 @@ struct file_writer_data {
     char *filename;
 };
 
+bool is_file(const char *pathname) {
+    struct stat info;
+    if (stat(pathname, &info) == -1) {
+        return false;
+    }
+    return S_ISREG(info.st_mode);
+}
+
 static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
     if (p == NULL)return;
 
@@ -185,6 +194,9 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
             if (data->fp == NULL) {
                 strcat(data->filename, "/");
                 strcat(data->filename, mp->file_name);
+                if (is_file(data->filename)) {
+                    break;
+                }
                 FILE *fp = fopen(data->filename, "wb");
                 data->fp = fp;
                 data->bytes_written = 0;
@@ -204,6 +216,15 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
 
             struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
+            if (data->fp == NULL) {
+                mg_printf(nc, "%s",
+                          "HTTP/1.1 500 Failed to open a file\r\n"
+                          "Content-Length: 0\r\n\r\n");
+                nc->flags |= MG_F_SEND_AND_CLOSE;
+                free(data->filename);
+                free(data);
+                return;
+            }
             if (fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
                 mg_printf(nc, "%s",
                           "HTTP/1.1 500 Failed to write to a file\r\n"
@@ -218,6 +239,17 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
         case MG_EV_HTTP_PART_END: {
             struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
+
+            if (data->fp == NULL) {
+                mg_printf(nc, "%s",
+                          "HTTP/1.1 500 Failed to open a file\r\n"
+                          "Content-Length: 0\r\n\r\n");
+                nc->flags |= MG_F_SEND_AND_CLOSE;
+                free(data->filename);
+                free(data);
+                return;
+            }
+
             mg_printf(nc,
                       "HTTP/1.1 200 OK\r\n"
                       "Content-Type: text/plain\r\n"

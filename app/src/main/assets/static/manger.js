@@ -36,10 +36,10 @@ let i=1;
         const formData = new FormData();
         formData.append('files', file, file.name);
        const v=document.querySelector('[data-directory]').getAttribute('data-directory');
-     await  fetch("/api/sdcard"+(v?"?v="+v:''),{
-        method:"POST",
-        body:formData})
-        .then(res=>console.log(res));
+     try{await  fetch("/api/sdcard"+(v?"?v="+v:''),{
+                 method:"POST",
+                 body:formData})
+                 .then(res=>console.log(res));}catch(e){}
         }
             window.location.reload();
     }
