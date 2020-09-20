@@ -195,7 +195,11 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                 strcat(data->filename, "/");
                 strcat(data->filename, mp->file_name);
                 if (is_file(data->filename)) {
-                    break;
+                    mg_printf(nc, "%s",
+                              "HTTP/1.1 500 Failed to open a file\r\n"
+                              "Content-Length: 0\r\n\r\n");
+                    nc->flags |= MG_F_SEND_AND_CLOSE;
+                    return;
                 }
                 FILE *fp = fopen(data->filename, "wb");
                 data->fp = fp;
@@ -205,8 +209,6 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                               "HTTP/1.1 500 Failed to open a file\r\n"
                               "Content-Length: 0\r\n\r\n");
                     nc->flags |= MG_F_SEND_AND_CLOSE;
-                    free(data->filename);
-                    free(data);
                     return;
                 }
             }
@@ -216,16 +218,8 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
 
             struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
-            if (data->fp == NULL) {
-                mg_printf(nc, "%s",
-                          "HTTP/1.1 500 Failed to open a file\r\n"
-                          "Content-Length: 0\r\n\r\n");
-                nc->flags |= MG_F_SEND_AND_CLOSE;
-                free(data->filename);
-                free(data);
-                return;
-            }
-            if (fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
+
+            if (data->fp == NULL || fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
                 mg_printf(nc, "%s",
                           "HTTP/1.1 500 Failed to write to a file\r\n"
                           "Content-Length: 0\r\n\r\n");
@@ -240,24 +234,16 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
             struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
 
-            if (data->fp == NULL) {
-                mg_printf(nc, "%s",
-                          "HTTP/1.1 500 Failed to open a file\r\n"
-                          "Content-Length: 0\r\n\r\n");
-                nc->flags |= MG_F_SEND_AND_CLOSE;
-                free(data->filename);
-                free(data);
-                return;
-            }
 
             mg_printf(nc,
                       "HTTP/1.1 200 OK\r\n"
                       "Content-Type: text/plain\r\n"
                       "Connection: close\r\n\r\n"
-                      "Written %ld of POST data to a temp file\n\n",
-                      (long) ftell(data->fp));
+                      "Written %s of POST data to a temp file\n\n",
+                      data->filename);
             nc->flags |= MG_F_SEND_AND_CLOSE;
-            fclose(data->fp);
+            if (data->fp)
+                fclose(data->fp);
             free(data->filename);
             free(data);
             nc->user_data = NULL;
