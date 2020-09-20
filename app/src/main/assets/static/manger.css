@@ -222,7 +222,9 @@ a:visited {
     margin: 13px 0 13px 12px;
     overflow: hidden;
 }
-
+.file-size{
+color: rgba(0,0,0,.35);
+}
 .files-list-border {
     position: relative;
     border-top: 1px solid #dfe1e5;
@@ -237,7 +239,6 @@ a:visited {
 .icon-file-m {
     background-image: url(../icon-file-m.svg)
 }
-
 .icon-nor-m {
     background-image: url(../icon-nor-m.svg)
 }

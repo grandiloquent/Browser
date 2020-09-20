@@ -1,3 +1,15 @@
+function humanFileSize(size) {
+    var i = Math.floor( Math.log(size) / Math.log(1024) );
+    return ( size / Math.pow(1024, i) ).toFixed(2) * 1 + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+};
+
+document.querySelectorAll('.file-size')
+.forEach(e=>{
+const length=parseFloat(e.getAttribute('data-length'));
+if(length)
+e.textContent=humanFileSize(length);
+});
+
 var dropZone = document.getElementById('app');
 
 // Optional.   Show the copy icon when dragging over.  Seems to only work for chrome.
@@ -14,14 +26,15 @@ dropZone.addEventListener('drop', function (e) {
     uploadFiles(e.dataTransfer.files);
 });
 
-function uploadFiles(files) {
+async function uploadFiles(files) {
     for (let file of files) {
-        console.log(file);
         const formData = new FormData();
         formData.append('files', file, file.name);
-        fetch("/api/sdcard",{
+       const v=document.querySelector('[data-directory]').getAttribute('data-directory');
+     await  fetch("/api/sdcard"+(v?"?v="+v:''),{
         method:"POST",
-        body:formData});
+        body:formData})
+        .then(res=>console.log(res));
         }
     }
 

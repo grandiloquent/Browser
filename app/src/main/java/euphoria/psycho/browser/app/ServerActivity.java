@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -106,7 +107,10 @@ public class ServerActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_server);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
         mTextView = findViewById(R.id.title);
         mProgressBar = findViewById(R.id.progress_circular);
         this.initialize();

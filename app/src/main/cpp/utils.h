@@ -96,12 +96,19 @@ int list_dir(char *path, dynarray_t *files) {
             file_t *file = malloc(sizeof(file_t));
             if (S_ISDIR(s.st_mode)) {
                 file->path = buf;
+//                int dirfd = open(buf, O_DIRECTORY, O_RDONLY);
+//                if (dirfd < 0) {
+//                    file->length = 0;
+//                } else {
+//                    file->length = calculate_dir_size(dirfd);
+//                    close(dirfd);
+//                }
                 file->length = 0;
                 file->type = 0;
 
             } else {
                 file->path = buf;
-                file->length = 0;
+                file->length = stat_size(&s);
                 file->type = 1;
             }
             dynarray_append(files, file);

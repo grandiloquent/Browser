@@ -1,17 +1,23 @@
 package euphoria.psycho.browser.app;
 
 import android.app.Notification;
+import android.app.Notification.Builder;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.util.Log;
 
+import java.io.File;
+
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileHelper;
 import euphoria.psycho.share.ContextUtils;
@@ -32,6 +38,9 @@ public class ServerService extends Service {
     public void onCreate() {
         super.onCreate();
         FileHelper.initialize(getApplicationContext());
+
+        Log.e("TAG/" + ServerService.this.getClass().getSimpleName(), FileHelper.getSDPath());
+
         mNotificationManager = (NotificationManager)
                 getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
         updateForegroundNotification(R.string.server_running);
@@ -43,6 +52,9 @@ public class ServerService extends Service {
         NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer")
                 , SettingsManager.getInstance().getVideoDirectory()
                 , FileHelper.getSDPath());
+        File zip = new File(FileHelper.getSDPath(), "ZIP");
+        if (!zip.isDirectory())
+            zip.mkdirs();
     }
 
     @Override
@@ -59,12 +71,13 @@ public class ServerService extends Service {
         return START_STICKY;
     }
 
+    @RequiresApi(api = VERSION_CODES.O)
     private void updateForegroundNotification(final int message) {
         final String NOTIFICATION_CHANNEL_ID = "Server";
         mNotificationManager.createNotificationChannel(new NotificationChannel(
                 NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID,
                 NotificationManager.IMPORTANCE_DEFAULT));
-        startForeground(1, new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+        startForeground(1, new Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_stat_cloud_queue)
                 .setContentText(getString(message))
                 //.setContentIntent(mConfigureIntent)

@@ -68,6 +68,7 @@ static void handle_remove(struct mg_connection *nc, int ev, void *p) {
 }
 
 static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
+
     if (p == NULL)return;
 
     char filename[PATH_MAX];
@@ -107,8 +108,11 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
             char buf[PATH_MAX];
             file_name(buf, file->path);
             rs_cat(&s, buf);
-            rs_cat(&s, "</div></a><div class=\"files-list-border\"></div>");
-
+            rs_cat(&s, "</div><div class=\"file-size\" data-length=\"");
+            char file_size_buf[PATH_MAX];
+            snprintf(file_size_buf, PATH_MAX - 1, "%d", file->length);
+            rs_cat(&s, file_size_buf);
+            rs_cat(&s, "\"></div></a><div class=\"files-list-border\"></div>");
             free(file);
         }
 
@@ -122,8 +126,7 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
         char *buf = rs_data(&s);
         mg_send_head(nc,
                      200, size, "Content-Type: text/html");
-        mg_send(nc, buf, size
-        );
+        mg_send(nc, buf, size);
         rs_free(&s);
     } else {
         static const struct mg_str stream = MG_MK_STR("application/octet-stream");
@@ -145,29 +148,44 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
 struct file_writer_data {
     FILE *fp;
     size_t bytes_written;
+    char *filename;
 };
 
 static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
     if (p == NULL)return;
 
-    struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
-    struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
-
-    char filename[PATH_MAX];
-//    struct http_message *hm = (struct http_message *) p;
-    int result = mg_get_http_var(nc, "v", filename, PATH_MAX);
-    LOGE("%s\n", filename);
-    if (result < 0) {
-        strcpy(filename, sdcard_directory);
-    }
 
     switch (ev) {
-        case MG_EV_HTTP_PART_BEGIN: {
+        case MG_EV_HTTP_MULTIPART_REQUEST: {
+            char addr[32];
+            struct http_message *hm = (struct http_message *) p;
+            cs_stat_t st;
+            mg_sock_addr_to_str(&nc->sa, addr, sizeof(addr),
+                                MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT);
+            LOGE("HTTP request from %s: %.*s %.*s", addr, (int) hm->method.len,
+                 hm->method.p, (int) hm->uri.len, hm->uri.p);
+            char *filename = (char *) malloc(PATH_MAX);
+            int result = mg_get_http_var(&hm->query_string, "v", filename, PATH_MAX);
+            if (result < 0) {
+                strcpy(filename, sdcard_directory);
+            }
+            struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             if (data == NULL) {
                 data = calloc(1, sizeof(struct file_writer_data));
-                strcat(filename, "/");
-                strcat(filename, mp->file_name);
-                FILE *fp = fopen(filename, "wb");
+                data->filename = filename;
+                nc->user_data = (void *) data;
+            }
+            break;
+        }
+        case MG_EV_HTTP_PART_BEGIN: {
+
+            struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
+            struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
+//
+            if (data->fp == NULL) {
+                strcat(data->filename, "/");
+                strcat(data->filename, mp->file_name);
+                FILE *fp = fopen(data->filename, "wb");
                 data->fp = fp;
                 data->bytes_written = 0;
                 if (data->fp == NULL) {
@@ -175,16 +193,17 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                               "HTTP/1.1 500 Failed to open a file\r\n"
                               "Content-Length: 0\r\n\r\n");
                     nc->flags |= MG_F_SEND_AND_CLOSE;
+                    free(data->filename);
                     free(data);
                     return;
                 }
-                nc->user_data = (void *) data;
             }
             break;
         }
         case MG_EV_HTTP_PART_DATA: {
 
-
+            struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
+            struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
             if (fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
                 mg_printf(nc, "%s",
                           "HTTP/1.1 500 Failed to write to a file\r\n"
@@ -192,13 +211,13 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                 nc->flags |= MG_F_SEND_AND_CLOSE;
                 return;
             }
-            LOGE("%s %d %d\n", filename, mp->data.len, data->fp);
             data->bytes_written += mp->data.len;
-            LOGE("%s\n", "8888888888888888888888888");
 
             break;
         }
         case MG_EV_HTTP_PART_END: {
+            struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
+            struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
             mg_printf(nc,
                       "HTTP/1.1 200 OK\r\n"
                       "Content-Type: text/plain\r\n"
@@ -207,7 +226,7 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                       (long) ftell(data->fp));
             nc->flags |= MG_F_SEND_AND_CLOSE;
             fclose(data->fp);
-
+            free(data->filename);
             free(data);
             nc->user_data = NULL;
             break;
@@ -263,7 +282,8 @@ void *start_server(const char *address) {
 }
 
 JNIEXPORT void JNICALL
-Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass clazz, jstring host_,
+Java_euphoria_psycho_browser_app_NativeHelper_startServer(JNIEnv *env, jclass clazz,
+                                                          jstring host_,
                                                           jstring port_, jstring rootDirectory_,
                                                           jstring videoDirectory_,
                                                           jstring sdcardDirectory_) {
