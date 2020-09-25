@@ -16,6 +16,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
@@ -42,6 +43,9 @@ public class FileActivity extends AppCompatActivity {
         List<String> needPermissions = new ArrayList<>();
         if (!ContextUtils.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!ContextUtils.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE)) {
+            needPermissions.add(permission.READ_EXTERNAL_STORAGE);
         }
         if (needPermissions.size() > 0) {
             requestPermissions(needPermissions.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);
@@ -74,6 +78,7 @@ public class FileActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS_CODE) {
             for (int i = 0; i < grantResults.length; i++) {
                 if (grantResults[i] != PackageManager.PERMISSION_GRANTED) {

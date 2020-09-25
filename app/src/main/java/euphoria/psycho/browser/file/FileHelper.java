@@ -33,6 +33,7 @@ import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
+import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.music.MusicPlaybackService;
 import euphoria.psycho.browser.video.MovieActivity;

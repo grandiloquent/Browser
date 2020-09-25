@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    buildToolsVersion "30.0.2"
+    compileSdkVersion 30
     defaultConfig {
         applicationId "euphoria.psycho.browser"
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
         /*vectorDrawables.useSupportLibrary = true*/
@@ -33,17 +34,17 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation group: 'androidx.recyclerview', name: 'recyclerview', version: '1.2.0-alpha03'
+    implementation group: 'androidx.recyclerview', name: 'recyclerview', version: '1.2.0-alpha05'
     // https://mvnrepository.com/artifact/androidx.interpolator/interpolator
     implementation group: 'androidx.interpolator', name: 'interpolator', version: '1.0.0'
-    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.3.0-alpha01'
+    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.3.0-alpha02'
     // https://mvnrepository.com/artifact/androidx.vectordrawable/vectordrawable
-    implementation group: 'androidx.vectordrawable', name: 'vectordrawable', version: '1.2.0-alpha01'
+    implementation group: 'androidx.vectordrawable', name: 'vectordrawable', version: '1.2.0-alpha02'
     // https://github.com/HaarigerHarald/android-youtubeExtractor
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     // https://mvnrepository.com/artifact/com.google.android.material/material
     // https://github.com/material-components/material-components-android
-    implementation group: 'com.google.android.material', name: 'material', version: '1.3.0-alpha01'
+    implementation group: 'com.google.android.material', name: 'material', version: '1.3.0-alpha02'
     implementation group: 'androidx.preference', name: 'preference', version: '1.1.1'
 
 

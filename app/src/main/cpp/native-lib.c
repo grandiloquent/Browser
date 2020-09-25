@@ -33,8 +33,9 @@ static void handle_watch(struct mg_connection *nc, int ev, void *p) {
 
     mg_get_http_var(&hm->query_string, "v", filename, PATH_MAX);
     static const struct mg_str video = MG_MK_STR("video/mp4");
+    // "Content-disposition: attachment; filename="
     mg_http_serve_file(nc, hm, filename, video,
-                       mg_mk_str("Content-disposition: attachment; filename="));
+                       mg_mk_str(""));
     nc->flags |= MG_F_SEND_AND_CLOSE;
 
 
@@ -69,7 +70,7 @@ static void handle_remove(struct mg_connection *nc, int ev, void *p) {
 }
 
 static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
-
+    LOGE("handle_sdcard: %d", ev);
     if (p == NULL)return;
 
     char filename[PATH_MAX];
@@ -150,6 +151,7 @@ struct file_writer_data {
     FILE *fp;
     size_t bytes_written;
     char *filename;
+    int status;
 };
 
 bool is_file(const char *pathname) {
@@ -195,21 +197,17 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                 strcat(data->filename, "/");
                 strcat(data->filename, mp->file_name);
                 if (is_file(data->filename)) {
-                    mg_printf(nc, "%s",
-                              "HTTP/1.1 500 Failed to open a file\r\n"
-                              "Content-Length: 0\r\n\r\n");
-                    nc->flags |= MG_F_SEND_AND_CLOSE;
-                    return;
+                    LOGE("MG_EV_HTTP_PART_BEGIN");
+                    data->status = 1;
+                    nc->flags |= MG_F_CLOSE_IMMEDIATELY;
+                    break;
                 }
                 FILE *fp = fopen(data->filename, "wb");
                 data->fp = fp;
                 data->bytes_written = 0;
                 if (data->fp == NULL) {
-                    mg_printf(nc, "%s",
-                              "HTTP/1.1 500 Failed to open a file\r\n"
-                              "Content-Length: 0\r\n\r\n");
-                    nc->flags |= MG_F_SEND_AND_CLOSE;
-                    return;
+                    data->status = 1;
+                    break;
                 }
             }
             break;
@@ -220,28 +218,27 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
 
             if (data->fp == NULL || fwrite(mp->data.p, 1, mp->data.len, data->fp) != mp->data.len) {
-                mg_printf(nc, "%s",
-                          "HTTP/1.1 500 Failed to write to a file\r\n"
-                          "Content-Length: 0\r\n\r\n");
-                nc->flags |= MG_F_SEND_AND_CLOSE;
-                return;
+                data->status = 1;
+                break;
             }
             data->bytes_written += mp->data.len;
-
             break;
         }
         case MG_EV_HTTP_PART_END: {
             struct file_writer_data *data = (struct file_writer_data *) nc->user_data;
             struct mg_http_multipart_part *mp = (struct mg_http_multipart_part *) p;
 
-
-            mg_printf(nc,
-                      "HTTP/1.1 200 OK\r\n"
-                      "Content-Type: text/plain\r\n"
-                      "Connection: close\r\n\r\n"
-                      "Written %s of POST data to a temp file\n\n",
-                      data->filename);
-            nc->flags |= MG_F_SEND_AND_CLOSE;
+            if (data->status != 1) {
+                mg_printf(nc,
+                          "HTTP/1.1 200 OK\r\n"
+                          "Content-Type: text/plain\r\n"
+                          "Connection: close\r\n\r\n"
+                          "Written %s of POST data to a temp file\n\n",
+                          data->filename);
+                nc->flags |= MG_F_SEND_AND_CLOSE;
+            } else {
+                LOGE("MG_EV_HTTP_PART_END");
+            }
             if (data->fp)
                 fclose(data->fp);
             free(data->filename);
@@ -250,6 +247,7 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
             break;
         }
     }
+
 }
 
 
@@ -285,6 +283,10 @@ void *start_server(const char *address) {
 
     nc = mg_bind(&mgr, address, ev_handler);
 
+    if (nc == NULL) {
+        LOGE("[error]: start_server");
+    }
+
     mg_register_http_endpoint(nc, "/api/videos", handle_api_videos);
     mg_register_http_endpoint(nc, "/videos", handle_videos);
     mg_register_http_endpoint(nc, "/watch", handle_watch);
@@ -293,6 +295,8 @@ void *start_server(const char *address) {
     mg_register_http_endpoint(nc, "/api/sdcard", handle_api_sdcard);
 
     mg_set_protocol_http_websocket(nc);
+    LOGE("start_server: %s; mg_set_protocol_http_websocket", address);
+
     for (;;) {
         mg_mgr_poll(&mgr, 500);
     }

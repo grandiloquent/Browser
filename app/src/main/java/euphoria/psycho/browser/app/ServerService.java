@@ -18,6 +18,7 @@ import java.io.File;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileHelper;
 import euphoria.psycho.share.ContextUtils;
@@ -43,12 +44,16 @@ public class ServerService extends Service {
 
         mNotificationManager = (NotificationManager)
                 getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        updateForegroundNotification(R.string.server_running);
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            updateForegroundNotification(R.string.server_running);
+        }
         Log.e("TAG/", "Debug: onCreate, \n");
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
         mCpuWakeLock.acquire();
+
+        // If any VPN is connected, the server will don't work
         NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer")
                 , SettingsManager.getInstance().getVideoDirectory()
                 , FileHelper.getSDPath());

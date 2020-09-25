@@ -58,7 +58,7 @@ public class FileManager implements OnMenuItemClickListener,
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
         mSortType = SettingsManager.getInstance().getSortType();
 
-        mSelectionDelegate = new SelectionDelegate<>();
+        mSelectionDelegate = new SelectionDelegate<FileItem>();
         mSelectionDelegate.addObserver(this);
         mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
         // 1. Create SelectableListLayout.
@@ -107,7 +107,7 @@ public class FileManager implements OnMenuItemClickListener,
 
     public String getDirectory() {
         if (mDirectory == null) {
-            mDirectory = Environment.getExternalStorageDirectory().getAbsolutePath();
+            mDirectory = ContextUtils.getExternalStorageDirectory();//Environment.getExternalStorageDirectory().getAbsolutePath();
         }
         return mDirectory;
     }

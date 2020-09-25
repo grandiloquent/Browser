@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import euphoria.psycho.browser.app.NativeHelper;
+import euphoria.psycho.share.Log;
 
 public class FileProviderImpl implements FileProvider {
     private BrowsingFileObserver mObserver;
@@ -42,7 +43,11 @@ public class FileProviderImpl implements FileProvider {
                             file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden()));
                     mItems.add(fileItem);
                 }
+            } else {
+                Log.e("TAG", directory);
             }
+        } else {
+            Log.e("TAG", "directory is null");
         }
         Collections.sort(mItems, new FileItemComparator(fileManager.getSortType()));
         if (mObserver != null)
