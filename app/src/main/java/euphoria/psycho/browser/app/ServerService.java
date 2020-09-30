@@ -12,6 +12,7 @@ import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.File;
@@ -56,8 +57,8 @@ public class ServerService extends Service {
         // If any VPN is connected, the server will don't work
         NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer")
                 , SettingsManager.getInstance().getVideoDirectory()
-                , FileHelper.getSDPath());
-        File zip = new File(FileHelper.getSDPath(), "ZIP");
+                , ContextUtils.getExternalStorageDirectory());
+        File zip = new File(ContextUtils.getExternalStorageDirectory(), "ZIP");
         if (!zip.isDirectory())
             zip.mkdirs();
     }

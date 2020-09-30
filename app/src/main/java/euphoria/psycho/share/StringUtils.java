@@ -52,7 +52,7 @@ public class StringUtils{
 
     public static String substringBeforeLast(String string, String delimiter) {
         int index = string.lastIndexOf(delimiter);
-        if (index != -1) return string.substring(0, index + delimiter.length());
+        if (index != -1) return string.substring(0, index);
         return string;
     }
 }

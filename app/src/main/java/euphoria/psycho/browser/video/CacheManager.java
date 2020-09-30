@@ -21,10 +21,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
 
 public class CacheManager {
     private static final String TAG = "CacheManager";
@@ -37,7 +37,7 @@ public class CacheManager {
     // there is no SD card found.
     // This can only be called from data thread.
     public static BlobCache getCache(Context context, String filename,
-                                     int maxEntries, int maxBytes, int version) {
+            int maxEntries, int maxBytes, int version) {
         synchronized (sCacheMap) {
             if (!sOldCheckDone) {
                 removeOldFilesIfNecessary(context);
@@ -46,18 +46,14 @@ public class CacheManager {
             BlobCache cache = sCacheMap.get(filename);
             if (cache == null) {
                 File cacheDir = context.getExternalCacheDir();
-                String path = null;
-                if (cacheDir != null) {
-                    path = cacheDir.getAbsolutePath() + "/" + filename;
-                    try {
-                        cache = new BlobCache(path, maxEntries, maxBytes, false,
-                                version);
-                        sCacheMap.put(filename, cache);
-                    } catch (IOException e) {
-                        Log.e(TAG, "Cannot instantiate cache!", e);
-                    }
+                String path = cacheDir.getAbsolutePath() + "/" + filename;
+                try {
+                    cache = new BlobCache(path, maxEntries, maxBytes, false,
+                            version);
+                    sCacheMap.put(filename, cache);
+                } catch (IOException e) {
+                    Log.e(TAG, "Cannot instantiate cache!", e);
                 }
-
             }
             return cache;
         }
@@ -77,14 +73,8 @@ public class CacheManager {
         pref.edit().putInt(KEY_CACHE_UP_TO_DATE, 1).apply();
 
         File cacheDir = context.getExternalCacheDir();
-        String prefix = null;
-        if (cacheDir != null) {
-            prefix = cacheDir.getAbsolutePath() + "/";
-            BlobCache.deleteFiles(prefix + "imgcache");
-            BlobCache.deleteFiles(prefix + "rev_geocoding");
-            BlobCache.deleteFiles(prefix + "bookmark");
-        }
+        String prefix = cacheDir.getAbsolutePath() + "/";
 
-
+        BlobCache.deleteFiles(prefix + "bookmark");
     }
 }

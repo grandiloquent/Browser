@@ -146,7 +146,6 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
 
 }
 
-
 struct file_writer_data {
     FILE *fp;
     size_t bytes_written;
@@ -163,6 +162,7 @@ bool is_file(const char *pathname) {
 }
 
 static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
+
     if (p == NULL)return;
 
 
@@ -184,6 +184,7 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
             if (data == NULL) {
                 data = calloc(1, sizeof(struct file_writer_data));
                 data->filename = filename;
+                LOGE("handle_api_sdcard %s", filename);
                 nc->user_data = (void *) data;
             }
             break;
@@ -206,6 +207,7 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                 data->fp = fp;
                 data->bytes_written = 0;
                 if (data->fp == NULL) {
+                    LOGE("MG_EV_HTTP_PART_BEGIN %s %s", data->filename, strerror(errno));
                     data->status = 1;
                     break;
                 }
@@ -237,6 +239,12 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                           data->filename);
                 nc->flags |= MG_F_SEND_AND_CLOSE;
             } else {
+                mg_printf(nc,
+                          "HTTP/1.1 500 OK\r\n"
+                          "Content-Type: text/plain\r\n"
+                          "Connection: close\r\n\r\n"
+                          "Written %s of POST data to a temp file\n\n",
+                          data->filename);
                 LOGE("MG_EV_HTTP_PART_END");
             }
             if (data->fp)
@@ -286,8 +294,6 @@ void *start_server(const char *address) {
     if (nc == NULL) {
         LOGE("[error]: start_server");
     }
-
-    mg_register_http_endpoint(nc, "/api/videos", handle_api_videos);
     mg_register_http_endpoint(nc, "/videos", handle_videos);
     mg_register_http_endpoint(nc, "/watch", handle_watch);
     mg_register_http_endpoint(nc, "/remove", handle_remove);
