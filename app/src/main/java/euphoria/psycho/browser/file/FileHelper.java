@@ -8,10 +8,6 @@ import android.app.DownloadManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
@@ -34,9 +30,9 @@ import euphoria.psycho.browser.app.SampleDownloadActivity;
 import euphoria.psycho.browser.app.ServerActivity;
 import euphoria.psycho.browser.app.TwitterHelper;
 import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
+import euphoria.psycho.browser.video.VideoActivity;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.music.MusicPlaybackService;
-import euphoria.psycho.browser.video.MovieActivity;
 import euphoria.psycho.share.DialogUtils;
 import euphoria.psycho.share.FormatUtils;
 import euphoria.psycho.share.StringUtils;
@@ -306,7 +302,7 @@ public class FileHelper {
             return;
         }
         if (sVideoPattern.matcher(fileItem.getTitle()).find()) {
-            Intent movieActivity = new Intent(activity, MovieActivity.class);
+            Intent movieActivity = new Intent(activity, VideoActivity.class);
             movieActivity.setData(Uri.fromFile(new File(fileItem.getUrl())));
             activity.startActivity(movieActivity);
             return;

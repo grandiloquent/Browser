@@ -6,10 +6,14 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import euphoria.psycho.browser.app.NativeHelper;
 
 public class DialogUtils {
 
@@ -44,5 +48,26 @@ public class DialogUtils {
         builder.setCancelable(false);
 
         return builder.create();
+    }
+
+    public interface Listener {
+        void onSuccess(String value);
+    }
+
+    public static void openTextContentDialog(Activity activity, String title, Listener listener) {
+        EditText editText = new EditText(activity);
+        editText.requestFocus();
+        AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setView(editText)
+                .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                    listener.onSuccess(editText.getText().toString());
+                    dialogInterface.dismiss();
+                }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                })
+                .create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        dialog.show();
     }
 }

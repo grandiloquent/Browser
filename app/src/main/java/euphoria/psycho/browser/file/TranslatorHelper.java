@@ -10,11 +10,13 @@ import java.io.File;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.DialogUtils;
 import euphoria.psycho.share.ThreadUtils;
 
 public class TranslatorHelper {
 
     public static void youdaoChinese(Activity activity) {
+<<<<<<< HEAD
       /*  EditText editText = new EditText(activity);
 
 
@@ -60,10 +62,30 @@ public class TranslatorHelper {
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
 
+=======
+
+
+        DialogUtils.openTextContentDialog(activity, "翻译英文文本", value -> {
+            ThreadUtils.postOnBackgroundThread(() -> {
+                String result = NativeHelper.youdao(value, true, value.contains(" "));
+                activity.runOnUiThread(() -> {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(result)
+                            .setPositiveButton(android.R.string.ok, (dlg, which) -> {
+                                ContextUtils.setClipboardString(result);
+                                dlg.dismiss();
+                            })
+                            .show();
+                });
+            });
+
+        });
+>>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
     }
 
     public static void google(Activity activity) {
 
+<<<<<<< HEAD
 
         EditText editText = new EditText(activity);
 
@@ -95,6 +117,23 @@ public class TranslatorHelper {
         dialog.show();
 
 
+=======
+        DialogUtils.openTextContentDialog(activity, "翻译中文文本", query -> {
+            ThreadUtils.postOnBackgroundThread(() -> {
+
+                String result = NativeHelper.google(query, false);
+                activity.runOnUiThread(() -> {
+                    new AlertDialog.Builder(activity)
+                            .setMessage(result)
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                                ContextUtils.setClipboardString(result);
+                                dialog.dismiss();
+                            })
+                            .show();
+                });
+            });
+        });
+>>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
     }
 
 }

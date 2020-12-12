@@ -23,10 +23,12 @@ import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
+
 public class SampleDownloadActivity extends Activity {
     private static String youtubeLink;
     private LinearLayout mainLayout;
     private ProgressBar mainProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +50,7 @@ public class SampleDownloadActivity extends Activity {
         } else if (savedInstanceState != null && youtubeLink != null) {
             getYoutubeDownloadUrl(youtubeLink);
         } else {
+<<<<<<< HEAD
             EditText editText = new EditText(this);
 
 
@@ -69,8 +72,19 @@ public class SampleDownloadActivity extends Activity {
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.show();
 
+=======
+            CharSequence c = ContextUtils.getClipboardString();
+            String ytLink = c != null ? c.toString() : "";
+            if (checkLink(ytLink)) {
+                youtubeLink = ytLink;
+                getYoutubeDownloadUrl(ytLink);
+            } else {
+                finish();
+            }
+>>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
         }
     }
+
     private static boolean checkLink(String ytLink) {
         if (ytLink != null
                 && (ytLink.contains("://youtu.be/") || ytLink.contains("youtube.com/watch?v="))) {
@@ -78,6 +92,7 @@ public class SampleDownloadActivity extends Activity {
         }
         return false;
     }
+
     private void getYoutubeDownloadUrl(String youtubeLink) {
         new YouTubeExtractor(this) {
             @Override
@@ -101,6 +116,7 @@ public class SampleDownloadActivity extends Activity {
             }
         }.extract(youtubeLink, true, false);
     }
+
     private void addButtonToMainLayout(final String videoTitle, final YtFile ytfile) {
         // Display some buttons and let the user choose the format
         String btnText = (ytfile.getFormat().getHeight() == -1) ? "Audio " +
@@ -125,6 +141,7 @@ public class SampleDownloadActivity extends Activity {
         });
         mainLayout.addView(btn);
     }
+
     private void downloadFromUrl(String youtubeDlUrl, String downloadTitle, String fileName) {
         Uri uri = Uri.parse(youtubeDlUrl);
         DownloadManager.Request request = new DownloadManager.Request(uri);
