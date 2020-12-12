@@ -1,6 +1,7 @@
 package euphoria.psycho.browser.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +11,9 @@ import android.os.Environment;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -45,13 +48,27 @@ public class SampleDownloadActivity extends Activity {
         } else if (savedInstanceState != null && youtubeLink != null) {
             getYoutubeDownloadUrl(youtubeLink);
         } else {
-            String ytLink = ContextUtils.getClipboardString().toString();
-            if (checkLink(ytLink)) {
-                youtubeLink = ytLink;
-                getYoutubeDownloadUrl(ytLink);
-            } else {
-                finish();
-            }
+            EditText editText = new EditText(this);
+
+
+            AlertDialog dialog = new AlertDialog.Builder(this)
+                    .setTitle("YouTube视频链接")
+                    .setView(editText)
+                    .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
+                        String ytLink = editText.getText().toString();
+                        if (checkLink(ytLink)) {
+                            youtubeLink = ytLink;
+                            getYoutubeDownloadUrl(ytLink);
+                        } else {
+                            finish();
+                        }
+                    }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
+                        dialogInterface.dismiss();
+                    })
+                    .create();
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            dialog.show();
+
         }
     }
     private static boolean checkLink(String ytLink) {

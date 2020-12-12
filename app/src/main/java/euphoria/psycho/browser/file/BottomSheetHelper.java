@@ -22,6 +22,7 @@ public class BottomSheetHelper {
                     Pair.create(R.drawable.ic_sd_storage, context.getString(R.string.sd_storage)),
                     Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                     Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_cleaning_service, context.getString(R.string.cleaning_service)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
                     Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
@@ -31,6 +32,7 @@ public class BottomSheetHelper {
                     Pair.create(R.drawable.ic_storage, context.getString(R.string.storage)),
                     Pair.create(R.drawable.ic_create_new_folder, context.getString(R.string.create_new_folder)),
                     Pair.create(R.drawable.ic_info, context.getString(R.string.directory_info)),
+                    Pair.create(R.drawable.ic_cleaning_service, context.getString(R.string.cleaning_service)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
                     Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
@@ -91,6 +93,9 @@ public class BottomSheetHelper {
                             break;
                         case R.drawable.ic_info:
                             showDirectoryInfo(activity, fileManager.getDirectory());
+                            break;
+                        case R.drawable.ic_cleaning_service:
+                             cleaningDirectory(activity,fileManager);
                             break;
                         case R.drawable.ic_more_vert:
                             createFunctionsMenu(activity, fileManager);

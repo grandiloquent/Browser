@@ -180,7 +180,26 @@ public class MusicPlaybackService extends Service implements
 
     private void loadFiles(String filename) {
         File music = new File(filename);
-        mMusics = music.getParentFile().listFiles(file -> file.isFile() && file.getName().endsWith(".mp3"));
+        mMusics = music.getParentFile().listFiles(file -> file.isFile() && (file.getName().endsWith(".mp3")
+                || file.getName().endsWith(".m4a")
+                || file.getName().endsWith(".aac")
+                || file.getName().endsWith(".amr")
+                || file.getName().endsWith(".flac")
+                || file.getName().endsWith(".imy")
+                || file.getName().endsWith(".mid")
+                || file.getName().endsWith(".mkv")
+                || file.getName().endsWith(".mp4")
+                || file.getName().endsWith(".mxmf")
+                || file.getName().endsWith(".ogg")
+                || file.getName().endsWith(".ota")
+                || file.getName().endsWith(".rtttl")
+                || file.getName().endsWith(".rtx")
+                || file.getName().endsWith(".ts")
+                || file.getName().endsWith(".wav")
+                || file.getName().endsWith(".xmf")
+        ));
+        // [...new Set([...a.matchAll(/\.[a-z0-9]+/g)].map(i=>i[0]).sort())].map(i=>`|| file.getName().endsWith("${i}")`).join('\n');
+
         if (mMusics == null) return;
         for (int i = 0; i < mMusics.length; i++) {
             if (mMusics[i].getAbsolutePath().equals(filename)) {

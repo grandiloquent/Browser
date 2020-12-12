@@ -81,5 +81,5 @@
     <string name="rename_file_item">Rename File</string>
     <string name="exo_controls_next_description">Next track</string>
     <string name="file_item_cut">剪切</string>
-
+    <string name="cleaning_service">整理文件夹</string>
 </resources>

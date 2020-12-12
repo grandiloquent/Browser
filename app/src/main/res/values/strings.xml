@@ -40,6 +40,7 @@
     <string name="videos_directory">Settings Videos Directory</string>
     <string name="open">Open</string>
     <string name="directory_info">Directory Info</string>
+    <string name="cleaning_service">Cleaning Directory</string>
     <string name="more">More</string>
     <string name="extracting">Extracting</string>
     <string name="copy">Copy</string>

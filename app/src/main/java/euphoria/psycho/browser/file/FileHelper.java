@@ -21,6 +21,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import euphoria.psycho.share.ThreadUtils;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
+import static euphoria.psycho.share.StringUtils.substringAfterLast;
 
 public class FileHelper {
 
@@ -120,7 +122,7 @@ public class FileHelper {
     public static void delete(FileManager fileManager, FileItem item) {
         AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
                 .setTitle(R.string.question_dialog_title)
-                .setMessage(fileManager.getActivity().getString(R.string.question_delete_file_item_message, StringUtils.substringAfterLast(item.getUrl(), '/')))
+                .setMessage(fileManager.getActivity().getString(R.string.question_delete_file_item_message, substringAfterLast(item.getUrl(), '/')))
                 .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
                     dialogInterface.dismiss();
                     NativeHelper.deleteFileSystem(item.getUrl());
@@ -171,7 +173,7 @@ public class FileHelper {
             try {
                 CharSequence twitterUrl = ContextUtils.getClipboardString();
                 if (twitterUrl != null) {
-                    String id = StringUtils.substringAfterLast(twitterUrl.toString(), "/");
+                    String id = substringAfterLast(twitterUrl.toString(), "/");
                     if (StringUtils.isDigits(id)) {
                         List<TwitterVideo> twitterVideos = TwitterHelper.extractTwitterVideo(id);
                         activity.runOnUiThread(() -> {
@@ -229,7 +231,7 @@ public class FileHelper {
         if (isMusic(file)) {
             return TYPE_MUSIC;
         }
-        String extension = StringUtils.substringAfterLast(file.getName(), '.');
+        String extension = substringAfterLast(file.getName(), '.');
         switch (extension) {
             case "apk":
                 return TYPE_APK;
@@ -315,7 +317,7 @@ public class FileHelper {
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
         intent.setDataAndType(Uri.fromFile(new File(url)),
                 MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                        StringUtils.substringAfterLast(url, '.')
+                        substringAfterLast(url, '.')
                 ));
         activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.open)));
     }
@@ -360,9 +362,9 @@ public class FileHelper {
                     }
                 }
             } else {
-                String extension = StringUtils.substringAfterLast(fileItem.getUrl(), ".");
+                String extension = substringAfterLast(fileItem.getUrl(), ".");
                 for (FileItem f : items) {
-                    if (StringUtils.substringAfterLast(f.getUrl(), ".").equals(extension)) {
+                    if (substringAfterLast(f.getUrl(), ".").equals(extension)) {
                         fileItemSet.add(f);
                     }
                 }
@@ -464,4 +466,17 @@ public class FileHelper {
     }
 
 
+    public static void cleaningDirectory(Activity activity, FileManager fileManager) {
+        File[] files = new File(fileManager.getDirectory()).listFiles(file -> file.isFile());
+        if (files == null || files.length == 0) return;
+        for (File f : files) {
+            File p = new File(fileManager.getDirectory(), substringAfterLast(f.getName(), ".").toUpperCase());
+            p.mkdir();
+            p=new File(p,f.getName());
+            if(!p.exists()){
+                f.renameTo(p);
+            }
+        }
+        fileManager.refresh();
+    }
 }
