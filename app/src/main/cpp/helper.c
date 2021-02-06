@@ -50,10 +50,10 @@ static int parse_size(const char *size_str, size_t *size) {
     return 0;
 }
 
-int64_t stat_size(struct stat *s) {
-    int64_t blksize = s->st_blksize;
+unsigned long stat_size(struct stat *s) {
+    unsigned long blksize = s->st_blksize;
     // count actual blocks used instead of nominal file size
-    int64_t size = s->st_blocks * 512;
+    unsigned long size = s->st_blocks * 512;
     if (blksize) {
         /* round up to filesystem block size */
         size = (size + blksize - 1) & (~(blksize - 1));

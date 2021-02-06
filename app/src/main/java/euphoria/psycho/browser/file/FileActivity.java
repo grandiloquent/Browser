@@ -1,9 +1,11 @@
 package euphoria.psycho.browser.file;
 
 import android.Manifest.permission;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -47,6 +49,14 @@ public class FileActivity extends AppCompatActivity {
         if (!ContextUtils.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.READ_EXTERNAL_STORAGE);
         }
+
+        // https://developer.android.com/training/data-storage/manage-all-files
+        if (!Environment.isExternalStorageManager()) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+            startActivity(intent);
+        }
+
+
         if (needPermissions.size() > 0) {
             requestPermissions(needPermissions.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);
         } else {

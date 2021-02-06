@@ -169,7 +169,7 @@ public class FileManager implements OnMenuItemClickListener,
         mToolbar.hideSearchView();
         String parent = StringUtils.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
-                || parent.startsWith(FileHelper.getSDPath())) {
+                || (FileHelper.getSDPath() != null && parent.startsWith(FileHelper.getSDPath()))) {
             mDirectory = parent;
             mFileAdapter.initialize();
             return true;
@@ -272,7 +272,7 @@ public class FileManager implements OnMenuItemClickListener,
                     Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                     intent.setData(Uri.fromFile(files[i]));
                     getActivity().sendBroadcast(intent);
-                    Log.e("TAG",files[i].getAbsolutePath());
+                    Log.e("TAG", files[i].getAbsolutePath());
                 }
                 /*
                  * https://github.com/SimpleMobileTools/Simple-File-Manager

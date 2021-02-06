@@ -27,7 +27,7 @@
 
 bool ends_with(const char *s1, const char *s2);
 
-int64_t stat_size(struct stat *s);
+unsigned long stat_size(struct stat *s);
 
 int64_t calculate_dir_size(int dfd);
 

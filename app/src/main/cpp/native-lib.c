@@ -70,7 +70,6 @@ static void handle_remove(struct mg_connection *nc, int ev, void *p) {
 }
 
 static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
-    LOGE("handle_sdcard: %d", ev);
     if (p == NULL)return;
 
     char filename[PATH_MAX];
@@ -81,6 +80,7 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
     }
     rapidstring s;
     rs_init(&s);
+    LOGE("handle_sdcard: %s", filename);
 
     if (is_dir(filename)) {
         rs_cat(&s,
@@ -95,6 +95,9 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
         dynarray_t files = DYNARRAY_INITIALIZER;
         list_dir(filename, &files);
         files_sort(&files);
+
+        LOGE("handle_sdcard: %s %d", filename, files.count);
+
         DYNARRAY_FOREACH_TYPE(&files, file_t *, file, {
 
             free(file->path);
@@ -112,7 +115,7 @@ static void handle_sdcard(struct mg_connection *nc, int ev, void *p) {
             rs_cat(&s, buf);
             rs_cat(&s, "</div><div class=\"file-size\" data-length=\"");
             char file_size_buf[PATH_MAX];
-            snprintf(file_size_buf, PATH_MAX - 1, "%d", file->length);
+            snprintf(file_size_buf, PATH_MAX - 1, "%ul", file->length);
             rs_cat(&s, file_size_buf);
             rs_cat(&s, "\"></div></a><div class=\"files-list-border\"></div>");
             free(file);

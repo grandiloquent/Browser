@@ -93,6 +93,7 @@ int list_dir(char *path, dynarray_t *files) {
             strcat(buf, path);
             strcat(buf, "/");
             strcat(buf, dp->d_name);
+
             if (stat(buf, &s) == -1) {
                 free(buf);
                 continue;
