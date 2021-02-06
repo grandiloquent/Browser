@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,12 +16,14 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.RecyclerView;
+
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.SettingsManager;
@@ -90,7 +95,7 @@ public class FileManager implements OnMenuItemClickListener,
     }
 
     public void cutSelection(FileItem item) {
-        FileHelper.cutSelection(this,item);
+        FileHelper.cutSelection(this, item);
     }
 
     public void delete(FileItem item) {
@@ -260,6 +265,22 @@ public class FileManager implements OnMenuItemClickListener,
                 return true;
             case R.id.selection_mode_delete_menu_id:
                 FileHelper.deleteSelections(this);
+                File[] files = new File(mDirectory).listFiles();
+                String[] strings = new String[files.length];
+                for (int i = 0; i < files.length; i++) {
+                    strings[i] = files[i].getAbsolutePath();
+                    Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+                    intent.setData(Uri.fromFile(files[i]));
+                    getActivity().sendBroadcast(intent);
+                    Log.e("TAG",files[i].getAbsolutePath());
+                }
+                /*
+                 * https://github.com/SimpleMobileTools/Simple-File-Manager
+                 *
+                 * */
+                MediaScannerConnection.scanFile(this.getActivity().getApplicationContext(), strings, null, (path, uri) -> {
+
+                });
                 return true;
             case R.id.search_menu_id:
                 mToolbar.showSearchView();

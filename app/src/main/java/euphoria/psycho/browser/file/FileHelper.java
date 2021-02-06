@@ -40,6 +40,7 @@ import euphoria.psycho.share.ThreadUtils;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
+import static euphoria.psycho.share.ContextUtils.getApplicationContext;
 import static euphoria.psycho.share.StringUtils.substringAfterLast;
 
 public class FileHelper {
@@ -468,11 +469,16 @@ public class FileHelper {
         for (File f : files) {
             File p = new File(fileManager.getDirectory(), substringAfterLast(f.getName(), ".").toUpperCase());
             p.mkdir();
-            p=new File(p,f.getName());
-            if(!p.exists()){
+            p = new File(p, f.getName());
+            if (!p.exists()) {
                 f.renameTo(p);
             }
         }
         fileManager.refresh();
+    }
+
+    // Android 10+ 无法在内部储存根目录创建目录
+    public static File getStaticResourceDirectory() {
+        return new File(getApplicationContext().getExternalFilesDir(""), "FileServer");
     }
 }

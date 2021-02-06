@@ -50,7 +50,6 @@ public class SampleDownloadActivity extends Activity {
         } else if (savedInstanceState != null && youtubeLink != null) {
             getYoutubeDownloadUrl(youtubeLink);
         } else {
-<<<<<<< HEAD
             EditText editText = new EditText(this);
 
 
@@ -72,16 +71,14 @@ public class SampleDownloadActivity extends Activity {
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.show();
 
-=======
-            CharSequence c = ContextUtils.getClipboardString();
-            String ytLink = c != null ? c.toString() : "";
-            if (checkLink(ytLink)) {
-                youtubeLink = ytLink;
-                getYoutubeDownloadUrl(ytLink);
-            } else {
-                finish();
-            }
->>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
+//            CharSequence c = ContextUtils.getClipboardString();
+//            String ytLink = c != null ? c.toString() : "";
+//            if (checkLink(ytLink)) {
+//                youtubeLink = ytLink;
+//                getYoutubeDownloadUrl(ytLink);
+//            } else {
+//                finish();
+//            }
         }
     }
 

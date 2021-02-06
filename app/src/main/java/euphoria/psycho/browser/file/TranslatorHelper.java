@@ -16,7 +16,6 @@ import euphoria.psycho.share.ThreadUtils;
 public class TranslatorHelper {
 
     public static void youdaoChinese(Activity activity) {
-<<<<<<< HEAD
       /*  EditText editText = new EditText(activity);
 
 
@@ -43,14 +42,14 @@ public class TranslatorHelper {
                     String string = editText.getText().toString();
                     ThreadUtils.postOnBackgroundThread(() -> {
 
-                        String query =string.trim();
+                        String query = string.trim();
                         String result = NativeHelper.youdao(query, true, query.contains(" "));
                         activity.runOnUiThread(() -> {
                             new AlertDialog.Builder(activity)
                                     .setMessage(result)
                                     .setPositiveButton(android.R.string.ok, (dlg, which) -> {
                                         ContextUtils.setClipboardString(result);
-                                      dlg.dismiss();
+                                        dlg.dismiss();
                                     })
                                     .show();
                         });
@@ -61,8 +60,6 @@ public class TranslatorHelper {
                 .create();
         dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         dialog.show();
-
-=======
 
 
         DialogUtils.openTextContentDialog(activity, "翻译英文文本", value -> {
@@ -80,12 +77,10 @@ public class TranslatorHelper {
             });
 
         });
->>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
     }
 
     public static void google(Activity activity) {
 
-<<<<<<< HEAD
 
         EditText editText = new EditText(activity);
 
@@ -97,7 +92,7 @@ public class TranslatorHelper {
                     String string = editText.getText().toString();
                     ThreadUtils.postOnBackgroundThread(() -> {
 
-                        String query =string.trim();
+                        String query = string.trim();
                         String result = NativeHelper.google(query, false);
                         activity.runOnUiThread(() -> {
                             new AlertDialog.Builder(activity)
@@ -117,7 +112,6 @@ public class TranslatorHelper {
         dialog.show();
 
 
-=======
         DialogUtils.openTextContentDialog(activity, "翻译中文文本", query -> {
             ThreadUtils.postOnBackgroundThread(() -> {
 
@@ -125,15 +119,14 @@ public class TranslatorHelper {
                 activity.runOnUiThread(() -> {
                     new AlertDialog.Builder(activity)
                             .setMessage(result)
-                            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            .setPositiveButton(android.R.string.ok, (i, which) -> {
                                 ContextUtils.setClipboardString(result);
-                                dialog.dismiss();
+                                i.dismiss();
                             })
                             .show();
                 });
             });
         });
->>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
     }
 
 }

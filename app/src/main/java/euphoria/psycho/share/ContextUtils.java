@@ -157,8 +157,9 @@ public class ContextUtils {
                     return path;
                 }
             }
-        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            Log.e("TAG/", "[getExternalStoragePath]: " + e.getMessage());
         }
         return null;
     }

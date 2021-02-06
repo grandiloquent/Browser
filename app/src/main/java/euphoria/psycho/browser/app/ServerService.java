@@ -39,28 +39,29 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        FileHelper.initialize(getApplicationContext());
 
-        Log.e("TAG/" + ServerService.this.getClass().getSimpleName(), FileHelper.getSDPath());
+        FileHelper.initialize(getApplicationContext());
+        Log.e("TAG/", "[ServerService]: onCreate");
+
 
         mNotificationManager = (NotificationManager)
                 getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        Log.e("TAG/", "[ServerService]: onCreate, " + ContextUtils.getExternalStorageDirectory());
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             updateForegroundNotification(R.string.server_running);
         }
-        Log.e("TAG/", "Debug: onCreate, \n");
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
         mCpuWakeLock.acquire();
 
         // If any VPN is connected, the server will don't work
-        NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", ContextUtils.getExternalStoragePath("FileServer")
+        NativeHelper.startServer(NetUtils.getDeviceIP(this), "12345", FileHelper.getStaticResourceDirectory().getAbsolutePath()
                 , SettingsManager.getInstance().getVideoDirectory()
                 , ContextUtils.getExternalStorageDirectory());
-        File zip = new File(ContextUtils.getExternalStorageDirectory(), "ZIP");
-        if (!zip.isDirectory())
-            zip.mkdirs();
+//        File zip = new File(ContextUtils.getExternalStorageDirectory(), "ZIP");
+//        if (!zip.isDirectory())
+//            zip.mkdirs();
     }
 
     @Override

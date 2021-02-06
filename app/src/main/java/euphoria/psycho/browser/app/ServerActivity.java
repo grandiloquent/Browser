@@ -18,9 +18,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.file.FileHelper;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.FileUtils;
+import euphoria.psycho.share.Log;
 import euphoria.psycho.share.NetUtils;
 
 import static euphoria.psycho.share.BitmapUtils.compressToBytes;
@@ -61,9 +64,11 @@ public class ServerActivity extends Activity {
                 "icon-file-m.svg",
                 "icon-nor-m.svg"
         };
-        FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
+
+
+        FileUtils.createDirectoryIfNotExists(FileHelper.getStaticResourceDirectory());
         for (String f : files) {
-            String fileName = ContextUtils.getExternalStoragePath("FileServer/" + f);
+            String fileName = new File(FileHelper.getStaticResourceDirectory(), f).getAbsolutePath();
             if (FileUtils.isFile(fileName)) {
                 if (!fileName.endsWith(".css")
                         && !fileName.endsWith(".js")
@@ -76,11 +81,13 @@ public class ServerActivity extends Activity {
                         continue;
                     }
                 } catch (Exception e) {
+                    Log.e("TAG/", "[checkStaticFiles]: " + e.getMessage());
                 }
             }
             try {
                 FileUtils.copyAssetFile(this, "static/" + f, fileName);
             } catch (IOException e) {
+                Log.e("TAG/", "[checkStaticFiles]: " + e.getMessage());
             }
         }
     }

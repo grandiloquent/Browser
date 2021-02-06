@@ -207,10 +207,7 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                 data->fp = fp;
                 data->bytes_written = 0;
                 if (data->fp == NULL) {
-<<<<<<< HEAD
-=======
                     LOGE("MG_EV_HTTP_PART_BEGIN %s %s", data->filename, strerror(errno));
->>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
                     data->status = 1;
                     break;
                 }
@@ -242,15 +239,13 @@ static void handle_api_sdcard(struct mg_connection *nc, int ev, void *p) {
                           data->filename);
                 nc->flags |= MG_F_SEND_AND_CLOSE;
             } else {
-<<<<<<< HEAD
-=======
+
                 mg_printf(nc,
                           "HTTP/1.1 500 OK\r\n"
                           "Content-Type: text/plain\r\n"
                           "Connection: close\r\n\r\n"
                           "Written %s of POST data to a temp file\n\n",
                           data->filename);
->>>>>>> b1c30cfbb727d3382cf34a1a28a17574da8c80a8
                 LOGE("MG_EV_HTTP_PART_END");
             }
             if (data->fp)
