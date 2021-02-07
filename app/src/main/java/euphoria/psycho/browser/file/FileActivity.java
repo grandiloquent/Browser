@@ -20,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.LocalFileService;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
 
@@ -56,6 +57,8 @@ public class FileActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+
+        startService(new Intent(this, LocalFileService.class));
 
         if (needPermissions.size() > 0) {
             requestPermissions(needPermissions.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);

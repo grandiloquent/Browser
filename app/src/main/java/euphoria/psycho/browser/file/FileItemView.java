@@ -92,7 +92,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     mFileManager.delete(getItem());
                     return;
                 case R.string.file_item_copy_path:
-                    ContextUtils.setClipboardString(getItem().getUrl());
+                    ContextUtils.setClipboardString("http://localhost:8080?v=" + getItem().getUrl());
                     return;
                 case R.string.file_item_extract_zip:
                     mFileManager.extractZipFile(getItem());

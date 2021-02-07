@@ -117,5 +117,6 @@
         <service android:name=".app.ServerService" />
         <service android:name=".download.DownloadService" />
         <service android:name=".music.MusicPlaybackService" />
+        <service android:name=".app.LocalFileService" />
     </application>
 </manifest>
