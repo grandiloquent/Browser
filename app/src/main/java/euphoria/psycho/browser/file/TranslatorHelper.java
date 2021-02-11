@@ -62,21 +62,21 @@ public class TranslatorHelper {
         dialog.show();
 
 
-        DialogUtils.openTextContentDialog(activity, "翻译英文文本", value -> {
-            ThreadUtils.postOnBackgroundThread(() -> {
-                String result = NativeHelper.youdao(value, true, value.contains(" "));
-                activity.runOnUiThread(() -> {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(result)
-                            .setPositiveButton(android.R.string.ok, (dlg, which) -> {
-                                ContextUtils.setClipboardString(result);
-                                dlg.dismiss();
-                            })
-                            .show();
-                });
-            });
-
-        });
+//        DialogUtils.openTextContentDialog(activity, "翻译英文文本", value -> {
+//            ThreadUtils.postOnBackgroundThread(() -> {
+//                String result = NativeHelper.youdao(value, true, value.contains(" "));
+//                activity.runOnUiThread(() -> {
+//                    new AlertDialog.Builder(activity)
+//                            .setMessage(result)
+//                            .setPositiveButton(android.R.string.ok, (dlg, which) -> {
+//                                ContextUtils.setClipboardString(result);
+//                                dlg.dismiss();
+//                            })
+//                            .show();
+//                });
+//            });
+//
+//        });
     }
 
     public static void google(Activity activity) {
@@ -112,21 +112,21 @@ public class TranslatorHelper {
         dialog.show();
 
 
-        DialogUtils.openTextContentDialog(activity, "翻译中文文本", query -> {
-            ThreadUtils.postOnBackgroundThread(() -> {
-
-                String result = NativeHelper.google(query, false);
-                activity.runOnUiThread(() -> {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(result)
-                            .setPositiveButton(android.R.string.ok, (i, which) -> {
-                                ContextUtils.setClipboardString(result);
-                                i.dismiss();
-                            })
-                            .show();
-                });
-            });
-        });
+//        DialogUtils.openTextContentDialog(activity, "翻译中文文本", query -> {
+//            ThreadUtils.postOnBackgroundThread(() -> {
+//
+//                String result = NativeHelper.google(query, false);
+//                activity.runOnUiThread(() -> {
+//                    new AlertDialog.Builder(activity)
+//                            .setMessage(result)
+//                            .setPositiveButton(android.R.string.ok, (i, which) -> {
+//                                ContextUtils.setClipboardString(result);
+//                                i.dismiss();
+//                            })
+//                            .show();
+//                });
+//            });
+//        });
     }
 
 }

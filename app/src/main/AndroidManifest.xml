@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
 
     <application
@@ -118,5 +119,7 @@
         <service android:name=".download.DownloadService" />
         <service android:name=".music.MusicPlaybackService" />
         <service android:name=".app.LocalFileService" />
+        <service android:name=".app.FloatingService" />
+        <activity android:name=".app.FloatingService$TransparentActivity"></activity>
     </application>
 </manifest>

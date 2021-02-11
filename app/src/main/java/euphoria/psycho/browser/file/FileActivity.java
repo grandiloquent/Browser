@@ -1,8 +1,11 @@
 package euphoria.psycho.browser.file;
 
 import android.Manifest.permission;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
@@ -19,13 +22,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import euphoria.psycho.Share;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.app.FloatingService;
 import euphoria.psycho.browser.app.LocalFileService;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 100;
     private FileManager mFileManager;
 
     private void initialize() {
@@ -57,15 +63,29 @@ public class FileActivity extends AppCompatActivity {
             startActivity(intent);
         }
 
+        checkStartPermissionRequest();
 
-        startService(new Intent(this, LocalFileService.class));
+        // startService(new Intent(this, LocalFileService.class));
 
         if (needPermissions.size() > 0) {
             requestPermissions(needPermissions.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);
         } else {
             initialize();
         }
+        startService(new Intent(this, FloatingService.class));
         //createDebugFiles();
+    }
+
+    public boolean checkStartPermissionRequest() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+                return false; // above will start new Activity with proper app setting
+            }
+        }
+        return true; // on lower OS versions granted during apk installation
     }
 
     @Override

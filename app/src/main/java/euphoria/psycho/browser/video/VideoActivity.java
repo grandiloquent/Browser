@@ -44,6 +44,7 @@ import com.google.android.exoplayer2.util.Util;
 import com.google.android.exoplayer2.video.VideoListener;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.text.Collator;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -234,8 +235,7 @@ public class VideoActivity extends BaseVideoActivity implements
     }
 
     private void hideController() {
-        long showTimeoutMs = DEFAULT_SHOW_TIMEOUT_MS;
-        mHandler.postDelayed(mHideAction, showTimeoutMs);
+        mHandler.postDelayed(mHideAction, DEFAULT_SHOW_TIMEOUT_MS);
     }
 
     private void initializePlayer() {
@@ -280,13 +280,19 @@ public class VideoActivity extends BaseVideoActivity implements
             return file.isFile() && pattern.matcher(file.getName()).find();
         });
         if (files == null || files.length == 0) return null;
-        Collator collator = Collator.getInstance(Locale.CHINA);
+        //Collator collator = Collator.getInstance(Locale.CHINA);
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
-
-
-                return collator.compare(o1.getName(), o2.getName());
+                final long result =o2.lastModified()-o1.lastModified();
+                if (result < 0) {
+                    return -1;
+                } else if (result > 0) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+               // return collator.compare(o1.getName(), o2.getName());
 
 
             }
