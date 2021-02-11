@@ -8,6 +8,7 @@ import android.text.method.KeyListener;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -19,12 +20,14 @@ import euphoria.psycho.share.ThreadUtils;
 
 public class TranslatorActivity extends Activity {
     EditText mEditText;
+    TextView mTextView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_translator);
         mEditText=findViewById(R.id.editText);
+        mTextView=findViewById(R.id.textView);
         mEditText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -34,13 +37,8 @@ public class TranslatorActivity extends Activity {
                     ThreadUtils.postOnBackgroundThread(() -> {
                         String result = NativeHelper.youdao(value, true, value.contains(" "));
                         activity.runOnUiThread(() -> {
-                            new AlertDialog.Builder(activity)
-                                    .setMessage(result)
-                                    .setPositiveButton(android.R.string.ok, (dlg, which) -> {
-                                        ContextUtils.setClipboardString(result);
-                                        dlg.dismiss();
-                                    })
-                                    .show();
+                            mTextView.setText(result);
+                            mEditText.setText("");
                         });
                     });
                     return true;
