@@ -121,5 +121,6 @@
         <service android:name=".app.LocalFileService" />
         <service android:name=".app.FloatingService" />
         <activity android:name=".app.FloatingService$TransparentActivity"></activity>
+        <activity android:name=".app.TranslatorActivity" />
     </application>
 </manifest>
