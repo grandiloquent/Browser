@@ -13,11 +13,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.provider.Settings;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -36,14 +39,14 @@ import euphoria.psycho.share.ThreadUtils;
 public class FloatingService extends Service {
     public static boolean isStarted = false;
 
+    private TextView mDisplay;
+    private TextView mWords;
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
-
+    private boolean mIsShown = false;
     private View displayView;
-
-    private int[] images;
-    private int imageIndex = 0;
-
+    private View mWrapper;
+    private View mOk;
 
     @Override
     public void onCreate() {
@@ -59,18 +62,10 @@ public class FloatingService extends Service {
         layoutParams.format = PixelFormat.RGBA_8888;
         layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        layoutParams.width = 500;
-        layoutParams.height = 500;
-        layoutParams.x = 300;
-        layoutParams.y = 300;
+        //
+        layoutParams.height=-2;
+        layoutParams.width=-1;
 
-        images = new int[]{
-                R.drawable.image_01,
-                R.drawable.image_02,
-                R.drawable.image_03,
-                R.drawable.image_04,
-                R.drawable.image_05,
-        };
 
     }
 
@@ -94,9 +89,39 @@ public class FloatingService extends Service {
             displayView = layoutInflater.inflate(R.layout.image_display, null);
             displayView.setOnTouchListener(new FloatingOnTouchListener());
             //displayView.findViewById(R.id.image_display_imageview);
-            displayView.setOnClickListener(new View.OnClickListener() {
+            mOk = displayView.findViewById(R.id.ok);
+            mDisplay = displayView.findViewById(R.id.display);
+            mWords = displayView.findViewById(R.id.words);
+            mWrapper = displayView.findViewById(R.id.wrapper);
+            mWords.setOnKeyListener((v, keyCode, event) -> {
+                if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    String value = mWords.getText().toString();
+                    ThreadUtils.postOnBackgroundThread(() -> {
+                        String result = NativeHelper.youdao(value, true, value.contains(" "));
+                        ThreadUtils.postOnMainThread(() -> {
+                            mDisplay.setText(result);
+                            mWords.setText("");
+                        });
+                    });
+                    return true;
+                }
+                return false;
+            });
+            mOk.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (mIsShown) {
+                        mDisplay.setText("");
+                        mWords.setText("");
+                        mWrapper.setVisibility(View.INVISIBLE);
+                        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+
+                    } else {
+                        mWrapper.setVisibility(View.VISIBLE);
+                        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+                    }
+                    windowManager.updateViewLayout(displayView, layoutParams);
+                    mIsShown = !mIsShown;
 //                    CharSequence charSequence = ContextUtils.getClipboardString();
 //                    if (charSequence == null) return;
 //
@@ -109,9 +134,9 @@ public class FloatingService extends Service {
 //                        });
 //                    });
 
-                    Intent act=new Intent(FloatingService.this, TransparentActivity.class);
-                    act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(act);
+//                    Intent act=new Intent(FloatingService.this, TransparentActivity.class);
+//                    act.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(act);
 
 
                 }
