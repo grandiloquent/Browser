@@ -64,7 +64,7 @@ public class FloatingService extends Service {
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         //
         layoutParams.height=-2;
-        layoutParams.width=-1;
+        layoutParams.width=-2;
 
 
     }
@@ -115,10 +115,12 @@ public class FloatingService extends Service {
                         mWords.setText("");
                         mWrapper.setVisibility(View.INVISIBLE);
                         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                        layoutParams.width=-2;
 
                     } else {
                         mWrapper.setVisibility(View.VISIBLE);
                         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+                        layoutParams.width=-1;
                     }
                     windowManager.updateViewLayout(displayView, layoutParams);
                     mIsShown = !mIsShown;

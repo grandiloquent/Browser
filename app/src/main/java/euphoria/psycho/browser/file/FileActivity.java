@@ -26,6 +26,7 @@ import euphoria.psycho.Share;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.FloatingService;
 import euphoria.psycho.browser.app.LocalFileService;
+import euphoria.psycho.browser.app.WebActivity;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
 
@@ -74,6 +75,7 @@ public class FileActivity extends AppCompatActivity {
         }
         startService(new Intent(this, FloatingService.class));
         //createDebugFiles();
+        //startActivity(new Intent(this, WebActivity.class));
     }
 
     public boolean checkStartPermissionRequest() {
