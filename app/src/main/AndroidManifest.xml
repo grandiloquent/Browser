@@ -123,5 +123,6 @@
         <activity android:name=".app.FloatingService$TransparentActivity"></activity>
         <activity android:name=".app.TranslatorActivity" />
         <activity android:name=".app.WebActivity" />
+        <activity android:name=".app.JdActivity" />
     </application>
 </manifest>

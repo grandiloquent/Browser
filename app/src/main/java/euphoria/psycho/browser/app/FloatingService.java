@@ -39,14 +39,12 @@ import euphoria.psycho.share.ThreadUtils;
 public class FloatingService extends Service {
     public static boolean isStarted = false;
 
-    private TextView mDisplay;
     private TextView mWords;
     private WindowManager windowManager;
     private WindowManager.LayoutParams layoutParams;
     private boolean mIsShown = false;
     private View displayView;
     private View mWrapper;
-    private View mOk;
 
     @Override
     public void onCreate() {
@@ -63,8 +61,8 @@ public class FloatingService extends Service {
         layoutParams.gravity = Gravity.LEFT | Gravity.TOP;
         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         //
-        layoutParams.height=-2;
-        layoutParams.width=-2;
+        layoutParams.height = -2;
+        layoutParams.width = -2;
 
 
     }
@@ -89,18 +87,18 @@ public class FloatingService extends Service {
             displayView = layoutInflater.inflate(R.layout.image_display, null);
             displayView.setOnTouchListener(new FloatingOnTouchListener());
             //displayView.findViewById(R.id.image_display_imageview);
-            mOk = displayView.findViewById(R.id.ok);
-            mDisplay = displayView.findViewById(R.id.display);
+            View mOk = displayView.findViewById(R.id.ok);
             mWords = displayView.findViewById(R.id.words);
             mWrapper = displayView.findViewById(R.id.wrapper);
             mWords.setOnKeyListener((v, keyCode, event) -> {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER) {
                     String value = mWords.getText().toString();
+                    Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
                     ThreadUtils.postOnBackgroundThread(() -> {
                         String result = NativeHelper.youdao(value, true, value.contains(" "));
                         ThreadUtils.postOnMainThread(() -> {
-                            mDisplay.setText(result);
                             mWords.setText("");
+                            Toast.makeText(this, result, Toast.LENGTH_LONG).show();
                         });
                     });
                     return true;
@@ -111,16 +109,15 @@ public class FloatingService extends Service {
                 @Override
                 public void onClick(View v) {
                     if (mIsShown) {
-                        mDisplay.setText("");
                         mWords.setText("");
-                        mWrapper.setVisibility(View.INVISIBLE);
+                        mWrapper.setVisibility(View.GONE);
                         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-                        layoutParams.width=-2;
+                        layoutParams.width = -2;
 
                     } else {
                         mWrapper.setVisibility(View.VISIBLE);
                         layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-                        layoutParams.width=-1;
+                        layoutParams.width = -1;
                     }
                     windowManager.updateViewLayout(displayView, layoutParams);
                     mIsShown = !mIsShown;
@@ -148,12 +145,6 @@ public class FloatingService extends Service {
         }
     }
 
-    public static class TransparentActivity extends Activity {
-        protected void onCreate(@Nullable Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            TranslatorHelper.youdaoChinese(this);
-        }
-    }
 
     private class FloatingOnTouchListener implements View.OnTouchListener {
         private int x;

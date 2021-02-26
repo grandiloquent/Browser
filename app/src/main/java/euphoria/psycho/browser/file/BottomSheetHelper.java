@@ -10,6 +10,7 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
 import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
 import euphoria.psycho.browser.app.FunctionsMenu;
+import euphoria.psycho.browser.app.JdActivity;
 import euphoria.psycho.browser.app.SettingsActivity;
 
 import static euphoria.psycho.browser.file.FileHelper.*;
@@ -60,6 +61,11 @@ public class BottomSheetHelper {
                     case R.drawable.ic_g_translate:
                         TranslatorHelper.google(activity);
                         break;
+                    case R.drawable.ic_action_shopping_cart:
+                        Intent jd = new Intent(activity, JdActivity.class);
+                        jd.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        activity.startActivity(jd);
+                        break;
 
                 }
             }
@@ -74,6 +80,7 @@ public class BottomSheetHelper {
                 Pair.create(R.drawable.ic_youtube, context.getString(R.string.youtube)),
                 Pair.create(R.drawable.ic_translate, context.getString(R.string.youdao)),
                 Pair.create(R.drawable.ic_g_translate, context.getString(R.string.google)),
+                Pair.create(R.drawable.ic_action_shopping_cart, context.getString(R.string.jd))
         };
     }
 
@@ -95,7 +102,7 @@ public class BottomSheetHelper {
                             showDirectoryInfo(activity, fileManager.getDirectory());
                             break;
                         case R.drawable.ic_cleaning_service:
-                             cleaningDirectory(activity,fileManager);
+                            cleaningDirectory(activity, fileManager);
                             break;
                         case R.drawable.ic_more_vert:
                             createFunctionsMenu(activity, fileManager);
@@ -106,6 +113,7 @@ public class BottomSheetHelper {
                         case R.drawable.ic_sort:
                             showSortDialog(activity, fileManager);
                             break;
+
                     }
                     fileManager.setBottomSheet(null);
                 });
