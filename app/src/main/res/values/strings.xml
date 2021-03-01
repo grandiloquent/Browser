@@ -85,4 +85,5 @@
     <string name="progress_dialog_extract_zip_title">Extracting Zip</string>
     <string name="progress_dialog_extract_zip_content">Extracting</string>
     <string name="jd">JingDong</string>
+    <string name="subtype_en_US">English (US)</string>
 </resources>

@@ -1,14 +1,20 @@
 package euphoria.psycho.browser.app;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputConnection;
+import android.widget.Toast;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.Log;
+import euphoria.psycho.share.ThreadUtils;
+
 
 public class InputService extends InputMethodService implements KeyboardView.OnKeyboardActionListener {
 
@@ -16,6 +22,25 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
     private Keyboard keyboard;
 
     private boolean caps = false;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        ClipboardManager clipboardManager = getSystemService(ClipboardManager.class);
+        clipboardManager.addPrimaryClipChangedListener(() -> {
+            ClipData clipData = clipboardManager.getPrimaryClip();
+            if (clipData.getItemCount() > 0) {
+                CharSequence charSequence = clipData.getItemAt(0).getText();
+                if (charSequence != null) {
+                    ThreadUtils.postOnBackgroundThread(() -> {
+                        String result = NativeHelper.youdao(charSequence.toString(), true, false);
+                        ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
+                    });
+                }
+            }
+        });
+
+    }
 
     @Override
     public View onCreateInputView() {
