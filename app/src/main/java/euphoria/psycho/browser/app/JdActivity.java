@@ -144,7 +144,6 @@ public class JdActivity extends Activity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                mEditText.setText(url);
                 evaluateJavascript();
             }
 

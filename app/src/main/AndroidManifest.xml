@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
 
     <application
@@ -120,7 +120,17 @@
         <service android:name=".music.MusicPlaybackService" />
         <service android:name=".app.LocalFileService" />
         <service android:name=".app.FloatingService" />
-        <activity android:name=".app.FloatingService$TransparentActivity"></activity>
+        <service
+            android:name=".app.InputService"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+        </service>
+
         <activity android:name=".app.TranslatorActivity" />
         <activity android:name=".app.WebActivity" />
         <activity android:name=".app.JdActivity" />

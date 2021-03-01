@@ -73,7 +73,7 @@ public class FileActivity extends AppCompatActivity {
         } else {
             initialize();
         }
-        startService(new Intent(this, FloatingService.class));
+        // startService(new Intent(this, FloatingService.class));
         //createDebugFiles();
         //startActivity(new Intent(this, WebActivity.class));
     }
