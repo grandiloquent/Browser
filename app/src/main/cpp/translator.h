@@ -207,7 +207,7 @@ int youdao(const char *word, bool english_to_chinese, const char *api_key, char 
             strcat(buf_body, explain->valuestring);
             strcat(buf_body, "\n");
         };
-        const cJSON *web = cJSON_GetObjectItem(json, "web");
+        /*const cJSON *web = cJSON_GetObjectItem(json, "web");
         const cJSON *w = NULL;
         cJSON_ArrayForEach(w, web) {
             strcat(buf_body, cJSON_GetObjectItem(w, "key")->valuestring);
@@ -219,7 +219,7 @@ int youdao(const char *word, bool english_to_chinese, const char *api_key, char 
                 strcat(buf_body, ",");
             }
             buf_body[strlen(buf_body) - 1] = '\n';
-        }
+        }*/
         cJSON_Delete(json);
     }
 
