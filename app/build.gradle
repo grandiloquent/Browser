@@ -41,6 +41,7 @@ dependencies {
     // https://mvnrepository.com/artifact/androidx.vectordrawable/vectordrawable
     implementation group: 'androidx.vectordrawable', name: 'vectordrawable', version: '1.2.0-alpha02'
     // https://github.com/HaarigerHarald/android-youtubeExtractor
+
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     // https://mvnrepository.com/artifact/com.google.android.material/material
     // https://github.com/material-components/material-components-android

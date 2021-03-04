@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
+import android.provider.Settings;
 import android.util.Pair;
 
 import euphoria.psycho.browser.R;
@@ -26,6 +27,7 @@ public class BottomSheetHelper {
                     Pair.create(R.drawable.ic_cleaning_service, context.getString(R.string.cleaning_service)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
                     Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
+                    Pair.create(R.drawable.ic_action_keyboard, context.getString(R.string.change_input)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
             };
         } else {
@@ -36,6 +38,7 @@ public class BottomSheetHelper {
                     Pair.create(R.drawable.ic_cleaning_service, context.getString(R.string.cleaning_service)),
                     Pair.create(R.drawable.ic_settings, context.getString(R.string.settings)),
                     Pair.create(R.drawable.ic_sort, context.getString(R.string.sort)),
+                    Pair.create(R.drawable.ic_action_keyboard, context.getString(R.string.change_input)),
                     Pair.create(R.drawable.ic_more_vert, context.getString(R.string.more))
             };
         }
@@ -112,6 +115,10 @@ public class BottomSheetHelper {
                             break;
                         case R.drawable.ic_sort:
                             showSortDialog(activity, fileManager);
+                            break;
+                        case R.drawable.ic_action_keyboard:
+                            Intent intent = new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS);
+                            activity.startActivity(intent);
                             break;
 
                     }

@@ -96,6 +96,7 @@ public class SampleDownloadActivity extends Activity {
             public void onExtractionComplete(SparseArray<YtFile> ytFiles, VideoMeta vMeta) {
                 mainProgressBar.setVisibility(View.GONE);
                 if (ytFiles == null) {
+                    Toast.makeText(SampleDownloadActivity.this, youtubeLink, Toast.LENGTH_LONG).show();
                     // Something went wrong we got no urls. Always check this.
                     finish();
                     return;
@@ -111,6 +112,7 @@ public class SampleDownloadActivity extends Activity {
                     }
                 }
             }
+
         }.extract(youtubeLink, true, false);
     }
 

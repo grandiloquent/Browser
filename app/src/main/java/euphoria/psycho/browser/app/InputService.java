@@ -20,6 +20,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
 
     private KeyboardView kv;
     private Keyboard keyboard;
+    private String mCurrentString;
 
     private boolean caps = false;
 
@@ -31,9 +32,10 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
             ClipData clipData = clipboardManager.getPrimaryClip();
             if (clipData.getItemCount() > 0) {
                 CharSequence charSequence = clipData.getItemAt(0).getText();
-                if (charSequence != null) {
+                if (charSequence != null && !mCurrentString.equals(charSequence.toString())) {
+                    mCurrentString = charSequence.toString();
                     ThreadUtils.postOnBackgroundThread(() -> {
-                        String result = NativeHelper.youdao(charSequence.toString(), true, false);
+                        String result = NativeHelper.youdao(mCurrentString, true, false);
                         ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
                     });
                 }
