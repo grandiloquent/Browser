@@ -1,6 +1,7 @@
 package euphoria.psycho.browser.file;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
@@ -117,7 +118,8 @@ public class BottomSheetHelper {
                             showSortDialog(activity, fileManager);
                             break;
                         case R.drawable.ic_action_keyboard:
-                            Intent intent = new Intent(Settings.ACTION_INPUT_METHOD_SETTINGS);
+                            Intent intent = new Intent();
+                            intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.Settings$InputMethodAndLanguageSettingsActivity"));
                             activity.startActivity(intent);
                             break;
 
