@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.inputmethodservice.InputMethodService;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Pair;
+import android.view.inputmethod.InputMethodManager;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.BottomSheet;
@@ -118,9 +120,13 @@ public class BottomSheetHelper {
                             showSortDialog(activity, fileManager);
                             break;
                         case R.drawable.ic_action_keyboard:
-                            Intent intent = new Intent();
-                            intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.Settings$InputMethodAndLanguageSettingsActivity"));
-                            activity.startActivity(intent);
+                            //Intent intent = new Intent("");
+
+                            // com.android.settings.Settings$LanguageAndInputSettingsActivity
+                            //intent.setComponent(new ComponentName("com.android.settings", "com.android.settings.Settings$EdgeModeSettingsActivity"));
+                            //activity.startActivity(intent);
+
+                            activity.getSystemService(InputMethodManager.class).showInputMethodPicker();
                             break;
 
                     }

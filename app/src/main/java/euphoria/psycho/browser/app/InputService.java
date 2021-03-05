@@ -20,7 +20,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
 
     private KeyboardView kv;
     private Keyboard keyboard;
-    private String mCurrentString;
+    private String mCurrentString = "";
 
     private boolean caps = false;
 
