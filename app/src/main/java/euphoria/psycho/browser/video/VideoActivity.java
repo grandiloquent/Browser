@@ -280,19 +280,19 @@ public class VideoActivity extends BaseVideoActivity implements
             return file.isFile() && pattern.matcher(file.getName()).find();
         });
         if (files == null || files.length == 0) return null;
-        //Collator collator = Collator.getInstance(Locale.CHINA);
+        Collator collator = Collator.getInstance(Locale.CHINA);
         Arrays.sort(files, new Comparator<File>() {
             @Override
             public int compare(File o1, File o2) {
-                final long result =o2.lastModified()-o1.lastModified();
-                if (result < 0) {
-                    return -1;
-                } else if (result > 0) {
-                    return 1;
-                } else {
-                    return 0;
-                }
-               // return collator.compare(o1.getName(), o2.getName());
+//                final long result =o2.lastModified()-o1.lastModified();
+//                if (result < 0) {
+//                    return -1;
+//                } else if (result > 0) {
+//                    return 1;
+//                } else {
+//                    return 0;
+//                }
+                return collator.compare(o1.getName(), o2.getName());
 
 
             }
