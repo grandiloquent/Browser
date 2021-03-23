@@ -328,4 +328,12 @@ public class FileManager implements OnMenuItemClickListener,
         loadPrefer();
         mFileAdapter.initialize();
     }
+
+    public void recycle(FileItem item) {
+        File file = new File(item.getUrl());
+        File dir = new File(file.getParentFile(), "Recycle");
+        if (!dir.isDirectory()) dir.mkdir();
+        file.renameTo(new File(dir, file.getName()));
+        mFileAdapter.initialize();
+    }
 }

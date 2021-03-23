@@ -109,7 +109,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     mFileImageManager.cutVideo(getItem());
                     return;
                 case R.string.recycle:
-                    mFileImageManager.recycle(getItem());
+                    mFileManager.recycle(getItem());
                     return;
 
 

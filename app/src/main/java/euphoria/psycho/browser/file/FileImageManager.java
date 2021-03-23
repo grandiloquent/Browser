@@ -284,11 +284,7 @@ public class FileImageManager {
         return timeOfSyncSamples[timeOfSyncSamples.length - 1];
     }
 
-    public void recycle(FileItem item) {
-        File file = new File(item.getUrl());
-        File dir = new File(file.getParentFile(), "Recycle");
-        file.renameTo(new File(dir, file.getName()));
-    }
+
 
     private static class ImageJob implements Job<Drawable> {
         private final String mCacheDirectory;
