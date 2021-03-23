@@ -87,4 +87,6 @@
     <string name="jd">JingDong</string>
     <string name="subtype_en_US">English (US)</string>
     <string name="change_input">Input Method</string>
+    <string name="cutVideo">剪切视频</string>
+    <string name="recycle">Recycle</string>
 </resources>
