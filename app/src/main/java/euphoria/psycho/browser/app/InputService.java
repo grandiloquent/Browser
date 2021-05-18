@@ -2,7 +2,6 @@ package euphoria.psycho.browser.app;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -15,6 +14,7 @@ import java.util.regex.Pattern;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.Log;
+import euphoria.psycho.share.StringUtils;
 import euphoria.psycho.share.ThreadUtils;
 
 
@@ -25,7 +25,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
     private String mCurrentString = "";
 
     private boolean caps = false;
-    private Pattern mChinese = Pattern.compile("[\\u4e00-\\u9fa5]");
+    private final Pattern mChinese = Pattern.compile("[\\u4e00-\\u9fa5]");
 
     @Override
     public void onCreate() {
@@ -33,6 +33,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
         ClipboardManager clipboardManager = getSystemService(ClipboardManager.class);
         clipboardManager.addPrimaryClipChangedListener(() -> {
             ClipData clipData = clipboardManager.getPrimaryClip();
+            if (clipData == null) return;
             if (clipData.getItemCount() > 0) {
                 CharSequence charSequence = clipData.getItemAt(0).getText();
                 if (charSequence != null && !mChinese.matcher(charSequence.toString()).find() && !mCurrentString.equals(charSequence.toString())) {
@@ -49,7 +50,11 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
 
                             return;
                         }
-                        String result = NativeHelper.youdao(mCurrentString, true, false);
+                        String r = NativeHelper.youdao(mCurrentString, true, false);
+                        if (r.trim().length() == 0) {
+                            r = NativeHelper.google(mCurrentString, true);
+                        }
+                        String result = r;
                         ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
                     });
                 }

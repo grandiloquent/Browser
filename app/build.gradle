@@ -34,10 +34,10 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation group: 'androidx.recyclerview', name: 'recyclerview', version: '1.2.0-alpha05'
+    implementation group: 'androidx.recyclerview', name: 'recyclerview', version: '1.2.0'
     // https://mvnrepository.com/artifact/androidx.interpolator/interpolator
     implementation group: 'androidx.interpolator', name: 'interpolator', version: '1.0.0'
-    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.3.0-alpha02'
+    implementation group: 'androidx.appcompat', name: 'appcompat', version: '1.3.0-rc01'
     // https://mvnrepository.com/artifact/androidx.vectordrawable/vectordrawable
     implementation group: 'androidx.vectordrawable', name: 'vectordrawable', version: '1.2.0-alpha02'
     // https://github.com/HaarigerHarald/android-youtubeExtractor
@@ -45,11 +45,11 @@ dependencies {
     implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
     // https://mvnrepository.com/artifact/com.google.android.material/material
     // https://github.com/material-components/material-components-android
-    implementation group: 'com.google.android.material', name: 'material', version: '1.3.0-alpha02'
+    implementation group: 'com.google.android.material', name: 'material', version: '1.4.0-beta01'
     implementation group: 'androidx.preference', name: 'preference', version: '1.1.1'
     implementation "com.google.android.exoplayer:exoplayer:2.9.2"
     implementation group: 'org.nanohttpd', name: 'nanohttpd', version: '2.3.0'
-    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.annotation:annotation:1.2.0'
     implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
 
 }

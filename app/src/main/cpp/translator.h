@@ -230,7 +230,7 @@ int youdao(const char *word, bool english_to_chinese, const char *api_key, char 
 int google(const char *word, bool english_to_chinese, char *buf_body, size_t buf_body_len) {
     const char *to = english_to_chinese ? "zh" : "en";
 
-    SOCKET_INIT("translate.google.cn", "80");
+    SOCKET_INIT("translate.google.com", "80");
     URL_ENCODE(word);
 
 
