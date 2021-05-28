@@ -67,6 +67,8 @@ public class SelectableListToolbar<E>
          */
         void onSearchTextChanged(String query);
 
+        void onSearchTextKeyDown(String query);
+
         /**
          * Called when a search is ended.
          */
@@ -222,8 +224,6 @@ public class SelectableListToolbar<E>
         mShowInfoStringId = R.string.show_info;
         mHideInfoStringId = R.string.hide_info;
     }
-
-
 
 
     /**
@@ -431,17 +431,17 @@ public class SelectableListToolbar<E>
         if (mIsSearching) hideSearchView();
     }
 
-        /**
-         * When the toolbar has a wide display style, its contents will be width constrained to
-         * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
-         * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the toolbar contents will be visually centered by
-         * adding padding to both sides.
-         *
-         * @param uiConfig The UiConfig used to observe display style changes.
-         */
-        public void configureWideDisplayStyle(UiConfig uiConfig) {
-            mWideDisplayStartOffsetPx =
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_wide_display_start_offset);
+    /**
+     * When the toolbar has a wide display style, its contents will be width constrained to
+     * {@link UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP}. If the current screen width is greater than
+     * UiConfig#WIDE_DISPLAY_STYLE_MIN_WIDTH_DP, the toolbar contents will be visually centered by
+     * adding padding to both sides.
+     *
+     * @param uiConfig The UiConfig used to observe display style changes.
+     */
+    public void configureWideDisplayStyle(UiConfig uiConfig) {
+        mWideDisplayStartOffsetPx =
+                getResources().getDimensionPixelSize(R.dimen.toolbar_wide_display_start_offset);
 
         mUiConfig = uiConfig;
         mUiConfig.addObserver(this);

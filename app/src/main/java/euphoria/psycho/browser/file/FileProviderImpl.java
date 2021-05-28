@@ -2,6 +2,10 @@ package euphoria.psycho.browser.file;
 
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,12 +30,35 @@ public class FileProviderImpl implements FileProvider {
         mRemovalItems.add(i);
     }
 
+    public static List<String> getFilesRecursively(File dir) {
+        List<String> ls = new ArrayList<String>();
+        if (dir.isDirectory())
+            for (File fObj : dir.listFiles()) {
+                if (fObj.isDirectory()) {
+                    ls.add(String.valueOf(fObj));
+                    ls.addAll(getFilesRecursively(fObj));
+                } else {
+                    ls.add(String.valueOf(fObj));
+                }
+            }
+        else
+            ls.add(String.valueOf(dir));
+
+        return ls;
+    }
+
     @Override
     public void queryFile(String directory, FileManager fileManager) {
         mItems.clear();
         File dir = new File(directory);
         if (dir.isDirectory()) {
-            File[] files = fileManager.getShowHidden() ? dir.listFiles() : dir.listFiles((file, s) -> !s.startsWith("."));
+            File[] files = null;
+            if (fileManager.isSearchIn()) {
+                files = getFilesRecursively(dir).toArray(new File[0]);
+                fileManager.setSearchIn(false);
+            } else {
+                files = fileManager.getShowHidden() ? dir.listFiles() : dir.listFiles((file, s) -> !s.startsWith("."));
+            }
             if (files != null) {
                 String searchText = fileManager.getSearchText();
                 for (File file : files) {

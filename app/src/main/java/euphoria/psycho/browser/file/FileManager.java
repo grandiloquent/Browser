@@ -55,6 +55,7 @@ public class FileManager implements OnMenuItemClickListener,
     private FileOperationManager mFileOperationManager;
     private LinkedList<String> mHistoryList = new LinkedList<>();
     private String mSearchText;
+    private boolean mSearchIn;
 
     public FileManager(Activity activity) {
         mActivity = activity;
@@ -155,6 +156,14 @@ public class FileManager implements OnMenuItemClickListener,
 
     public int getSortType() {
         return mSortType;
+    }
+
+    public boolean isSearchIn() {
+        return mSearchIn;
+    }
+
+    public void setSearchIn(boolean searchIn) {
+        mSearchIn = searchIn;
     }
 
     public void setSortType(int i) {
@@ -315,6 +324,14 @@ public class FileManager implements OnMenuItemClickListener,
     public void onSearchTextChanged(String query) {
         mIsSearching = true;
         mSearchText = query;
+        mFileAdapter.initialize();
+    }
+
+    @Override
+    public void onSearchTextKeyDown(String query) {
+        mIsSearching = true;
+        mSearchText = query;
+        mSearchIn = true;
         mFileAdapter.initialize();
     }
 
