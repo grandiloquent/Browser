@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
+import euphoria.psycho.share.Log;
 
 public class SampleDownloadActivity extends Activity {
     private static String youtubeLink;
@@ -60,18 +63,19 @@ public class SampleDownloadActivity extends Activity {
                         String ytLink = editText.getText().toString();
                         if (checkLink(ytLink)) {
                             youtubeLink = ytLink;
+                            Log.e("TAG/", ytLink);
                             getYoutubeDownloadUrl(ytLink);
                         } else {
                             finish();
                         }
                     }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
                         dialogInterface.dismiss();
+                        finish();
                     })
                     .create();
             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             dialog.show();
-
-//            CharSequence c = ContextUtils.getClipboardString();
+            //            CharSequence c = ContextUtils.getClipboardString();
 //            String ytLink = c != null ? c.toString() : "";
 //            if (checkLink(ytLink)) {
 //                youtubeLink = ytLink;
@@ -83,11 +87,8 @@ public class SampleDownloadActivity extends Activity {
     }
 
     private static boolean checkLink(String ytLink) {
-        if (ytLink != null
-                && (ytLink.contains("://youtu.be/") || ytLink.contains("youtube.com/watch?v="))) {
-            return true;
-        }
-        return false;
+        return ytLink != null
+                && (ytLink.contains("://youtu.be/") || ytLink.contains("youtube.com/watch?v="));
     }
 
     private void getYoutubeDownloadUrl(String youtubeLink) {

@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.Log;
-import euphoria.psycho.share.StringUtils;
 import euphoria.psycho.share.ThreadUtils;
 
 
