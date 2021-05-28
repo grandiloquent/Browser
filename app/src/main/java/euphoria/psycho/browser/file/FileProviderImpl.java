@@ -30,19 +30,19 @@ public class FileProviderImpl implements FileProvider {
         mRemovalItems.add(i);
     }
 
-    public static List<String> getFilesRecursively(File dir) {
-        List<String> ls = new ArrayList<String>();
+    public static List<File> getFilesRecursively(File dir) {
+        List<File> ls = new ArrayList<File>();
         if (dir.isDirectory())
             for (File fObj : dir.listFiles()) {
                 if (fObj.isDirectory()) {
-                    ls.add(String.valueOf(fObj));
+                    ls.add(fObj);
                     ls.addAll(getFilesRecursively(fObj));
                 } else {
-                    ls.add(String.valueOf(fObj));
+                    ls.add(fObj);
                 }
             }
         else
-            ls.add(String.valueOf(dir));
+            ls.add(dir);
 
         return ls;
     }

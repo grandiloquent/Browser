@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.text.method.KeyListener;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -248,6 +249,17 @@ public class SelectableListToolbar<E>
         mSearchEditText = mSearchView.findViewById(R.id.search_text);
         mSearchEditText.setHint(hintStringResId);
         mSearchEditText.setOnEditorActionListener(this);
+        mSearchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (mIsSearching)
+                        mSearchDelegate.onSearchTextKeyDown(mSearchEditText.getText().toString());
+                    return true;
+                }
+                return false;
+            }
+        });
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
