@@ -332,9 +332,21 @@ public class MusicPlaybackService extends Service implements
 
     }
 
+    public static int randomInt(int Min, int Max) {
+        return (int) (Math.random() * (Max - Min)) + Min;
+    }
+
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        playNext(false);
+        mIndex = randomInt(0, mMusics.length - 1);
+
+        mMediaPlayer.reset();
+        try {
+            mMediaPlayer.setDataSource(mMusics[mIndex].getAbsolutePath());
+            mMediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
