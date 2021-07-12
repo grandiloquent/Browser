@@ -2,6 +2,8 @@ package euphoria.psycho.browser.app;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
@@ -10,7 +12,25 @@ import android.view.View;
 import android.view.inputmethod.InputConnection;
 import android.widget.Toast;
 
+import com.evgenii.jsevaluator.JsEvaluator;
+import com.evgenii.jsevaluator.interfaces.JsCallback;
+
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPInputStream;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.Log;
@@ -26,6 +46,29 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
     private boolean caps = false;
     private final Pattern mChinese = Pattern.compile("[\\u4e00-\\u9fa5]");
 
+    public static String readAssetAsString(Context context, String assetName) {
+        InputStream inputStream = null;
+        try {
+            inputStream = context.getAssets().open(assetName);
+
+            int size = inputStream.available();
+            byte[] buffer = new byte[size];
+            inputStream.read(buffer);
+            inputStream.close();
+            return new String(buffer, StandardCharsets.UTF_8);
+
+        } catch (IOException e) {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException ex) {
+                }
+            }
+
+        }
+        return null;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -37,6 +80,109 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                 CharSequence charSequence = clipData.getItemAt(0).getText();
                 if (charSequence != null && !mChinese.matcher(charSequence.toString()).find() && !mCurrentString.equals(charSequence.toString())) {
                     mCurrentString = charSequence.toString();
+                    if (SampleDownloadActivity.checkLink(mCurrentString)) {
+                        Intent intent = new Intent(InputService.this, SampleDownloadActivity.class);
+                        intent.setAction(Intent.ACTION_SEND);
+
+
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.setType("text/plain");
+                        intent.putExtra(Intent.EXTRA_TEXT, mCurrentString);
+                        InputService.this.startActivity(intent);
+                        return;
+                    }
+                    if (mCurrentString.contains("91porn.com")) {
+
+
+                        ThreadUtils.postOnBackgroundThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                HttpURLConnection connection = null;
+                                URL u;
+                                try {
+                                    u = new URL(mCurrentString);
+                                } catch (Exception e) {
+                                    Log.e("TAG", e.getMessage());
+                                    return;
+                                }
+                                try {
+                                    connection = (HttpURLConnection) u.openConnection();
+                                    connection.setRequestMethod("GET");
+                                    connection.setRequestProperty("Referer", "http://91porn.com");
+                                    Random r = new Random();
+                                    connection.setRequestProperty("X-Forwarded-For", r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256));
+                                    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.56 Mobile Safari/537.36");
+
+                                    int code = connection.getResponseCode();
+                                    Log.e("TAG", code + "");
+                                    if (code < 400 && code >= 200) {
+                                        StringBuilder sb = new StringBuilder();
+                                        InputStream in;
+                                        String contentEncoding = connection.getHeaderField("Content-Encoding");
+                                        if (contentEncoding != null && contentEncoding.equals("gzip")) {
+                                            in = new GZIPInputStream(connection.getInputStream());
+                                        } else {
+                                            in = connection.getInputStream();
+                                        }
+                                        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
+                                        String line;
+                                        while ((line = reader.readLine()) != null) {
+                                            sb.append(line).append("\r\n");
+                                        }
+                                        reader.close();
+
+                                        int start = sb.indexOf("document.write(strencode2(") + "document.write(strencode2(".length() + 1;
+                                        int end = sb.indexOf("\"));", start);
+                                        String secret = sb.substring(start, end);
+
+                                        String asset = readAssetAsString(InputService.this, "encode.js");
+
+                                        sb = new StringBuilder();
+                                        sb.append(asset)
+                                                .append(";")
+                                                .append(" strencode2(\"")
+                                                .append(secret)
+                                                .append("\");");
+
+
+                                        StringBuilder finalSb = sb;
+                                        ThreadUtils.postOnMainThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                new JsEvaluator(InputService.this).evaluate(finalSb.toString(), new JsCallback() {
+                                                    @Override
+                                                    public void onResult(String value) {
+                                                        Pattern pattern = Pattern.compile("(?<=src=')[^']*(?=')");
+                                                        Matcher matcher = pattern.matcher(value);
+                                                        if (matcher.find()) {
+                                                            String video = matcher.group();
+                                                            Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
+                                                            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
+                                                        } else {
+                                                            Log.e("TAG", "uri" + value);
+                                                        }
+
+                                                    }
+
+                                                    // <source src='https://cdn.91p07.com//m3u8/492868/492868.m3u8?st=MKar6oBIiyyMtO83huyHag&e=1626096266' type='application/x-mpegURL'>
+
+                                                    @Override
+                                                    public void onError(String errorMessage) {
+                                                        Log.e("TAG", errorMessage);
+                                                    }
+                                                });
+
+                                            }
+                                        });
+                                    }
+                                } catch (IOException e) {
+                                    Log.e("TAG", e.getMessage());
+
+                                }
+                            }
+                        });
+                        return;
+                    }
                     ThreadUtils.postOnBackgroundThread(() -> {
                         if (mCurrentString.contains(" ")) {
                             StringBuilder sb = new StringBuilder();
@@ -50,9 +196,9 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                             return;
                         }
                         String r = NativeHelper.youdao(mCurrentString, true, false);
-                        if (r.trim().length() == 0) {
-                            r = NativeHelper.google(mCurrentString, true);
-                        }
+//                        if (r.trim().length() == 0) {
+//                            r = NativeHelper.google(mCurrentString, true);
+//                        }
                         String result = r;
                         ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
                     });

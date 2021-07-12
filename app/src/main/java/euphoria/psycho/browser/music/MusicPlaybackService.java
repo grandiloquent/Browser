@@ -398,6 +398,9 @@ public class MusicPlaybackService extends Service implements
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent==null){
+            return super.onStartCommand(intent, flags, startId);
+        }
         String action = intent.getAction();
         if (action == null) {
             return START_NOT_STICKY;

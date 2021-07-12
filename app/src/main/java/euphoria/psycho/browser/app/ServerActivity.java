@@ -125,6 +125,7 @@ public class ServerActivity extends Activity {
         if (!videoDirectory.isDirectory()) {
             return;
         }
+        Log.e("TAG", videoDirectory.getAbsolutePath());
         List<File> files = listFilesRecursive(videoDirectory);
         File imagesDirectory = new File(ContextUtils.getExternalStoragePath("FileServer"), "images");
         if (!imagesDirectory.isDirectory()) {

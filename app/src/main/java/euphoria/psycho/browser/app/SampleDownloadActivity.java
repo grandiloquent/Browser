@@ -86,7 +86,7 @@ public class SampleDownloadActivity extends Activity {
         }
     }
 
-    private static boolean checkLink(String ytLink) {
+   public static boolean checkLink(String ytLink) {
         return ytLink != null
                 && (ytLink.contains("://youtu.be/") || ytLink.contains("youtube.com/watch?v="));
     }
