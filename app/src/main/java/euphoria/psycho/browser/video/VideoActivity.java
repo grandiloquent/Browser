@@ -33,11 +33,15 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.MergingMediaSource;
 import com.google.android.exoplayer2.source.SingleSampleMediaSource;
 import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.text.Cue;
 import com.google.android.exoplayer2.text.TextOutput;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
+import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.upstream.FileDataSourceFactory;
 import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.exoplayer2.util.Util;
@@ -250,11 +254,20 @@ public class VideoActivity extends BaseVideoActivity implements
             videoComponent.addVideoListener(this);
             mPlayer.getTextComponent().addTextOutput(this);
             Uri uri = getIntent().getData();
+            MediaSource mediaSource = null;
             if (uri == null) {
-                uri = Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "1.mp4"));
+                DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
+                String userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
+                DefaultDataSourceFactory mediaDataSourceFactory = new DefaultDataSourceFactory(this, BANDWIDTH_METER,
+                        new DefaultHttpDataSourceFactory(userAgent, BANDWIDTH_METER));
+                mediaSource = new HlsMediaSource.Factory(mediaDataSourceFactory)
+                        .createMediaSource(uri );
+
+            } else {
+                mediaSource = generateMediaSource(uri);
             }
 
-            MediaSource mediaSource = generateMediaSource(uri);
+
             mPlayer.prepare(mediaSource);
             if (mStartWindow > 0) {
                 seekTo(mStartWindow, C.TIME_UNSET);

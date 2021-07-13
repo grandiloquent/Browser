@@ -36,7 +36,7 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.share.Log;
 import euphoria.psycho.share.ThreadUtils;
 
-
+// InputServiceHelper
 public class InputService extends InputMethodService implements KeyboardView.OnKeyboardActionListener {
 
     private KeyboardView kv;
@@ -83,8 +83,6 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                     if (SampleDownloadActivity.checkLink(mCurrentString)) {
                         Intent intent = new Intent(InputService.this, SampleDownloadActivity.class);
                         intent.setAction(Intent.ACTION_SEND);
-
-
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.setType("text/plain");
                         intent.putExtra(Intent.EXTRA_TEXT, mCurrentString);
@@ -97,85 +95,40 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                         ThreadUtils.postOnBackgroundThread(new Runnable() {
                             @Override
                             public void run() {
-                                HttpURLConnection connection = null;
-                                URL u;
                                 try {
-                                    u = new URL(mCurrentString);
-                                } catch (Exception e) {
-                                    Log.e("TAG", e.getMessage());
-                                    return;
-                                }
-                                try {
-                                    connection = (HttpURLConnection) u.openConnection();
-                                    connection.setRequestMethod("GET");
-                                    connection.setRequestProperty("Referer", "http://91porn.com");
-                                    Random r = new Random();
-                                    connection.setRequestProperty("X-Forwarded-For", r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256));
-                                    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 5.0; SM-G900P Build/LRX21T) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.56 Mobile Safari/537.36");
+                                    String js=InputServiceHelper.buildJavaScript(InputService.this,InputServiceHelper.getHtml(mCurrentString));
 
-                                    int code = connection.getResponseCode();
-                                    Log.e("TAG", code + "");
-                                    if (code < 400 && code >= 200) {
-                                        StringBuilder sb = new StringBuilder();
-                                        InputStream in;
-                                        String contentEncoding = connection.getHeaderField("Content-Encoding");
-                                        if (contentEncoding != null && contentEncoding.equals("gzip")) {
-                                            in = new GZIPInputStream(connection.getInputStream());
-                                        } else {
-                                            in = connection.getInputStream();
-                                        }
-                                        BufferedReader reader = new BufferedReader(new InputStreamReader(in, "utf-8"));
-                                        String line;
-                                        while ((line = reader.readLine()) != null) {
-                                            sb.append(line).append("\r\n");
-                                        }
-                                        reader.close();
-
-                                        int start = sb.indexOf("document.write(strencode2(") + "document.write(strencode2(".length() + 1;
-                                        int end = sb.indexOf("\"));", start);
-                                        String secret = sb.substring(start, end);
-
-                                        String asset = readAssetAsString(InputService.this, "encode.js");
-
-                                        sb = new StringBuilder();
-                                        sb.append(asset)
-                                                .append(";")
-                                                .append(" strencode2(\"")
-                                                .append(secret)
-                                                .append("\");");
-
-
-                                        StringBuilder finalSb = sb;
-                                        ThreadUtils.postOnMainThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                new JsEvaluator(InputService.this).evaluate(finalSb.toString(), new JsCallback() {
-                                                    @Override
-                                                    public void onResult(String value) {
-                                                        Pattern pattern = Pattern.compile("(?<=src=')[^']*(?=')");
-                                                        Matcher matcher = pattern.matcher(value);
-                                                        if (matcher.find()) {
-                                                            String video = matcher.group();
-                                                            Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
-                                                            clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
-                                                        } else {
-                                                            Log.e("TAG", "uri" + value);
-                                                        }
-
+                                    ThreadUtils.postOnMainThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            new JsEvaluator(InputService.this).evaluate(js, new JsCallback() {
+                                                @Override
+                                                public void onResult(String value) {
+                                                    Pattern pattern = Pattern.compile("(?<=src=')[^']*(?=')");
+                                                    Matcher matcher = pattern.matcher(value);
+                                                    if (matcher.find()) {
+                                                        String video = matcher.group();
+                                                        Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
+                                                        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
+                                                        InputServiceHelper.launchVideoPlayer(InputService.this,video);
+                                                    } else {
+                                                        Log.e("TAG", "uri" + value);
                                                     }
 
-                                                    // <source src='https://cdn.91p07.com//m3u8/492868/492868.m3u8?st=MKar6oBIiyyMtO83huyHag&e=1626096266' type='application/x-mpegURL'>
+                                                }
 
-                                                    @Override
-                                                    public void onError(String errorMessage) {
-                                                        Log.e("TAG", errorMessage);
-                                                    }
-                                                });
+                                                // <source src='https://cdn.91p07.com//m3u8/492868/492868.m3u8?st=MKar6oBIiyyMtO83huyHag&e=1626096266' type='application/x-mpegURL'>
 
-                                            }
-                                        });
-                                    }
-                                } catch (IOException e) {
+                                                @Override
+                                                public void onError(String errorMessage) {
+                                                    Log.e("TAG", errorMessage);
+                                                }
+                                            });
+
+                                        }
+                                    });
+                                } catch (
+                                        IOException e) {
                                     Log.e("TAG", e.getMessage());
 
                                 }
