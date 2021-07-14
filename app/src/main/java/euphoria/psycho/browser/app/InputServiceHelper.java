@@ -16,10 +16,10 @@ import java.util.zip.GZIPInputStream;
 import euphoria.psycho.browser.video.VideoActivity;
 import euphoria.psycho.share.Log;
 
-class InputServiceHelper {
+public class InputServiceHelper {
     public static void launchVideoPlayer(Context context, String uri) {
         Intent intent = new Intent(context, VideoActivity.class);
-        intent.setAction(Intent.ACTION_SEND);
+        intent.setAction(Intent.ACTION_VIEW);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_TEXT, uri);

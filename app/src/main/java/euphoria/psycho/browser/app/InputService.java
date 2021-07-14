@@ -96,7 +96,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                             @Override
                             public void run() {
                                 try {
-                                    String js=InputServiceHelper.buildJavaScript(InputService.this,InputServiceHelper.getHtml(mCurrentString));
+                                    String js = InputServiceHelper.buildJavaScript(InputService.this, InputServiceHelper.getHtml(mCurrentString));
 
                                     ThreadUtils.postOnMainThread(new Runnable() {
                                         @Override
@@ -110,7 +110,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                                                         String video = matcher.group();
                                                         Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
                                                         clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
-                                                        InputServiceHelper.launchVideoPlayer(InputService.this,video);
+                                                        InputServiceHelper.launchVideoPlayer(InputService.this, video);
                                                     } else {
                                                         Log.e("TAG", "uri" + value);
                                                     }
@@ -132,10 +132,13 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                                     Log.e("TAG", e.getMessage());
 
                                 }
+                                return;
                             }
                         });
                         return;
                     }
+                    if (mCurrentString.startsWith("http://") || mCurrentString.startsWith("https://"))
+                        return;
                     ThreadUtils.postOnBackgroundThread(() -> {
                         if (mCurrentString.contains(" ")) {
                             StringBuilder sb = new StringBuilder();

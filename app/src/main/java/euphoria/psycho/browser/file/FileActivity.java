@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.Share;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.FloatingService;
+import euphoria.psycho.browser.app.InputService;
+import euphoria.psycho.browser.app.InputServiceHelper;
 import euphoria.psycho.browser.app.LocalFileService;
 import euphoria.psycho.browser.app.WebActivity;
 import euphoria.psycho.share.ContextUtils;
@@ -76,6 +78,7 @@ public class FileActivity extends AppCompatActivity {
         // startService(new Intent(this, FloatingService.class));
         //createDebugFiles();
         //startActivity(new Intent(this, WebActivity.class));
+        //InputServiceHelper.launchVideoPlayer(this,"https://cdn.91p07.com//m3u8/493240/493240.m3u8?st=hGRLsC6UiX1NeC4gSPER5A&e=1626169392");
     }
 
     public boolean checkStartPermissionRequest() {
