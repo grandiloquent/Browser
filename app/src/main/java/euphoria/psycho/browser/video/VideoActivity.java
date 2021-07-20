@@ -256,13 +256,19 @@ public class VideoActivity extends BaseVideoActivity implements
             Uri uri = getIntent().getData();
             MediaSource mediaSource = null;
             if (uri == null) {
-                uri = Uri.parse(getIntent().getStringExtra(Intent.EXTRA_TEXT));
+                String videoUri = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+                uri = Uri.parse(videoUri);
                 DefaultBandwidthMeter BANDWIDTH_METER = new DefaultBandwidthMeter();
                 String userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1";
                 DefaultDataSourceFactory mediaDataSourceFactory = new DefaultDataSourceFactory(this, BANDWIDTH_METER,
                         new DefaultHttpDataSourceFactory(userAgent, BANDWIDTH_METER));
-                mediaSource = new HlsMediaSource.Factory(mediaDataSourceFactory)
-                        .createMediaSource(uri);
+
+                if (videoUri.contains(".m3u8"))
+                    mediaSource = new HlsMediaSource.Factory(mediaDataSourceFactory)
+                            .createMediaSource(uri);
+                else{
+                    mediaSource=new ExtractorMediaSource.Factory(mediaDataSourceFactory).createMediaSource(uri);
+                }
 
             } else {
                 mediaSource = generateMediaSource(uri);

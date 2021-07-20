@@ -17,6 +17,13 @@ import euphoria.psycho.browser.video.VideoActivity;
 import euphoria.psycho.share.Log;
 
 public class InputServiceHelper {
+
+    public static  void switchVideoPlayer(final Context context,String value) throws IOException {
+        final Runtime runtime = Runtime.getRuntime();
+        final String intentCommand = "su -c am start -n euphoria.psycho.browser/euphoria.psycho.browser.video.VideoActivity -a android.intent.action.VIEW --es android.intent.extra.TEXT \""+value+"\" -t text/plain";
+        runtime.exec(intentCommand);
+    }
+
     public static void launchVideoPlayer(Context context, String uri) {
         Intent intent = new Intent(context, VideoActivity.class);
         intent.setAction(Intent.ACTION_VIEW);

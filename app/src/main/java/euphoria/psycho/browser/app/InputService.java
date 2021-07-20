@@ -110,7 +110,12 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                                                         String video = matcher.group();
                                                         Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
                                                         clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
-                                                        InputServiceHelper.launchVideoPlayer(InputService.this, video);
+                                                        try {
+                                                            InputServiceHelper.switchVideoPlayer(InputService.this, video);
+                                                        } catch (IOException e) {
+                                                            InputServiceHelper.launchVideoPlayer(InputService.this, video);
+                                                        }
+
                                                     } else {
                                                         Log.e("TAG", "uri" + value);
                                                     }
