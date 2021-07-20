@@ -81,12 +81,16 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                 if (charSequence != null && !mChinese.matcher(charSequence.toString()).find() && !mCurrentString.equals(charSequence.toString())) {
                     mCurrentString = charSequence.toString();
                     if (SampleDownloadActivity.checkLink(mCurrentString)) {
-                        Intent intent = new Intent(InputService.this, SampleDownloadActivity.class);
-                        intent.setAction(Intent.ACTION_SEND);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.setType("text/plain");
-                        intent.putExtra(Intent.EXTRA_TEXT, mCurrentString);
-                        InputService.this.startActivity(intent);
+                        try {
+                            InputServiceHelper.switchSampleDownloadActivity(InputService.this,mCurrentString);
+                        } catch (IOException e) {
+                            Intent intent = new Intent(InputService.this, SampleDownloadActivity.class);
+                            intent.setAction(Intent.ACTION_SEND);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.setType("text/plain");
+                            intent.putExtra(Intent.EXTRA_TEXT, mCurrentString);
+                            InputService.this.startActivity(intent);
+                        }
                         return;
                     }
                     if (mCurrentString.contains("91porn.com")) {
