@@ -21,7 +21,7 @@ public class InputServiceHelper {
 
     public static  void switchSampleDownloadActivity(final Context context,String value) throws IOException {
         final Runtime runtime = Runtime.getRuntime();
-        final String intentCommand = "su -c am start -n euphoria.psycho.browser/euphoria.psycho.browser.app.SampleDownloadActivity -a android.intent.action.VIEW --es android.intent.extra.TEXT \""+value+"\" -t text/plain";
+        final String intentCommand = "su -c am start -n euphoria.psycho.browser/euphoria.psycho.browser.app.SampleDownloadActivity -a android.intent.action.SEND --es android.intent.extra.TEXT \""+value+"\" -t text/plain";
         runtime.exec(intentCommand);
     }
 
