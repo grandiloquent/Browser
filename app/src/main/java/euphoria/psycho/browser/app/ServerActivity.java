@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,6 +24,7 @@ import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.FileUtils;
 import euphoria.psycho.share.Log;
 import euphoria.psycho.share.NetUtils;
+import euphoria.share.FileShare;
 
 import static euphoria.psycho.share.BitmapUtils.compressToBytes;
 import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
@@ -66,18 +66,18 @@ public class ServerActivity extends Activity {
         };
 
 
-        FileUtils.createDirectoryIfNotExists(FileHelper.getStaticResourceDirectory());
+        FileShare.createDirectoryIfNotExists(FileHelper.getStaticResourceDirectory());
         for (String f : files) {
             String fileName = new File(FileHelper.getStaticResourceDirectory(), f).getAbsolutePath();
-            if (FileUtils.isFile(fileName)) {
+            if (FileShare.isFile(fileName)) {
                 if (!fileName.endsWith(".css")
                         && !fileName.endsWith(".js")
                         && !fileName.endsWith(".html")) {
                     continue;
                 }
                 try {
-                    String assetMd5 = FileUtils.getMD5Checksum(getAssets().open("static/" + f));
-                    if (FileUtils.getMD5Checksum(fileName).equals(assetMd5)) {
+                    String assetMd5 = FileShare.getMD5Checksum(getAssets().open("static/" + f));
+                    if (FileShare.getMD5Checksum(fileName).equals(assetMd5)) {
                         continue;
                     }
                 } catch (Exception e) {
@@ -138,7 +138,7 @@ public class ServerActivity extends Activity {
                     File target = new File(imagesDirectory, filename + ".jpg");
                     if (!target.isFile()) {
                         Bitmap bitmap = createVideoThumbnail(file.getAbsolutePath());
-                        FileUtils.writeAllBytes(target.getAbsolutePath(), compressToBytes(bitmap));
+                        FileShare.writeAllBytes(target.getAbsolutePath(), compressToBytes(bitmap));
                     }
                 } catch (Exception e) {
                 }

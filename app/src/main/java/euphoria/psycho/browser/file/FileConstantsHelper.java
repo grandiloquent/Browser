@@ -25,7 +25,6 @@ public class FileConstantsHelper {
     public static final int TYPE_ZIP = 12;
     public static boolean sIsHasSD;
     public static Pattern sMusicPattern = Pattern.compile("\\.(?:mp3|m4a|aac|flac|gsm|mid|xmf|mxmf|rtttl|rtx|ota|imy|wav|ogg)$", Pattern.CASE_INSENSITIVE);
-    public static String sSDPath;
     public static Pattern sVideoPattern = Pattern.compile("\\.(?:mp4|3gp|webm|ts|mkv)$", Pattern.CASE_INSENSITIVE);
 
 }

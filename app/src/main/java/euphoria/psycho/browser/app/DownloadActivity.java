@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.FileUtils;
+import euphoria.share.FileShare;
 
 public class DownloadActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1;
@@ -28,18 +29,18 @@ public class DownloadActivity extends AppCompatActivity {
                 "video.js",
                 "videos.html",
         };
-        FileUtils.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
+        FileShare.createDirectoryIfNotExists(ContextUtils.getExternalStoragePath("FileServer"));
         for (String f : files) {
             String fileName = ContextUtils.getExternalStoragePath("FileServer/" + f);
-            if (FileUtils.isFile(fileName)) {
+            if (FileShare.isFile(fileName)) {
                 if (!fileName.endsWith(".css")
                         && !fileName.endsWith(".js")
                         && !fileName.endsWith(".html")) {
                     continue;
                 }
                 try {
-                    String assetMd5 = FileUtils.getMD5Checksum(getAssets().open("static/" + f));
-                    if (FileUtils.getMD5Checksum(fileName).equals(assetMd5)) {
+                    String assetMd5 = FileShare.getMD5Checksum(getAssets().open("static/" + f));
+                    if (FileShare.getMD5Checksum(fileName).equals(assetMd5)) {
                         continue;
                     }
                 } catch (Exception e) {

@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager.LayoutParams;
@@ -17,7 +18,7 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 
 import java.io.File;
-import java.io.FileFilter;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -37,6 +38,8 @@ import euphoria.psycho.share.DialogUtils;
 import euphoria.psycho.share.FormatUtils;
 import euphoria.psycho.share.StringUtils;
 import euphoria.psycho.share.ThreadUtils;
+import euphoria.share.FileShare;
+import euphoria.share.Logger;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
@@ -44,7 +47,6 @@ import static euphoria.psycho.share.ContextUtils.getApplicationContext;
 import static euphoria.psycho.share.StringUtils.substringAfterLast;
 
 public class FileHelper {
-
     // https://developer.android.com/guide/topics/media/media-formats
     // 匹配文件名是否为音频格式
 
@@ -243,7 +245,6 @@ public class FileHelper {
             case "heif":
             case "jpeg":
                 return TYPE_IMAGE;
-
             case "pdf":
                 return TYPE_PDF;
             case "pps":
@@ -276,13 +277,7 @@ public class FileHelper {
         }
     }
 
-    public static String getSDPath() {
-        return sSDPath;
-    }
 
-    public static void initialize(Context context) {
-        sIsHasSD = (sSDPath = ContextUtils.getExternalStoragePath(context)) != null;
-    }
 
     public static boolean isMusic(File f) {
         return sMusicPattern.matcher(f.getName()).find();
@@ -308,7 +303,6 @@ public class FileHelper {
             activity.startActivity(movieActivity);
             return;
         }
-
         String url = fileItem.getUrl();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.addFlags(FLAG_ACTIVITY_NEW_TASK);
@@ -321,7 +315,6 @@ public class FileHelper {
 
     public static void rename(FileManager fileManager, FileItem item) {
         EditText editText = new EditText(fileManager.getActivity());
-
         editText.setText(item.getTitle());
         editText.requestFocus();
         String fileName = item.getTitle();
@@ -329,14 +322,22 @@ public class FileHelper {
         if ((index = fileName.lastIndexOf(".")) != -1) {
             editText.setSelection(0, index);
         }
-        AlertDialog dialog = new AlertDialog.Builder(fileManager.getActivity())
+        AlertDialog dialog = new Builder(fileManager.getActivity())
                 .setTitle(R.string.rename_file_item)
                 .setView(editText)
                 .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
                     File src = new File(item.getUrl());
+                    Logger.d(String.format("rename: %s", src));
                     String targetFileName = editText.getText().toString();
                     File target = new File(fileManager.getDirectory(), targetFileName);
                     src.renameTo(target);
+                    try {
+                        DocumentsContract.renameDocument(fileManager.getActivity()
+                                        .getContentResolver(),
+                                Uri.parse(""), "");
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                     fileManager.getFileAdapter().initialize();
                 }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
                     dialogInterface.dismiss();
@@ -430,13 +431,9 @@ public class FileHelper {
                             fileManager.setSortType((fileManager.getSortType() & 31));
                             break;
                     }
-
-
                     Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
-
                     fileManager.sortBy();
                     //Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
-
                     dialogInterface.dismiss();
                 })
                 .show();

@@ -24,6 +24,7 @@ import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileHelper;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.NetUtils;
+import euphoria.share.FileShare;
 
 public class ServerService extends Service {
     private static final String TAG = "TAG/" + ServerService.class.getSimpleName();
@@ -40,7 +41,7 @@ public class ServerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        FileHelper.initialize(getApplicationContext());
+        FileShare.initialize(getApplicationContext());
         Log.e("TAG/", "[ServerService]: onCreate");
 
 

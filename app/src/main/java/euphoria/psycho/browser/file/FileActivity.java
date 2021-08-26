@@ -31,6 +31,8 @@ import euphoria.psycho.browser.app.LocalFileService;
 import euphoria.psycho.browser.app.WebActivity;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
+import euphoria.share.FileShare;
+import euphoria.share.Logger;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -46,6 +48,7 @@ public class FileActivity extends AppCompatActivity {
 //        Intent intent = new Intent(this, MovieActivity.class);
 //        intent.setData(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "/Videos/231.mp4")));
 //        startActivity(intent);
+        Logger.d(String.format("initialize: %s", FileShare.getExternalStoragePath(this)));
 
     }
 

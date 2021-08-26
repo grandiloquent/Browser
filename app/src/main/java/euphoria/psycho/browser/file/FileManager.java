@@ -34,6 +34,7 @@ import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
 import euphoria.psycho.share.StringUtils;
+import euphoria.share.FileShare;
 
 import static euphoria.psycho.browser.file.FileConstantsHelper.TYPE_FOLDER;
 
@@ -86,7 +87,7 @@ public class FileManager implements OnMenuItemClickListener,
         TextView emptyView = mSelectableListLayout.initializeEmptyView(
                 R.string.file_manager_empty, R.string.file_manager_no_results);
         mFileAdapter.initialize();
-        FileHelper.initialize(activity);
+        FileShare.initialize(activity);
         mFileOperationManager = new FileOperationManager(this);
         ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
     }
@@ -178,7 +179,7 @@ public class FileManager implements OnMenuItemClickListener,
         mToolbar.hideSearchView();
         String parent = StringUtils.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
-                || (FileHelper.getSDPath() != null && parent.startsWith(FileHelper.getSDPath()))) {
+                || (FileShare.getSDPath() != null && parent.startsWith(FileShare.getSDPath()))) {
             mDirectory = parent;
             mFileAdapter.initialize();
             return true;

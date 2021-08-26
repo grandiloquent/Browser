@@ -45,9 +45,9 @@ import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.tasks.ThreadPool;
 import euphoria.psycho.browser.tasks.ThreadPool.Job;
 import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
-import euphoria.psycho.share.FileUtils;
 import euphoria.psycho.share.KeyUtils;
 import euphoria.psycho.share.StringUtils;
+import euphoria.share.FileShare;
 
 import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
 
@@ -335,7 +335,7 @@ public class FileImageManager {
                 if (bitmap != null) {
                     byte[] buffer = BitmapUtils.compressToBytes(bitmap);
                     try {
-                        FileUtils.writeAllBytes(image.getAbsolutePath(), buffer);
+                        FileShare.writeAllBytes(image.getAbsolutePath(), buffer);
                     } catch (IOException e) {
                         Log.e("TAG/" + ImageJob.this.getClass().getSimpleName(), "Error: run, " + e.getMessage() + " " + e.getCause());
                     }

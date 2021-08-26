@@ -136,34 +136,6 @@ public class ContextUtils {
         return null;
     }
 
-    public static String getExternalStoragePath(Context context) {
-        StorageManager mStorageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-        Class<?> storageVolumeClazz = null;
-        try {
-            storageVolumeClazz = Class.forName("android.os.storage.StorageVolume");
-            Method getVolumeList = mStorageManager.getClass().getMethod("getVolumeList");
-            Method getPath = storageVolumeClazz.getMethod("getPath");
-            Method isRemovable = storageVolumeClazz.getMethod("isRemovable");
-            Object result = getVolumeList.invoke(mStorageManager);
-            if (result == null) return null;
-            final int length = Array.getLength(result);
-            for (int i = 0; i < length; i++) {
-                Object storageVolumeElement = Array.get(result, i);
-                String path = (String) getPath.invoke(storageVolumeElement);
-                Object removableObject = isRemovable.invoke(storageVolumeElement);
-                if (removableObject == null) return null;
-                boolean removable = (Boolean) removableObject;
-                if (removable) {
-                    return path;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e("TAG/", "[getExternalStoragePath]: " + e.getMessage());
-        }
-        return null;
-    }
-
     public static void setClipboardString(String string) {
         if (sClipboardManager == null)
             sClipboardManager = (ClipboardManager) sApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE);

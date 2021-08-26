@@ -16,6 +16,7 @@ import euphoria.psycho.browser.app.BottomSheet.OnClickListener;
 import euphoria.psycho.browser.app.FunctionsMenu;
 import euphoria.psycho.browser.app.JdActivity;
 import euphoria.psycho.browser.app.SettingsActivity;
+import euphoria.share.FileShare;
 
 import static euphoria.psycho.browser.file.FileHelper.*;
 
@@ -98,7 +99,7 @@ public class BottomSheetHelper {
                             fileManager.openDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
                             break;
                         case R.drawable.ic_sd_storage:
-                            fileManager.openDirectory(FileConstantsHelper.sSDPath);
+                            fileManager.openDirectory(FileShare.sSDPath);
                             break;
                         case R.drawable.ic_settings:
                             Intent settingsActivity = new Intent(activity, SettingsActivity.class);
