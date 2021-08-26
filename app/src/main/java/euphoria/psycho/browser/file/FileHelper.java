@@ -278,7 +278,6 @@ public class FileHelper {
     }
 
 
-
     public static boolean isMusic(File f) {
         return sMusicPattern.matcher(f.getName()).find();
     }
@@ -331,13 +330,6 @@ public class FileHelper {
                     String targetFileName = editText.getText().toString();
                     File target = new File(fileManager.getDirectory(), targetFileName);
                     src.renameTo(target);
-                    try {
-                        DocumentsContract.renameDocument(fileManager.getActivity()
-                                        .getContentResolver(),
-                                Uri.parse(""), "");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
                     fileManager.getFileAdapter().initialize();
                 }).setNegativeButton(android.R.string.cancel, (dialogInterface, which) -> {
                     dialogInterface.dismiss();

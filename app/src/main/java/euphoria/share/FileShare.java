@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 import android.os.storage.StorageManager;
+import android.provider.DocumentsContract;
+
+import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -28,6 +31,7 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.arch.core.util.Function;
+import androidx.documentfile.provider.DocumentFile;
 import euphoria.psycho.browser.base.ThreadUtils;
 import euphoria.psycho.share.FileUtils;
 
@@ -35,6 +39,7 @@ import static euphoria.psycho.browser.file.FileConstantsHelper.sIsHasSD;
 
 public class FileShare {
     public static String sSDPath;
+    public static final String KEY_TREE_URI = "tree_uri";
 
     public static void appendAllText(File file, String contents) throws IOException {
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
@@ -504,6 +509,13 @@ public class FileShare {
         FileOutputStream fs = new FileOutputStream(path);
         fs.write(bytes, 0, bytes.length);
         fs.close();
+    }
+
+    public static boolean rename(String src) {
+        if (sIsHasSD && src.startsWith(sSDPath)) {
+            Logger.d(String.format("rename: %s", DocumentFile.fromFile(new File(src)).getUri()));
+        }
+        return true;
     }
 
 }

@@ -33,6 +33,7 @@ import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.DialogUtils;
 import euphoria.share.FileShare;
 import euphoria.share.Logger;
+import euphoria.share.PreferenceShare;
 
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -44,12 +45,6 @@ public class FileActivity extends AppCompatActivity {
         FrameLayout container = findViewById(R.id.container);
         mFileManager = new FileManager(this);
         container.addView(mFileManager.getView(), 0);
-
-//        Intent intent = new Intent(this, MovieActivity.class);
-//        intent.setData(Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "/Videos/231.mp4")));
-//        startActivity(intent);
-        Logger.d(String.format("initialize: %s", FileShare.getExternalStoragePath(this)));
-
     }
 
     @Override
@@ -62,26 +57,23 @@ public class FileActivity extends AppCompatActivity {
         if (!ContextUtils.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.READ_EXTERNAL_STORAGE);
         }
-
         // https://developer.android.com/training/data-storage/manage-all-files
         if (!Environment.isExternalStorageManager()) {
             Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
             startActivity(intent);
         }
-
         checkStartPermissionRequest();
-
-        // startService(new Intent(this, LocalFileService.class));
-
         if (needPermissions.size() > 0) {
             requestPermissions(needPermissions.toArray(new String[0]), REQUEST_PERMISSIONS_CODE);
         } else {
             initialize();
         }
-        // startService(new Intent(this, FloatingService.class));
-        //createDebugFiles();
-        //startActivity(new Intent(this, WebActivity.class));
-        //InputServiceHelper.launchVideoPlayer(this,"https://cdn.91p07.com//m3u8/493240/493240.m3u8?st=hGRLsC6UiX1NeC4gSPER5A&e=1626169392");
+        PreferenceShare.initialize(this);
+        if (PreferenceShare.getPreferences().getString(FileShare.KEY_TREE_URI, null) == null) {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            startActivityForResult(intent, 101);
+        }
     }
 
     public boolean checkStartPermissionRequest() {
@@ -112,7 +104,6 @@ public class FileActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (!mFileManager.onBackPressed())
             super.onBackPressed();
     }
@@ -132,32 +123,20 @@ public class FileActivity extends AppCompatActivity {
         }
     }
 
-    private void createDebugFiles() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 101) {
+            getContentResolver().takePersistableUriPermission(
+                    data.getData(),
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+            );
+            Logger.d(String.format("onActivityResult: %s", data.getData().toString()));
+            PreferenceShare.getPreferences()
+                    .edit().
+                    putString(FileShare.KEY_TREE_URI,
+                            data.getData().toString()).apply();
 
-
-        Log.e("TAG/", "Debug: createDebugFiles, \n" + Environment.getDataDirectory());
-
-        File dir = new File(Environment.getExternalStorageDirectory(), "aaa");
-        dir.mkdir();
-        for (int i = 0; i < 10; i++) {
-            File a = new File(dir, i + ".mp3");
-            try {
-                a.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            a = new File(dir, i + ".pdf");
-            try {
-                a.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            a = new File(dir, i + ".mp4");
-            try {
-                a.createNewFile();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
