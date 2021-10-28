@@ -109,7 +109,6 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
                             || pathname.getName().endsWith(".ts")
                             || pathname.getName().endsWith(".f4v")
                             || pathname.getName().endsWith(".flv")
-
                     )) {
                         return true;
                     }
@@ -124,6 +123,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
             MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(s));
             File sub = new File(s.getParentFile(), StringShare.substringBeforeLast(s.getName(), ".") + ".srt");
             if (sub.exists()) {
+                Log.e("B5aOx2", String.format("initializePlayer, %s", sub));
                 List<Subtitle> subtitles = new ArrayList<>();
                 Subtitle subtitle = new Subtitle(
                         Uri.fromFile(sub), "application/x-subrip", "en"
@@ -166,6 +166,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
             mPlayer.setAudioAttributes(AudioAttributes.DEFAULT, /* handleAudioFocus= */ true);
             mPlayer.setPlayWhenReady(mStartAutoPlay);
             mPlayerView.setPlayer(mPlayer);
+            mPlayerView.setShowSubtitleButton(true);
 
         }
         boolean haveStartPosition = mStartWindow != C.INDEX_UNSET;
@@ -314,7 +315,6 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
         mPlayerView = findViewById(R.id.player_view);
-        mPlayerView.setShowSubtitleButton(true);
         mPlayerView.setControllerVisibilityListener(this);
         mPlayerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
         mPlayerView.requestFocus();
