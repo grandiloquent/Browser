@@ -102,17 +102,20 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
     protected boolean initializePlayer() {
         Intent intent = getIntent();
         List<MediaItem> mediaItems = new ArrayList<>();
-        File[] strings = new File(getIntent().getData().getPath()).getParentFile()
-                .listFiles(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        if (pathname.isFile() && pathname.getName().endsWith(".mp4")) {
-                            return true;
-                        }
-                        return false;
+        File f = new File(getIntent().getData().getPath());
+        File[] strings = f.getParentFile()
+                .listFiles(pathname -> {
+                    if (pathname.isFile() && pathname.getName().endsWith(".mp4")) {
+                        return true;
                     }
+                    return false;
                 });
+        int i = 0;
         for (File s : strings) {
+            if (s.equals(f)) {
+                mStartWindow = i;
+            }
+            i++;
             MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(s));
             File sub = new File(s.getParentFile(), StringShare.substringBeforeLast(s.getName(), ".") + ".srt");
             if (sub.exists()) {
