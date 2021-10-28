@@ -82,60 +82,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                         }
                         return;
                     }
-                    if (mCurrentString.contains("91porn.com")) {
-
-
-                        ThreadUtils.postOnBackgroundThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    String js = InputServiceHelper.buildJavaScript(InputService.this, InputServiceHelper.getHtml(mCurrentString));
-
-                                    ThreadUtils.postOnMainThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            new JsEvaluator(InputService.this).evaluate(js, new JsCallback() {
-                                                @Override
-                                                public void onResult(String value) {
-                                                    Pattern pattern = Pattern.compile("(?<=src=')[^']*(?=')");
-                                                    Matcher matcher = pattern.matcher(value);
-                                                    if (matcher.find()) {
-                                                        String video = matcher.group();
-                                                        Toast.makeText(InputService.this, video, Toast.LENGTH_SHORT).show();
-                                                        clipboardManager.setPrimaryClip(ClipData.newPlainText(null, video));
-                                                        try {
-                                                            InputServiceHelper.switchVideoPlayer(InputService.this, video);
-                                                        } catch (IOException e) {
-                                                            InputServiceHelper.launchVideoPlayer(InputService.this, video);
-                                                        }
-
-                                                    } else {
-                                                        Log.e("TAG", "uri" + value);
-                                                    }
-
-                                                }
-
-                                                // <source src='https://cdn.91p07.com//m3u8/492868/492868.m3u8?st=MKar6oBIiyyMtO83huyHag&e=1626096266' type='application/x-mpegURL'>
-
-                                                @Override
-                                                public void onError(String errorMessage) {
-                                                    Log.e("TAG", errorMessage);
-                                                }
-                                            });
-
-                                        }
-                                    });
-                                } catch (
-                                        IOException e) {
-                                    Log.e("TAG", e.getMessage());
-
-                                }
-                                return;
-                            }
-                        });
-                        return;
-                    }
-                    if (mCurrentString.startsWith("http://") || mCurrentString.startsWith("https://"))
+                 if (mCurrentString.startsWith("http://") || mCurrentString.startsWith("https://"))
                         return;
                     ThreadUtils.postOnBackgroundThread(() -> {
                         if (mCurrentString.contains(" ")) {
