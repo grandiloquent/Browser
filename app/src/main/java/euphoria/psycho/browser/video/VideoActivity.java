@@ -105,7 +105,12 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         File f = new File(getIntent().getData().getPath());
         File[] strings = f.getParentFile()
                 .listFiles(pathname -> {
-                    if (pathname.isFile() && pathname.getName().endsWith(".mp4")) {
+                    if (pathname.isFile() && (pathname.getName().endsWith(".mp4")
+                            || pathname.getName().endsWith(".ts")
+                            || pathname.getName().endsWith(".f4v")
+                            || pathname.getName().endsWith(".flv")
+
+                    )) {
                         return true;
                     }
                     return false;
