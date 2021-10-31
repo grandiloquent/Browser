@@ -114,26 +114,32 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
                     }
                     return false;
                 });
-        int i = 0;
-        for (File s : strings) {
-            if (s.equals(f)) {
-                mStartWindow = i;
-            }
-            i++;
-            MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(s));
-            File sub = new File(s.getParentFile(), StringShare.substringBeforeLast(s.getName(), ".") + ".srt");
-            if (sub.exists()) {
-                List<Subtitle> subtitles = new ArrayList<>();
-                Subtitle subtitle = new Subtitle(
-                        Uri.fromFile(sub), "application/x-subrip", "en"
-                );
-                subtitles.add(subtitle);
-                MediaItem.Builder builder = mediaItem.buildUpon();
-                builder.setSubtitles(subtitles);
-                mediaItem = builder.build();
-            }
+        if (strings == null) {
+            MediaItem mediaItem = MediaItem.fromUri(intent.getData());
             mediaItems.add(mediaItem);
+        }else {
+            int i = 0;
+            for (File s : strings) {
+                if (s.equals(f)) {
+                    mStartWindow = i;
+                }
+                i++;
+                MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(s));
+                File sub = new File(s.getParentFile(), StringShare.substringBeforeLast(s.getName(), ".") + ".srt");
+                if (sub.exists()) {
+                    List<Subtitle> subtitles = new ArrayList<>();
+                    Subtitle subtitle = new Subtitle(
+                            Uri.fromFile(sub), "application/x-subrip", "en"
+                    );
+                    subtitles.add(subtitle);
+                    MediaItem.Builder builder = mediaItem.buildUpon();
+                    builder.setSubtitles(subtitles);
+                    mediaItem = builder.build();
+                }
+                mediaItems.add(mediaItem);
+            }
         }
+
         if (mPlayer == null) {
             //Iqiyi.getVideoAddress(intent.getStringArrayExtra(EXTRA_PLAYLSIT)[0], this);
             boolean preferExtensionDecoders = true;
