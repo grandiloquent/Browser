@@ -123,7 +123,6 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
             MediaItem mediaItem = MediaItem.fromUri(Uri.fromFile(s));
             File sub = new File(s.getParentFile(), StringShare.substringBeforeLast(s.getName(), ".") + ".srt");
             if (sub.exists()) {
-                Log.e("B5aOx2", String.format("initializePlayer, %s", sub));
                 List<Subtitle> subtitles = new ArrayList<>();
                 Subtitle subtitle = new Subtitle(
                         Uri.fromFile(sub), "application/x-subrip", "en"
