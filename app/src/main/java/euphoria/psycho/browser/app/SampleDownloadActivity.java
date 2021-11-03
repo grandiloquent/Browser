@@ -23,7 +23,6 @@ import android.widget.Toast;
 import at.huber.youtubeExtractor.VideoMeta;
 import at.huber.youtubeExtractor.YouTubeExtractor;
 import at.huber.youtubeExtractor.YtFile;
-import euphoria.psycho.Share;
 import euphoria.psycho.browser.R;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.share.Log;

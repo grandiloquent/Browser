@@ -67,8 +67,7 @@
         <activity
             android:name=".video.VideoActivity"
             android:hardwareAccelerated="true"
-            android:taskAffinity=""
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            android:taskAffinity="">
 
 
             <intent-filter>

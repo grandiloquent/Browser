@@ -20,8 +20,10 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.MediaItem.Subtitle;
 import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.Player.PositionInfo;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.database.ExoDatabaseProvider;
 import com.google.android.exoplayer2.mediacodec.MediaCodecRenderer.DecoderInitializationException;
@@ -47,6 +49,8 @@ import com.google.android.exoplayer2.util.EventLogger;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
@@ -56,6 +60,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.graphics.PathSegment;
 import euphoria.psycho.browser.R;
 import euphoria.share.StringShare;
 
@@ -82,6 +87,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
     private DefaultTrackSelector mDefaultTrackSelector;
     private TrackGroupArray mLastSeenTrackGroupArray;
     private SimpleCache mCache;
+    List<MediaItem> mediaItems = new ArrayList<>();
 
     public static RenderersFactory buildRenderersFactory(
             Context context, boolean preferExtensionRenderer) {
@@ -101,7 +107,6 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
 
     protected boolean initializePlayer() {
         Intent intent = getIntent();
-        List<MediaItem> mediaItems = new ArrayList<>();
         File f = new File(getIntent().getData().getPath());
         File[] strings = f.getParentFile()
                 .listFiles(pathname -> {
@@ -117,7 +122,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         if (strings == null) {
             MediaItem mediaItem = MediaItem.fromUri(intent.getData());
             mediaItems.add(mediaItem);
-        }else {
+        } else {
             int i = 0;
             for (File s : strings) {
                 if (s.equals(f)) {
@@ -133,13 +138,13 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
                     );
                     subtitles.add(subtitle);
                     MediaItem.Builder builder = mediaItem.buildUpon();
-                    builder.setSubtitles(subtitles);
+                    builder
+                            .setSubtitles(subtitles);
                     mediaItem = builder.build();
                 }
                 mediaItems.add(mediaItem);
             }
         }
-
         if (mPlayer == null) {
             //Iqiyi.getVideoAddress(intent.getStringArrayExtra(EXTRA_PLAYLSIT)[0], this);
             boolean preferExtensionDecoders = true;
@@ -311,7 +316,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
 
     private void updateTrackSelectorParameters() {
         if (mDefaultTrackSelector != null) {
-            trackSelectorParameters = mDefaultTrackSelector.getParameters();
+            trackSelectorParameters = mDefaultTrackSelector.buildUponParameters().setPreferredTextLanguage("en").build();
         }
     }
 
@@ -323,19 +328,16 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         mPlayerView.setControllerVisibilityListener(this);
         mPlayerView.setErrorMessageProvider(new PlayerErrorMessageProvider());
         mPlayerView.requestFocus();
-        mPlayerView.setShowSubtitleButton(false);
-        mPlayerView.setControllerOnFullScreenModeChangedListener(new OnFullScreenModeChangedListener() {
-            @Override
-            public void onFullScreenModeChanged(boolean isFullScreen) {
-                if (isFullScreen) {
-                    hideSystemUI(VideoActivity.this, true);
-                    rotateScreen(VideoActivity.this);
-                    mPlayerView.setPadding(0, 0, 0, 0);
-                } else {
-                    showSystemUI(VideoActivity.this, true);
-                    rotateScreen(VideoActivity.this);
-                    mPlayerView.setPadding(0, 0, 0, getNavigationBarHeight(VideoActivity.this));
-                }
+        getActionBar().show();
+        mPlayerView.setControllerOnFullScreenModeChangedListener(isFullScreen -> {
+            if (isFullScreen) {
+                hideSystemUI(VideoActivity.this, true);
+                rotateScreen(VideoActivity.this);
+                mPlayerView.setPadding(0, 0, 0, 0);
+            } else {
+                showSystemUI(VideoActivity.this, true);
+                rotateScreen(VideoActivity.this);
+                mPlayerView.setPadding(0, 0, 0, getNavigationBarHeight(VideoActivity.this));
             }
         });
         if (savedInstanceState != null) {
@@ -346,7 +348,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         } else {
             DefaultTrackSelector.ParametersBuilder builder =
                     new DefaultTrackSelector.ParametersBuilder(/* context= */ this);
-            trackSelectorParameters = builder.build();
+            trackSelectorParameters = builder.setPreferredTextLanguage("en").build();
             clearStartPosition();
         }
     }
@@ -369,6 +371,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         if (mPlayerView != null) {
             mPlayerView.onResume();
         }
+
     }
 
     @Override
@@ -407,8 +410,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
 
         @Override
         public void onPlaybackStateChanged(@Player.State int playbackState) {
-            if (playbackState == Player.STATE_ENDED) {
-            }
+
         }
 
         @Override
@@ -439,6 +441,14 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
                 mLastSeenTrackGroupArray = trackGroups;
             }
         }
+
+        @Override
+        public void onMediaItemTransition(  MediaItem mediaItem, int reason) {
+            List<String> pathSegments = mediaItems.get(mPlayer.getCurrentWindowIndex()).playbackProperties.uri.getPathSegments();
+            getActionBar().setTitle(pathSegments.get(pathSegments.size() - 1));
+        }
+
+
     }
 
     private class PlayerErrorMessageProvider implements ErrorMessageProvider<PlaybackException> {
