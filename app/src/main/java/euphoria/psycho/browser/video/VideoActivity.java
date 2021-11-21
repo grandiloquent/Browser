@@ -55,8 +55,11 @@ import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -123,6 +126,23 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
             MediaItem mediaItem = MediaItem.fromUri(intent.getData());
             mediaItems.add(mediaItem);
         } else {
+            Pattern prefix = Pattern.compile("^\\d+\\. .+");
+            if (!prefix.matcher(f.getName()).matches()) {
+                Arrays.sort(strings, (file1, file2) -> {
+                    final long size1;
+                    size1 = file1.length();
+                    final long size2;
+                    size2 = file2.length();
+                    final long result = size1 - size2;
+                    if (result < 0) {
+                        return -1;
+                    }
+                    if (result > 0) {
+                        return 1;
+                    }
+                    return 0;
+                });
+            }
             int i = 0;
             for (File s : strings) {
                 if (s.equals(f)) {
@@ -144,6 +164,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
                 }
                 mediaItems.add(mediaItem);
             }
+
         }
         if (mPlayer == null) {
             //Iqiyi.getVideoAddress(intent.getStringArrayExtra(EXTRA_PLAYLSIT)[0], this);
@@ -410,7 +431,6 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
 
         @Override
         public void onPlaybackStateChanged(@Player.State int playbackState) {
-
         }
 
         @Override
@@ -443,7 +463,7 @@ public class VideoActivity extends Activity implements StyledPlayerControlView.V
         }
 
         @Override
-        public void onMediaItemTransition(  MediaItem mediaItem, int reason) {
+        public void onMediaItemTransition(MediaItem mediaItem, int reason) {
             List<String> pathSegments = mediaItems.get(mPlayer.getCurrentWindowIndex()).playbackProperties.uri.getPathSegments();
             getActionBar().setTitle(pathSegments.get(pathSegments.size() - 1));
         }

@@ -3,6 +3,7 @@ package euphoria.psycho.browser.app;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.format.Formatter;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -29,10 +31,17 @@ public class JdActivity extends Activity {
 
     private int mMode = 0;
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
 
     private void evaluateJavascript() {
-
-        String javaScript = "(function() {\n" +
+/*
+"document.querySelectorAll('.price')[0].textContent=\"¥3399.00\";"+
+                "document.querySelectorAll('.price')[1].textContent=\"¥749.00\";"+
+ */
+        String javaScript = "\n(function() {\n" +
                 "    var Jd = function Jd() {};\n" +
                 "    Jd.prototype.initialize = function() {\n" +
                 "        //this.hideItems();\n" +
@@ -69,6 +78,7 @@ public class JdActivity extends Activity {
                 "        }\n" +
                 "    };\n" +
                 "\n" +
+
                 "    var jd = new Jd();\n" +
                 "    jd.initialize();\n" +
                 "})();";
@@ -77,7 +87,7 @@ public class JdActivity extends Activity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             mWebView.evaluateJavascript(javaScript, value -> {
-                //Toast.makeText(Browsers.this, value, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(JdActivity.this, value, Toast.LENGTH_SHORT).show();
             });
         }
 
@@ -163,7 +173,7 @@ public class JdActivity extends Activity {
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
 
 
-                // Log.e(TAG, "Debug: onConsoleMessage, " + consoleMessage.message());
+                Log.e(TAG, "Debug: onConsoleMessage, " + consoleMessage.message());
 
                 return super.onConsoleMessage(consoleMessage);
             }

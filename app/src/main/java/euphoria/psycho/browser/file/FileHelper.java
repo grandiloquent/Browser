@@ -19,6 +19,8 @@ import android.widget.EditText;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -296,10 +298,16 @@ public class FileHelper {
             activity.startService(service);
             return;
         }
-        if (sVideoPattern.matcher(fileItem.getTitle()).find()) {
+        if (fileItem.getType() == TYPE_VIDEO) {
             Intent movieActivity = new Intent(activity, VideoActivity.class);
             movieActivity.setData(Uri.fromFile(new File(fileItem.getUrl())));
             activity.startActivity(movieActivity);
+            return;
+        }
+        if (fileItem.getType() == TYPE_IMAGE) {
+            Intent imageActivity = new Intent(activity, ImageActivity.class);
+            imageActivity.setData(Uri.fromFile(new File(fileItem.getUrl())));
+            activity.startActivity(imageActivity);
             return;
         }
         String url = fileItem.getUrl();
@@ -383,6 +391,12 @@ public class FileHelper {
                     .append(" = ")
                     .append(p.second)
                     .append('\n');
+        }
+        try {
+            FileShare.writeAllBytes(new File(directory, "directory_info.txt").getAbsolutePath(),
+                    stringBuilder.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         new AlertDialog.Builder(activity)
                 .setMessage(stringBuilder.toString())

@@ -2,10 +2,15 @@ package euphoria.psycho.browser.file;
 
 import android.Manifest.permission;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
@@ -33,7 +38,7 @@ import euphoria.psycho.share.DialogUtils;
 import euphoria.share.FileShare;
 import euphoria.share.Logger;
 import euphoria.share.PreferenceShare;
-
+// ImageActivity
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 100;
@@ -56,10 +61,15 @@ public class FileActivity extends AppCompatActivity {
         if (!ContextUtils.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.READ_EXTERNAL_STORAGE);
         }
+//        if (!ContextUtils.checkSelfPermission(this, "android.permission.ACCESS_MOCK_LOCATION")) {
+//            needPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
+//        }
         // https://developer.android.com/training/data-storage/manage-all-files
-        if (!Environment.isExternalStorageManager()) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-            startActivity(intent);
+        if (VERSION.SDK_INT >= VERSION_CODES.R) {
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                startActivity(intent);
+            }
         }
         checkStartPermissionRequest();
         if (needPermissions.size() > 0) {
@@ -73,6 +83,32 @@ public class FileActivity extends AppCompatActivity {
             intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             startActivityForResult(intent, 101);
         }
+//        Location fake_location_gps = new Location(LocationManager.GPS_PROVIDER);
+//        Location fake_location_network = new Location(LocationManager.NETWORK_PROVIDER);
+//        fake_location_gps.setLatitude(127.15);
+//        fake_location_gps.setLongitude(37.24);
+//        fake_location_gps.setAccuracy((float) 0.001);
+//        fake_location_gps.setAltitude(0);
+//        fake_location_gps.setSpeed(0);
+//        long system_time_now = System.currentTimeMillis();
+//        fake_location_gps.setTime(system_time_now);
+//        fake_location_gps.setElapsedRealtimeNanos(System.nanoTime());
+//        fake_location_network.setLatitude(0);
+//        fake_location_network.setLongitude(0);
+//        fake_location_network.setAccuracy((float) 0.001);
+//        fake_location_network.setAltitude(0);
+//        fake_location_network.setSpeed(0);
+//        long system_time_now2 = System.currentTimeMillis();
+//        fake_location_network.setTime(system_time_now2);
+//        fake_location_network.setElapsedRealtimeNanos(System.nanoTime());
+//        LocationManager location_manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+//        location_manager.addTestProvider(LocationManager.GPS_PROVIDER, false, false, false, false, true, true, true, 1, 1);
+//        location_manager.setTestProviderEnabled(LocationManager.GPS_PROVIDER, true);
+//        location_manager.setTestProviderLocation(LocationManager.GPS_PROVIDER, fake_location_gps);
+//        location_manager.addTestProvider(LocationManager.NETWORK_PROVIDER, false, false, false, false, true, true, true, 1, 1);
+//        location_manager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
+//        location_manager.setTestProviderLocation(LocationManager.NETWORK_PROVIDER, fake_location_network);
+
     }
 
     public boolean checkStartPermissionRequest() {

@@ -54,5 +54,9 @@ dependencies {
     implementation('com.github.evgenyneu:js-evaluator-for-android:v4.0.0') {
         exclude module: 'appcompat-v7'
     }
+    implementation 'com.github.piasy:BigImageViewer:1.8.1'
+    implementation 'com.github.piasy:ProgressPieIndicator:1.8.1'
+    implementation 'com.github.piasy:GlideImageLoader:1.8.1'
+    implementation 'com.github.piasy:GlideImageViewFactory:1.8.1'
 }
 
