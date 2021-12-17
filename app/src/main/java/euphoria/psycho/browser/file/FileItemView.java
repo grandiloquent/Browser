@@ -54,15 +54,14 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         listItems.add(buildMenuListItem(R.string.file_item_rename, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_delete, 0, 0));
         listItems.add(buildMenuListItem(R.string.file_item_copy_path, 0, 0));
+        listItems.add(buildMenuListItem(R.string.recycle, 0, 0));
         if (getItem().getType() == FileConstantsHelper.TYPE_ZIP) {
             listItems.add(buildMenuListItem(R.string.file_item_extract_zip, 0, 0));
         }
         if (getItem().getType() == FileConstantsHelper.TYPE_VIDEO) {
             listItems.add(buildMenuListItem(R.string.cutVideo, 0, 0));
         }
-        if (getItem().getType() != FileConstantsHelper.TYPE_FOLDER) {
-            listItems.add(buildMenuListItem(R.string.recycle, 0, 0));
-        }
+
         //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));

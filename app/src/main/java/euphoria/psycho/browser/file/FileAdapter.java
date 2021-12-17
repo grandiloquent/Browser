@@ -36,11 +36,11 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     public void initialize() {
         mIsLoadingItems = true;
         mFileProvider.queryFile(mFileManager.getDirectory(), mFileManager);
-        mFileManager.getHistoryList().remove(mFileManager.getDirectory());
-        mFileManager.getHistoryList().addFirst(mFileManager.getDirectory());
-        if (mFileManager.getHistoryList().size() > 5) {
-            mFileManager.getHistoryList().removeLast();
-        }
+//        mFileManager.getHistoryList().remove(mFileManager.getDirectory());
+//        mFileManager.getHistoryList().addFirst(mFileManager.getDirectory());
+//        if (mFileManager.getHistoryList().size() > 5) {
+//            mFileManager.getHistoryList().removeLast();
+//        }
     }
 
     public void markItemForRemoval(FileItem i) {

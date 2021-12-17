@@ -10,6 +10,7 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
+import android.provider.ContactsContract.Directory;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -54,17 +55,15 @@ public class FileManager implements OnMenuItemClickListener,
     private int mSortType;
     private boolean mIsShowHiddenFiles;
     private FileOperationManager mFileOperationManager;
-    private LinkedList<String> mHistoryList = new LinkedList<>();
+    //private LinkedList<String> mHistoryList = new LinkedList<>();
     private String mSearchText;
     private boolean mSearchIn;
 
     public FileManager(Activity activity) {
         mActivity = activity;
-
         loadPrefer();
         mDirectory = SettingsManager.getInstance().getLastAccessDirectory();
         mSortType = SettingsManager.getInstance().getSortType();
-
         mSelectionDelegate = new SelectionDelegate<FileItem>();
         mSelectionDelegate.addObserver(this);
         mFileAdapter = new FileAdapter(mSelectionDelegate, this, new FileProviderImpl());
@@ -139,9 +138,9 @@ public class FileManager implements OnMenuItemClickListener,
         return mFileOperationManager;
     }
 
-    public LinkedList<String> getHistoryList() {
-        return mHistoryList;
-    }
+//    public LinkedList<String> getHistoryList() {
+//        return mHistoryList;
+//    }
 
     public String getSearchText() {
         return mSearchText;
@@ -232,26 +231,37 @@ public class FileManager implements OnMenuItemClickListener,
     // 排序文件
     public void sortBy() {
         SettingsManager.getInstance().setSortType(mSortType);
-
         Log.e("TAG/", "Debug: sortBy, \n" + mDirectory);
-
         mFileAdapter.initialize();
     }
 
     private void loadPrefer() {
-
-
         Log.e("TAG/", "Debug: loadPrefer, \n");
-
-
         mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
     }
 
     private void showHistoryDialog() {
+        String[] names = new String[]{
+                "书籍",
+                "视频",
+                "音乐",
+                "下载",
+        };
+        String[] values = new String[]{
+                "/storage/emulated/0/Books",
+                "/storage/emulated/0/Videos",
+                "/storage/emulated/0/Musics",
+                "/storage/emulated/0/Download",
+        };
+        for (String value : values) {
+            File dir = new File(value);
+            if (!dir.isDirectory())
+                dir.mkdir();
+        }
         new AlertDialog.Builder(mActivity)
                 .setTitle(R.string.history)
-                .setItems(mHistoryList.toArray(new String[0]), (dialogInterface, i) -> {
-                    mDirectory = mHistoryList.get(i);
+                .setItems(names, (dialogInterface, i) -> {
+                    mDirectory = values[i];
                     mFileAdapter.initialize();
                     dialogInterface.dismiss();
                 })
@@ -289,7 +299,6 @@ public class FileManager implements OnMenuItemClickListener,
                  *
                  * */
                 MediaScannerConnection.scanFile(this.getActivity().getApplicationContext(), strings, null, (path, uri) -> {
-
                 });
                 return true;
             case R.id.search_menu_id:
