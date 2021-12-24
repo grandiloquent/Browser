@@ -137,7 +137,6 @@ public class FileManager implements OnMenuItemClickListener,
     public FileOperationManager getFileOperationManager() {
         return mFileOperationManager;
     }
-
 //    public LinkedList<String> getHistoryList() {
 //        return mHistoryList;
 //    }
@@ -246,12 +245,14 @@ public class FileManager implements OnMenuItemClickListener,
                 "视频",
                 "音乐",
                 "下载",
+                "电影"
         };
         String[] values = new String[]{
                 "/storage/emulated/0/Books",
                 "/storage/emulated/0/Videos",
                 "/storage/emulated/0/Musics",
                 "/storage/emulated/0/Download",
+                "/storage/FD12-1F1D/Movies"
         };
         for (String value : values) {
             File dir = new File(value);

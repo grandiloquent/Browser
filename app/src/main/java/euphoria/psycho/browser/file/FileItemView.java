@@ -60,8 +60,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         }
         if (getItem().getType() == FileConstantsHelper.TYPE_VIDEO) {
             listItems.add(buildMenuListItem(R.string.cutVideo, 0, 0));
-        }
+            listItems.add(buildMenuListItem(R.string.covertVideo, 0, 0));
 
+        }
         //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
@@ -106,6 +107,9 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
                     return;
                 case R.string.cutVideo:
                     mFileImageManager.cutVideo(getItem());
+                    return;
+                case R.string.covertVideo:
+                    mFileImageManager.covertVideo(getItem());
                     return;
                 case R.string.recycle:
                     mFileManager.recycle(getItem());

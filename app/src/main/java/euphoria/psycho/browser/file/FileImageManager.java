@@ -1,6 +1,7 @@
 package euphoria.psycho.browser.file;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -8,12 +9,17 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.Process;
 import android.text.Editable;
 import android.util.Log;
 import android.util.LruCache;
 import android.widget.EditText;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.ReturnCode;
 import com.coremedia.iso.boxes.Container;
 import com.coremedia.iso.boxes.MovieHeaderBox;
 import com.googlecode.mp4parser.FileDataSourceImpl;
@@ -48,8 +54,10 @@ import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
 import euphoria.psycho.share.KeyUtils;
 import euphoria.psycho.share.StringUtils;
 import euphoria.share.FileShare;
+import euphoria.share.StringShare;
 
 import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
+import static euphoria.share.ThreadShare.runOnUiThread;
 
 public class FileImageManager {
     private final Context mContext;
@@ -82,6 +90,39 @@ public class FileImageManager {
         }
         mCacheDirectory = cacheDirectory.getAbsolutePath();
         mLruCache = new LruCache<String, Drawable>(maxCacheSize);
+    }
+
+    public void covertVideo(FileItem item) {
+        ProgressDialog dialog = new ProgressDialog(mContext);
+        dialog.setMessage("正在下载中...");
+        dialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+                // ).getAbsolutePath()
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", item.getUrl(), StringShare.substringAfterLast(item.getUrl(), "/"));
+                Log.e("B5aOx2", String.format("run, %s", arg));
+
+                FFmpegSession session = FFmpegKit.execute(arg);
+                if (ReturnCode.isSuccess(session.getReturnCode())) {
+                    // SUCCESS
+                } else if (ReturnCode.isCancel(session.getReturnCode())) {
+                    // CANCEL
+                } else {
+
+                    Log.e("B5aOx2", String.format("run, %s",session.getAllLogsAsString()));
+                    // FAILURE
+                }
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        }).start();
     }
 
     public Drawable getDefaultDrawable(FileItem fileItem) {
@@ -216,10 +257,8 @@ public class FileImageManager {
             double currentTime = 0;
             long startSample = -1;
             long endSample = -1;
-
             for (int i = 0; i < track.getSampleDurations().length; i++) {
                 if (currentTime <= startTime) {
-
                     // current sample is still before the new starttime
                     startSample = currentSample;
                 }
@@ -235,7 +274,6 @@ public class FileImageManager {
             }
             movie.addTrack(new CroppedTrack(track, startSample, endSample));
         }
-
         Container out = new DefaultMp4Builder().build(movie);
         MovieHeaderBox mvhd = Path.getPath(out, "moov/mvhd");
         mvhd.setMatrix(Matrix.ROTATE_180);
@@ -251,7 +289,6 @@ public class FileImageManager {
             fos.close();
             file.close();
         }
-
         file.close();
     }
 
@@ -262,7 +299,6 @@ public class FileImageManager {
         double currentTime = 0;
         for (int i = 0; i < track.getSampleDurations().length; i++) {
             long delta = track.getSampleDurations()[i];
-
             if (Arrays.binarySearch(track.getSyncSamples(), currentSample + 1) >= 0) {
                 timeOfSyncSamples[Arrays.binarySearch(track.getSyncSamples(), currentSample + 1)] = currentTime;
             }
@@ -283,7 +319,6 @@ public class FileImageManager {
         }
         return timeOfSyncSamples[timeOfSyncSamples.length - 1];
     }
-
 
 
     private static class ImageJob implements Job<Drawable> {
