@@ -103,16 +103,20 @@ public class FileImageManager {
                 // ).getAbsolutePath()
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
                 String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", item.getUrl(), StringShare.substringAfterLast(item.getUrl(), "/"));
-                Log.e("B5aOx2", String.format("run, %s", arg));
-
                 FFmpegSession session = FFmpegKit.execute(arg);
                 if (ReturnCode.isSuccess(session.getReturnCode())) {
-                    // SUCCESS
+                    File f = new File(item.getUrl());
+                    File dir = f.getParentFile();
+                    dir = new File(dir, "Recycle");
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
+                    f.renameTo(new File(dir, f.getName()));
+
                 } else if (ReturnCode.isCancel(session.getReturnCode())) {
                     // CANCEL
                 } else {
-
-                    Log.e("B5aOx2", String.format("run, %s",session.getAllLogsAsString()));
+                    Log.e("B5aOx2", String.format("run, %s", session.getAllLogsAsString()));
                     // FAILURE
                 }
                 runOnUiThread(new Runnable() {
