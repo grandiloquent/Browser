@@ -14,8 +14,8 @@ import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URL;
 
-import static euphoria.psycho.share.StringUtils.substringAfterLast;
-import static euphoria.psycho.share.StringUtils.substringBefore;
+import static euphoria.psycho.browser.file.Shared.substringAfterLast;
+import static euphoria.psycho.browser.file.Shared.substringBefore;
 import static euphoria.psycho.browser.download.DownloadHelper.BUFFER_SIZE;
 import static euphoria.psycho.browser.download.DownloadHelper.DEFAULT_TIMEOUT;
 import static euphoria.psycho.browser.download.DownloadHelper.HTTP_REQUESTED_RANGE_NOT_SATISFIABLE;

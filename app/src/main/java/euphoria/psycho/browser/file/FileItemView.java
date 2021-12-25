@@ -16,7 +16,6 @@ import euphoria.psycho.browser.widget.ListMenuButtonDelegate;
 import euphoria.psycho.browser.widget.ListMenuItemProperties;
 import euphoria.psycho.browser.widget.MVCListAdapter.ModelList;
 import euphoria.psycho.browser.widget.SelectableItemView;
-import euphoria.psycho.share.FormatUtils;
 
 import static euphoria.psycho.browser.widget.BasicListMenu.buildMenuListItem;
 
@@ -60,9 +59,8 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         }
         if (getItem().getType() == FileConstantsHelper.TYPE_VIDEO) {
             listItems.add(buildMenuListItem(R.string.cutVideo, 0, 0));
-            listItems.add(buildMenuListItem(R.string.covertVideo, 0, 0));
-
         }
+        listItems.add(buildMenuListItem(R.string.covertVideo, 0, 0));
         //        listItems.add(buildMenuListItem(R.string.bookmark_item_select, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_edit, 0, 0));
 //        listItems.add(buildMenuListItem(R.string.bookmark_item_move, 0, 0, canMove));
@@ -164,7 +162,7 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         if (item.getType() == FileConstantsHelper.TYPE_FOLDER) {
             mDescriptionView.setText(getContext().getString(R.string.items, item.getSize()));
         } else {
-            mDescriptionView.setText(FormatUtils.formatFileSize(item.getSize()));
+            mDescriptionView.setText(Shared.formatFileSize(item.getSize()));
         }
         requestIcon();
     }

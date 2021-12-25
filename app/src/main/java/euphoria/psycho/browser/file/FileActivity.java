@@ -34,7 +34,6 @@ import euphoria.psycho.browser.app.InputServiceHelper;
 import euphoria.psycho.browser.app.LocalFileService;
 import euphoria.psycho.browser.app.WebActivity;
 import euphoria.psycho.share.ContextUtils;
-import euphoria.psycho.share.DialogUtils;
 import euphoria.share.FileShare;
 import euphoria.share.Logger;
 import euphoria.share.PreferenceShare;

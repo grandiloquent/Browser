@@ -27,10 +27,9 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import androidx.annotation.NonNull;
+import euphoria.psycho.browser.file.Shared;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.file.FileHelper;
-import euphoria.psycho.share.FormatUtils;
-import euphoria.psycho.share.StringUtils;
 
 public class TwitterHelper {
     public static List<TwitterVideo> extractTwitterVideo(String id) throws IOException, JSONException {
@@ -115,7 +114,7 @@ public class TwitterHelper {
         }
         String[] items = new String[twitterVideos.size()];
         for (int i = 0; i < twitterVideos.size(); i++) {
-            items[i] = String.format("%s \n %s", FormatUtils.formatFileSize(twitterVideos.get(i).size), twitterVideos.get(i).url);
+            items[i] = String.format("%s \n %s", Shared.formatFileSize(twitterVideos.get(i).size), twitterVideos.get(i).url);
         }
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setItems(items, (dialog1, which) -> {
@@ -123,8 +122,8 @@ public class TwitterHelper {
                     ContextUtils.setClipboardString(url);
                     FileHelper.downloadFromUrl(context,
                             url,
-                            StringUtils.substringAfterLast(url, "/"),
-                            StringUtils.substringAfterLast(url, "/")
+                            Shared.substringAfterLast(url, "/"),
+                            Shared.substringAfterLast(url, "/")
                     );
                 })
                 .create();

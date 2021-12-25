@@ -7,14 +7,12 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
-import com.google.android.exoplayer2.util.MimeTypes;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import euphoria.psycho.browser.file.Shared;
 import euphoria.psycho.share.Log;
-import euphoria.psycho.share.StringUtils;
 import fi.iki.elonen.NanoHTTPD;
 
 public class LocalFileService extends Service {
@@ -65,11 +63,11 @@ public class LocalFileService extends Service {
                     Log.e("TAG/", "[serve]: " + e.getMessage());
                 }
             } else {
-                String uri = StringUtils.substringBeforeLast(mPath, '/') + session.getUri();
+                String uri = Shared.substringBeforeLast(mPath, '/') + session.getUri();
                 try {
                     return NanoHTTPD.newChunkedResponse(
                             Response.Status.OK,
-                            MimeTypeMap.getSingleton().getMimeTypeFromExtension(StringUtils.substringAfterLast(session.getUri(),'.')),
+                            MimeTypeMap.getSingleton().getMimeTypeFromExtension(Shared.substringAfterLast(session.getUri(),'.')),
                             new FileInputStream(uri)
                     );
                 } catch (FileNotFoundException e) {

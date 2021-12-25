@@ -1,8 +1,9 @@
-package euphoria.psycho.browser.app;
+package euphoria.psycho.browser.file;
 
 import android.app.Notification.Builder;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -11,19 +12,21 @@ import android.os.Build.VERSION_CODES;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.util.Log;
+import android.os.Process;
+
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.ReturnCode;
+
+import java.io.File;
+import java.io.FileFilter;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.file.FileHelper;
-import euphoria.psycho.browser.file.Shared;
-import euphoria.psycho.share.ContextUtils;
-import euphoria.share.FileShare;
 
-public class ServerService extends Service {
-    private static final String TAG = "TAG/" + ServerService.class.getSimpleName();
+public class VideoService extends Service {
+    private static final String TAG = "TAG/" + VideoService.class.getSimpleName();
     private WakeLock mCpuWakeLock;
     NotificationManager mNotificationManager;
 
@@ -36,29 +39,15 @@ public class ServerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        FileShare.initialize(getApplicationContext());
-        Log.e("TAG/", "[ServerService]: onCreate");
-
-
         mNotificationManager = (NotificationManager)
                 getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-        Log.e("TAG/", "[ServerService]: onCreate, " + ContextUtils.getExternalStorageDirectory());
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
             updateForegroundNotification(R.string.server_running);
         }
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mCpuWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK
                 | PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.ON_AFTER_RELEASE, TAG);
-        mCpuWakeLock.acquire();
-
-        // If any VPN is connected, the server will don't work
-        NativeHelper.startServer(Shared.getDeviceIP(this), "12345", FileHelper.getStaticResourceDirectory().getAbsolutePath()
-                , SettingsManager.getInstance().getVideoDirectory()
-                , ContextUtils.getExternalStorageDirectory());
-//        File zip = new File(ContextUtils.getExternalStorageDirectory(), "ZIP");
-//        if (!zip.isDirectory())
-//            zip.mkdirs();
+        mCpuWakeLock.acquire(60 * 60 * 1000L /*60 minutes*/);
     }
 
     @Override
@@ -71,13 +60,49 @@ public class ServerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("TAG/", "Debug: onStartCommand, \n");
+        if (intent != null) {
+            String directory = intent.getStringExtra("directory");
+            new Thread(() -> {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                covertVideos(directory);
+            }).start();
+        }
         return START_STICKY;
+    }
+
+    private void covertVideo(String source, String destination) {
+        String arg = String.format("-i \"%s\" -c:v mpeg4 \"%s\"", source, destination);
+        FFmpegSession session = FFmpegKit.execute(arg);
+        if (ReturnCode.isSuccess(session.getReturnCode())) {
+            File f = new File(source);
+            File dir = f.getParentFile();
+            dir = new File(dir, "Recycle");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            f.renameTo(new File(dir, f.getName()));
+        }
+    }
+
+    private void covertVideos(String directory) {
+        File[] files = new File(directory).listFiles(
+                new FileFilter() {
+                    @Override
+                    public boolean accept(File file) {
+                        return file.isFile() && file.getName().endsWith(".mp4");
+                    }
+                }
+        );
+        if (files == null) return;
+        for (File file : files) {
+            covertVideo(file.getAbsolutePath(),
+                    new File("/storage/FD12-1F1D/Movies", file.getName()).getAbsolutePath());
+        }
     }
 
     @RequiresApi(api = VERSION_CODES.O)
     private void updateForegroundNotification(final int message) {
-        final String NOTIFICATION_CHANNEL_ID = "Server";
+        final String NOTIFICATION_CHANNEL_ID = "Video Service";
         mNotificationManager.createNotificationChannel(new NotificationChannel(
                 NOTIFICATION_CHANNEL_ID, NOTIFICATION_CHANNEL_ID,
                 NotificationManager.IMPORTANCE_DEFAULT));

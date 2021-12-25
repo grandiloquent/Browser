@@ -12,53 +12,27 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
-import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 import android.os.storage.StorageManager;
 import android.preference.PreferenceManager;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.system.StructStat;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyManagementException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import euphoria.psycho.browser.file.Shared;
 
 import static android.os.Environment.DIRECTORY_MUSIC;
 
@@ -150,7 +124,7 @@ public class ContextUtils {
         }
         directory = sApplicationContext.getExternalFilesDir(DIRECTORY_MUSIC);
         if (directory != null) {
-            return StringUtils.substringBefore(directory.getAbsolutePath(), "/Android/");
+            return Shared.substringBefore(directory.getAbsolutePath(), "/Android/");
         }
         return null;
     }
@@ -232,7 +206,6 @@ public class ContextUtils {
                 .append(e.getMessage())
                 .append("\n\n")
                 .append("## StackTrace");
-
         for (StackTraceElement stackTraceElement : e.getStackTrace()) {
             stringBuilder.append(stackTraceElement.toString())
                     .append("\n\n");
@@ -260,7 +233,6 @@ public class ContextUtils {
     }
 
     private static String getExternalStoragePath(Context mContext, boolean is_removable) {
-
         StorageManager mStorageManager = (StorageManager) mContext.getSystemService(Context.STORAGE_SERVICE);
         Class<?> storageVolumeClazz = null;
         try {

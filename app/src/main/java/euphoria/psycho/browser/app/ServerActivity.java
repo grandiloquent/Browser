@@ -20,15 +20,14 @@ import androidx.annotation.Nullable;
 
 import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.file.FileHelper;
+import euphoria.psycho.browser.file.Shared;
 import euphoria.psycho.share.ContextUtils;
-import euphoria.psycho.share.FileUtils;
 import euphoria.psycho.share.Log;
-import euphoria.psycho.share.NetUtils;
 import euphoria.share.FileShare;
 
-import static euphoria.psycho.share.BitmapUtils.compressToBytes;
-import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
-import static euphoria.psycho.share.KeyUtils.md5;
+import static euphoria.psycho.browser.file.Shared.compressToBytes;
+import static euphoria.psycho.browser.file.Shared.createVideoThumbnail;
+import static euphoria.psycho.browser.file.Shared.md5;
 
 public class ServerActivity extends Activity {
     private TextView mTextView;
@@ -85,7 +84,7 @@ public class ServerActivity extends Activity {
                 }
             }
             try {
-                FileUtils.copyAssetFile(this, "static/" + f, fileName);
+                Shared.copyAssetFile(this, "static/" + f, fileName);
             } catch (IOException e) {
                 Log.e("TAG/", "[checkStaticFiles]: " + e.getMessage());
             }
@@ -95,7 +94,7 @@ public class ServerActivity extends Activity {
     private void initialize() {
         mHandler = new Handler();
         new Thread(() -> {
-            String ip = NetUtils.getDeviceIP(ServerActivity.this);
+            String ip = Shared.getDeviceIP(ServerActivity.this);
             checkStaticFiles();
             Intent serverService = new Intent(this, ServerService.class);
             startService(serverService);

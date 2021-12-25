@@ -58,5 +58,11 @@
             android:title="@string/remove"
             app:iconTint="@color/default_icon_color_inverse"
             app:showAsAction="never" />
+        <item
+            android:id="@+id/selection_mode_covert_all_menu_id"
+            android:icon="@drawable/ic_action_select_all"
+            android:title="@string/covert_all"
+            app:iconTint="@color/default_icon_color_inverse"
+            app:showAsAction="never" />
     </group>
 </menu>

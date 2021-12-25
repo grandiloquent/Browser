@@ -109,4 +109,5 @@
 
     <string name="error_unsupported_audio">Media includes audio tracks, but none are playable by this device</string>
     <string name="covertVideo">转化视频</string>
+    <string name="covert_all">Covert Videos</string>
 </resources>

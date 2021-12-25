@@ -12,18 +12,14 @@ import android.view.View;
 import android.view.inputmethod.InputConnection;
 import android.widget.Toast;
 
-import com.evgenii.jsevaluator.JsEvaluator;
-import com.evgenii.jsevaluator.interfaces.JsCallback;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.file.Shared;
 import euphoria.psycho.share.Log;
-import euphoria.psycho.share.ThreadUtils;
 
 // InputServiceHelper
 public class InputService extends InputMethodService implements KeyboardView.OnKeyboardActionListener {
@@ -84,7 +80,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                     }
                  if (mCurrentString.startsWith("http://") || mCurrentString.startsWith("https://"))
                         return;
-                    ThreadUtils.postOnBackgroundThread(() -> {
+                    Shared.postOnBackgroundThread(() -> {
                         if (mCurrentString.contains(" ")) {
                             StringBuilder sb = new StringBuilder();
                             sb.append(NativeHelper.youdao(mCurrentString, true, true));
@@ -92,7 +88,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
                             sb.append(NativeHelper.google(mCurrentString, true));
                             sb.append("\n");
                             clipboardManager.setPrimaryClip(ClipData.newPlainText(null, sb.toString()));
-                            ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, sb.toString(), Toast.LENGTH_LONG).show());
+                            Shared.postOnMainThread(() -> Toast.makeText(InputService.this, sb.toString(), Toast.LENGTH_LONG).show());
 
                             return;
                         }
@@ -101,7 +97,7 @@ public class InputService extends InputMethodService implements KeyboardView.OnK
 //                            r = NativeHelper.google(mCurrentString, true);
 //                        }
                         String result = r;
-                        ThreadUtils.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
+                        Shared.postOnMainThread(() -> Toast.makeText(InputService.this, result, Toast.LENGTH_LONG).show());
                     });
                 }
             }

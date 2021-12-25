@@ -8,7 +8,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
-import static euphoria.psycho.share.KeyUtils.crc64Long;
+import static euphoria.psycho.browser.file.Shared.crc64Long;
 
 
 public class Bookmarker {

@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager.LayoutParams;
@@ -18,7 +17,6 @@ import android.webkit.MimeTypeMap;
 import android.widget.EditText;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -36,17 +34,13 @@ import euphoria.psycho.browser.app.TwitterHelper.TwitterVideo;
 import euphoria.psycho.browser.video.VideoActivity;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.music.MusicPlaybackService;
-import euphoria.psycho.share.DialogUtils;
-import euphoria.psycho.share.FormatUtils;
-import euphoria.psycho.share.StringUtils;
-import euphoria.psycho.share.ThreadUtils;
 import euphoria.share.FileShare;
 import euphoria.share.Logger;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static euphoria.psycho.browser.file.FileConstantsHelper.*;
 import static euphoria.psycho.share.ContextUtils.getApplicationContext;
-import static euphoria.psycho.share.StringUtils.substringAfterLast;
+import static euphoria.psycho.browser.file.Shared.substringAfterLast;
 
 public class FileHelper {
     // https://developer.android.com/guide/topics/media/media-formats
@@ -170,12 +164,12 @@ public class FileHelper {
         ProgressDialog dialog = new ProgressDialog(activity);
         dialog.setMessage(activity.getText(R.string.extracting));
         dialog.show();
-        ThreadUtils.postOnBackgroundThread(() -> {
+        Shared.postOnBackgroundThread(() -> {
             try {
                 CharSequence twitterUrl = ContextUtils.getClipboardString();
                 if (twitterUrl != null) {
                     String id = substringAfterLast(twitterUrl.toString(), "/");
-                    if (StringUtils.isDigits(id)) {
+                    if (Shared.isDigits(id)) {
                         List<TwitterVideo> twitterVideos = TwitterHelper.extractTwitterVideo(id);
                         activity.runOnUiThread(() -> {
                             dialog.dismiss();
@@ -184,7 +178,7 @@ public class FileHelper {
                     }
                 }
             } catch (Exception e) {
-                ThreadUtils.postOnMainThread(() -> {
+                Shared.postOnMainThread(() -> {
                     dialog.dismiss();
                     ContextUtils.showExceptionDialog(activity, e);
                 });
@@ -193,12 +187,12 @@ public class FileHelper {
     }
 
     public static void extractZipFile(FileManager fileManager, FileItem item) {
-        Dialog progress = DialogUtils.buildProgressDialog(fileManager.getActivity(),
+        Dialog progress = Shared.buildProgressDialog(fileManager.getActivity(),
                 fileManager.getActivity().getString(R.string.progress_dialog_extract_zip_title),
                 fileManager.getActivity().getString(R.string.progress_dialog_extract_zip_content));
         progress.show();
-        ThreadUtils.postOnBackgroundThread(() -> {
-            String fileName = StringUtils.substringBeforeLast(item.getTitle(), '.');
+        Shared.postOnBackgroundThread(() -> {
+            String fileName = Shared.substringBeforeLast(item.getTitle(), '.');
             File targetDirectory = new File(fileManager.getDirectory(), fileName);
             boolean ret = true;
             if (!targetDirectory.exists()) {
@@ -209,7 +203,7 @@ public class FileHelper {
                 return;
             }
             NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
-            ThreadUtils.postOnMainThread(() -> {
+            Shared.postOnMainThread(() -> {
                 progress.dismiss();
                 fileManager.getFileAdapter().initialize();
             });
@@ -387,7 +381,7 @@ public class FileHelper {
         });
         StringBuilder stringBuilder = new StringBuilder();
         for (Pair<Long, String> p : pairList) {
-            stringBuilder.append(FormatUtils.formatFileSize(p.first))
+            stringBuilder.append(Shared.formatFileSize(p.first))
                     .append(" = ")
                     .append(p.second)
                     .append('\n');

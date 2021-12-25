@@ -1,16 +1,10 @@
 package euphoria.psycho.browser.app;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Service;
-import android.content.ClipboardManager;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -18,22 +12,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
-import java.util.concurrent.TransferQueue;
-
 import euphoria.psycho.browser.R;
-import euphoria.psycho.browser.file.TranslatorHelper;
-import euphoria.psycho.share.ContextUtils;
-import euphoria.psycho.share.Log;
-import euphoria.psycho.share.StringUtils;
-import euphoria.psycho.share.ThreadUtils;
+import euphoria.psycho.browser.file.Shared;
+
 
 
 public class FloatingService extends Service {
@@ -94,9 +81,9 @@ public class FloatingService extends Service {
                 if (event.getAction() == KeyEvent.ACTION_UP && keyCode == KeyEvent.KEYCODE_ENTER) {
                     String value = mWords.getText().toString();
                     Toast.makeText(this, value, Toast.LENGTH_SHORT).show();
-                    ThreadUtils.postOnBackgroundThread(() -> {
+                    Shared.postOnBackgroundThread(() -> {
                         String result = NativeHelper.youdao(value, true, value.contains(" "));
-                        ThreadUtils.postOnMainThread(() -> {
+                        Shared.postOnMainThread(() -> {
                             mWords.setText("");
                             Toast.makeText(this, result, Toast.LENGTH_LONG).show();
                         });

@@ -6,14 +6,9 @@ import android.content.Intent;
 import android.view.WindowManager;
 import android.widget.EditText;
 
-import java.io.File;
-
-import euphoria.psycho.browser.R;
 import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.TranslatorActivity;
 import euphoria.psycho.share.ContextUtils;
-import euphoria.psycho.share.DialogUtils;
-import euphoria.psycho.share.ThreadUtils;
 
 public class TranslatorHelper {
 
@@ -81,7 +76,7 @@ public class TranslatorHelper {
                 .setView(editText)
                 .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
                     String string = editText.getText().toString();
-                    ThreadUtils.postOnBackgroundThread(() -> {
+                    Shared.postOnBackgroundThread(() -> {
 
                         String query = string.trim();
                         String result = NativeHelper.google(query, false);

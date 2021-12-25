@@ -15,8 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import euphoria.psycho.browser.R;
+import euphoria.psycho.browser.file.Shared;
 import euphoria.psycho.share.ContextUtils;
-import euphoria.psycho.share.FileUtils;
 import euphoria.share.FileShare;
 
 public class DownloadActivity extends AppCompatActivity {
@@ -48,7 +48,7 @@ public class DownloadActivity extends AppCompatActivity {
                 }
             } else {
                 try {
-                    FileUtils.copyAssetFile(this, "static/" + f, fileName);
+                    Shared.copyAssetFile(this, "static/" + f, fileName);
                 } catch (IOException e) {
                     Log.e("TAG/" + DownloadActivity.this.getClass().getSimpleName(), "Error: checkStaticFiles, " + e.getMessage() + " " + e.getCause());
                 }

@@ -20,7 +20,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import euphoria.psycho.browser.R;
-import euphoria.psycho.share.ViewUtils;
+import euphoria.psycho.browser.file.Shared;
 
 /**
  * Utilities and common methods to handle settings managed by policies.
@@ -158,7 +158,7 @@ public class ManagedPreferencesUtils {
         if (delegate == null) return;
 
         if (delegate.isPreferenceClickDisabledByPolicy(preference)) {
-            ViewUtils.setEnabledRecursive(view, false);
+            Shared.setEnabledRecursive(view, false);
         }
 
         // Append managed information to summary if necessary.

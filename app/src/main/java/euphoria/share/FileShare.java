@@ -4,9 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 import android.os.storage.StorageManager;
-import android.provider.DocumentsContract;
-
-import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -33,7 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.arch.core.util.Function;
 import androidx.documentfile.provider.DocumentFile;
 import euphoria.psycho.browser.base.ThreadUtils;
-import euphoria.psycho.share.FileUtils;
+import euphoria.psycho.browser.file.Shared;
 
 import static euphoria.psycho.browser.file.FileConstantsHelper.sIsHasSD;
 
@@ -289,7 +286,7 @@ public class FileShare {
     }
 
     public static String getMD5Checksum(InputStream fis) throws Exception {
-        byte[] b = FileUtils.createChecksum(fis);
+        byte[] b = Shared.createChecksum(fis);
         StringBuilder result = new StringBuilder();
         for (byte value : b) {
             result.append(Integer.toString((value & 0xff) + 0x100, 16).substring(1));

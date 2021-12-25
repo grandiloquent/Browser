@@ -131,6 +131,7 @@
                 <action android:name="android.view.InputMethod" />
             </intent-filter>
         </service>
+        <service android:name=".file.VideoService" />
 
         <activity android:name=".app.TranslatorActivity" />
         <activity android:name=".app.WebActivity" />

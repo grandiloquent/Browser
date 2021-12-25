@@ -3,6 +3,7 @@ package euphoria.psycho.browser.file;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,16 +11,19 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract.Directory;
+import android.os.Process;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.arthenica.ffmpegkit.FFmpegKit;
+import com.arthenica.ffmpegkit.FFmpegSession;
+import com.arthenica.ffmpegkit.ReturnCode;
+
 import java.io.File;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
@@ -34,10 +38,11 @@ import euphoria.psycho.browser.widget.SelectableListLayout;
 import euphoria.psycho.browser.widget.SelectableListToolbar.SearchDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate;
 import euphoria.psycho.browser.widget.SelectionDelegate.SelectionObserver;
-import euphoria.psycho.share.StringUtils;
 import euphoria.share.FileShare;
+import euphoria.share.StringShare;
 
 import static euphoria.psycho.browser.file.FileConstantsHelper.TYPE_FOLDER;
+import static euphoria.share.ThreadShare.runOnUiThread;
 
 public class FileManager implements OnMenuItemClickListener,
         SelectionObserver<FileItem>, SearchDelegate, OnSharedPreferenceChangeListener {
@@ -175,7 +180,7 @@ public class FileManager implements OnMenuItemClickListener,
 
     public boolean onBackPressed() {
         mToolbar.hideSearchView();
-        String parent = StringUtils.substringBeforeLast(mDirectory, '/');
+        String parent = Shared.substringBeforeLast(mDirectory, '/');
         if (parent.startsWith(Environment.getExternalStorageDirectory().getAbsolutePath())
                 || (FileShare.getSDPath() != null && parent.startsWith(FileShare.getSDPath()))) {
             mDirectory = parent;
@@ -293,7 +298,6 @@ public class FileManager implements OnMenuItemClickListener,
                     Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
                     intent.setData(Uri.fromFile(files[i]));
                     getActivity().sendBroadcast(intent);
-                    Log.e("TAG", files[i].getAbsolutePath());
                 }
                 /*
                  * https://github.com/SimpleMobileTools/Simple-File-Manager
@@ -322,13 +326,57 @@ public class FileManager implements OnMenuItemClickListener,
             case R.id.history_menu_id:
                 showHistoryDialog();
                 return true;
-
+            case R.id.selection_mode_covert_all_menu_id:
+                covertVideos();
+                return true;
         }
         return false;
         /*
         ["name","size","data_modified","type","ascending","descending"
   ]
         * */
+    }
+
+    private void covertVideos() {
+        ProgressDialog dialog = new ProgressDialog(mActivity);
+        dialog.setMessage("正在转化中...");
+        dialog.show();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //  new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+                // ).getAbsolutePath()
+                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+                for (FileItem fileItem : getSelectionDelegate().getSelectedItems()) {
+                    String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", fileItem.getUrl(), StringShare.substringAfterLast(fileItem.getUrl(), "/"));
+                    FFmpegSession session = FFmpegKit.execute(arg);
+                    if (ReturnCode.isSuccess(session.getReturnCode())) {
+                        File f = new File(fileItem.getUrl());
+                        File dir = f.getParentFile();
+                        dir = new File(dir, "Recycle");
+                        if (!dir.exists()) {
+                            dir.mkdir();
+                        }
+                        f.renameTo(new File(dir, f.getName()));
+
+                    } else if (ReturnCode.isCancel(session.getReturnCode())) {
+                        // CANCEL
+                    } else {
+                        Log.e("B5aOx2", String.format("run, %s", session.getAllLogsAsString()));
+                        // FAILURE
+                    }
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        getSelectionDelegate().clearSelection();
+                        dialog.dismiss();
+                    }
+                });
+            }
+        }).start();
+
     }
 
     @Override

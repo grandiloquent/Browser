@@ -3,13 +3,13 @@ package euphoria.psycho.browser.file;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Process;
 import android.text.Editable;
@@ -45,18 +45,15 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 
 import euphoria.psycho.browser.R;
-import euphoria.psycho.share.BitmapUtils;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.psycho.browser.tasks.FutureListener;
 import euphoria.psycho.browser.tasks.ThreadPool;
 import euphoria.psycho.browser.tasks.ThreadPool.Job;
 import euphoria.psycho.browser.tasks.ThreadPool.JobContext;
-import euphoria.psycho.share.KeyUtils;
-import euphoria.psycho.share.StringUtils;
 import euphoria.share.FileShare;
 import euphoria.share.StringShare;
 
-import static euphoria.psycho.share.BitmapUtils.createVideoThumbnail;
+import static euphoria.psycho.browser.file.Shared.createVideoThumbnail;
 import static euphoria.share.ThreadShare.runOnUiThread;
 
 public class FileImageManager {
@@ -93,40 +90,9 @@ public class FileImageManager {
     }
 
     public void covertVideo(FileItem item) {
-        ProgressDialog dialog = new ProgressDialog(mContext);
-        dialog.setMessage("正在下载中...");
-        dialog.show();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //  new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-                // ).getAbsolutePath()
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", item.getUrl(), StringShare.substringAfterLast(item.getUrl(), "/"));
-                FFmpegSession session = FFmpegKit.execute(arg);
-                if (ReturnCode.isSuccess(session.getReturnCode())) {
-                    File f = new File(item.getUrl());
-                    File dir = f.getParentFile();
-                    dir = new File(dir, "Recycle");
-                    if (!dir.exists()) {
-                        dir.mkdir();
-                    }
-                    f.renameTo(new File(dir, f.getName()));
-
-                } else if (ReturnCode.isCancel(session.getReturnCode())) {
-                    // CANCEL
-                } else {
-                    Log.e("B5aOx2", String.format("run, %s", session.getAllLogsAsString()));
-                    // FAILURE
-                }
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        dialog.dismiss();
-                    }
-                });
-            }
-        }).start();
+        Intent intent = new Intent(mContext, VideoService.class);
+        intent.putExtra("directory", item.getUrl());
+        mContext.startService(intent);
     }
 
     public Drawable getDefaultDrawable(FileItem fileItem) {
@@ -219,7 +185,7 @@ public class FileImageManager {
                         if (i > 3) break;
                     }
                     File src = new File(item.getUrl());
-                    File dst = new File(src.getParentFile(), StringUtils.substringBeforeLast(src.getName(), '.') + "_splitted." + StringUtils.substringAfterLast(src.getName(), '.'));
+                    File dst = new File(src.getParentFile(), Shared.substringBeforeLast(src.getName(), '.') + "_splitted." + Shared.substringAfterLast(src.getName(), '.'));
                     try {
                         Log.e("TAG/", "[FileImageManager]: cutVideo" + n[0] + " " + n[1] + " " + n[2] + " " + n[3] + " ");
                         startTrim(src, dst, (n[0] * 60 * 1000 + n[1] * 1000), (n[2] * 60 * 1000 + n[3] * 1000));
@@ -341,7 +307,7 @@ public class FileImageManager {
         @Override
         public Drawable run(JobContext jc) {
             Drawable drawable = null;
-            String key = Long.toString(KeyUtils.crc64Long(mFileItem.getUrl()));
+            String key = Long.toString(Shared.crc64Long(mFileItem.getUrl()));
             drawable = mLruCache.get(key);
             if (drawable != null) {
                 return drawable;
@@ -361,18 +327,18 @@ public class FileImageManager {
                         final BitmapFactory.Options options = new BitmapFactory.Options();
                         options.inJustDecodeBounds = true;
                         BitmapFactory.decodeFile(mFileItem.getUrl(), options);
-                        options.inSampleSize = BitmapUtils.calculateInSampleSize(options, mSize, mSize);
+                        options.inSampleSize = Shared.calculateInSampleSize(options, mSize, mSize);
                         options.inJustDecodeBounds = false;
                         bitmap = BitmapFactory.decodeFile(mFileItem.getUrl(), options);
                         break;
                     case FileConstantsHelper.TYPE_APK:
                         Drawable ico = ContextUtils.getApkIcon(ContextUtils.getApplicationContext(), mFileItem.getUrl());
                         if (ico != null)
-                            bitmap = BitmapUtils.drawableToBitmap(ico);
+                            bitmap = Shared.drawableToBitmap(ico);
                         break;
                 }
                 if (bitmap != null) {
-                    byte[] buffer = BitmapUtils.compressToBytes(bitmap);
+                    byte[] buffer = Shared.compressToBytes(bitmap);
                     try {
                         FileShare.writeAllBytes(image.getAbsolutePath(), buffer);
                     } catch (IOException e) {
@@ -383,7 +349,7 @@ public class FileImageManager {
             if (bitmap == null) {
                 return null;
             }
-            bitmap = BitmapUtils.resizeAndCropCenter(bitmap, mSize, true);
+            bitmap = Shared.resizeAndCropCenter(bitmap, mSize, true);
             drawable = new BitmapDrawable(bitmap);
             mLruCache.put(key, drawable);
             return drawable;
