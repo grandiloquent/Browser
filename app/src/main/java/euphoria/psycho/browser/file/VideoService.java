@@ -86,17 +86,14 @@ public class VideoService extends Service {
 
     private void covertVideos(String directory) {
         File[] files = new File(directory).listFiles(
-                new FileFilter() {
-                    @Override
-                    public boolean accept(File file) {
-                        return file.isFile() && file.getName().endsWith(".mp4");
-                    }
-                }
+                file -> file.isFile() && file.getName().endsWith(".mp4")
         );
         if (files == null) return;
         for (File file : files) {
+            File st = new File("/storage/FD12-1F1D/Movies", file.getName());
+            if (st.exists()) continue;
             covertVideo(file.getAbsolutePath(),
-                    new File("/storage/FD12-1F1D/Movies", file.getName()).getAbsolutePath());
+                    st.getAbsolutePath());
         }
     }
 
