@@ -1,6 +1,8 @@
 package euphoria.psycho.browser.file;
 
 
+import android.util.LruCache;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -17,6 +19,7 @@ public class FileProviderImpl implements FileProvider {
     private BrowsingFileObserver mObserver;
     private List<FileItem> mItems = new ArrayList<>();
     private List<FileItem> mRemovalItems;
+    private LruCache<String, FileItem> mLruCache = new LruCache<>(1024 * 10);
 
     @Override
     public void destroy() {
@@ -43,7 +46,6 @@ public class FileProviderImpl implements FileProvider {
             }
         else
             ls.add(dir);
-
         return ls;
     }
 
@@ -66,9 +68,13 @@ public class FileProviderImpl implements FileProvider {
                     if (searchText != null) {
                         if (!file.getName().contains(searchText)) continue;
                     }
-                    FileItem fileItem = new FileItem(file.getName(),
-                            file.getAbsolutePath(),
-                            file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden(),fileManager.getSortType()==8));
+                    FileItem fileItem = mLruCache.get(file.getPath());
+                    if (fileItem == null) {
+                        fileItem = new FileItem(file.getName(),
+                                file.getAbsolutePath(),
+                                file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden(), fileManager.getSortType() == 8));
+                        mLruCache.put(file.getPath(), fileItem);
+                    }
                     mItems.add(fileItem);
                 }
             } else {
