@@ -31,7 +31,7 @@ public class FileInfoManager {
         @Override
         public String run(JobContext jc) {
             File file = new File(mPath);
-            long size = FileHelper.getFileSize(file, true);
+            long size = FileHelper.getFileSize(file, true,false);
             if (file.isDirectory()) {
                 return String.format("%s items", size);
             } else {

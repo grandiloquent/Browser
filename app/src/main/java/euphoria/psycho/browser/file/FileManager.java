@@ -235,12 +235,10 @@ public class FileManager implements OnMenuItemClickListener,
     // 排序文件
     public void sortBy() {
         SettingsManager.getInstance().setSortType(mSortType);
-        Log.e("TAG/", "Debug: sortBy, \n" + mDirectory);
-        mFileAdapter.initialize();
+        //mFileAdapter.initialize();
     }
 
     private void loadPrefer() {
-        Log.e("TAG/", "Debug: loadPrefer, \n");
         mIsShowHiddenFiles = SettingsManager.getInstance().getDisplayHiddenFiles();
     }
 

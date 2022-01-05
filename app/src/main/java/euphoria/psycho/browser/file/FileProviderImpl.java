@@ -50,6 +50,7 @@ public class FileProviderImpl implements FileProvider {
     @Override
     public void queryFile(String directory, FileManager fileManager) {
         mItems.clear();
+        Log.e("B5aOx2", String.format("queryFile, %s", ""));
         File dir = new File(directory);
         if (dir.isDirectory()) {
             File[] files = null;
@@ -67,7 +68,7 @@ public class FileProviderImpl implements FileProvider {
                     }
                     FileItem fileItem = new FileItem(file.getName(),
                             file.getAbsolutePath(),
-                            file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden()));
+                            file.lastModified(), FileHelper.getFileType(file), FileHelper.getFileSize(file, fileManager.getShowHidden(),fileManager.getSortType()==8));
                     mItems.add(fileItem);
                 }
             } else {

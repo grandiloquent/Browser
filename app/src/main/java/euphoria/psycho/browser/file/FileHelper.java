@@ -18,6 +18,7 @@ import android.widget.EditText;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Native;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -211,8 +212,11 @@ public class FileHelper {
     }
 
 
-    public static long getFileSize(File file, boolean isShowHidden) {
+    public static long getFileSize(File file, boolean isShowHidden, boolean isSize) {
         if (file.isDirectory()) {
+            if (isSize) {
+                return NativeHelper.dirSize(file.getAbsolutePath());
+            }
             File[] files = file.listFiles();
             return files == null ? 0 : (isShowHidden ? files.length : countFiles(files));
         }
@@ -431,7 +435,6 @@ public class FileHelper {
                             fileManager.setSortType((fileManager.getSortType() & 31));
                             break;
                     }
-                    Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
                     fileManager.sortBy();
                     //Log.e("TAG/", "Debug: showSortDialog, \n" + fileManager.getDirectory());
                     dialogInterface.dismiss();

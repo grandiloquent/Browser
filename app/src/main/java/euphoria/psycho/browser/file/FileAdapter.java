@@ -1,5 +1,6 @@
 package euphoria.psycho.browser.file;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -34,6 +35,7 @@ public class FileAdapter extends Adapter<ViewHolder> implements BrowsingFileObse
     }
 
     public void initialize() {
+        Log.e("B5aOx2", String.format("initialize, %s", ""));
         mIsLoadingItems = true;
         mFileProvider.queryFile(mFileManager.getDirectory(), mFileManager);
 //        mFileManager.getHistoryList().remove(mFileManager.getDirectory());

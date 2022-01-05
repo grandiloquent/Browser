@@ -160,7 +160,8 @@ public class FileItemView extends SelectableItemView<FileItem> implements Future
         mTitleView.setText(item.getTitle());
         setStartIconDrawable(mFileImageManager.getDefaultDrawable(item));
         if (item.getType() == FileConstantsHelper.TYPE_FOLDER) {
-            mDescriptionView.setText(getContext().getString(R.string.items, item.getSize()));
+            // getContext().getString(R.string.items, item.getSize())
+            mDescriptionView.setText(Shared.formatFileSize(item.getSize()));
         } else {
             mDescriptionView.setText(Shared.formatFileSize(item.getSize()));
         }
