@@ -246,14 +246,18 @@ public class FileManager implements OnMenuItemClickListener,
                 "视频",
                 "音乐",
                 "下载",
-                "电影"
+                "电影",
+				"截屏",
+				"Shorts"
         };
         String[] values = new String[]{
                 "/storage/emulated/0/Books",
                 "/storage/emulated/0/Videos",
                 "/storage/emulated/0/Musics",
                 "/storage/emulated/0/Download",
-                "/storage/FD12-1F1D/Movies"
+                "/storage/FD12-1F1D/Movies",
+				"/storage/emulated/0/Pictures/Screenshots",
+				"/storage/emulated/0/Movies/TikTok"
         };
         for (String value : values) {
             File dir = new File(value);
