@@ -206,6 +206,7 @@ public class FileHelper {
             NativeHelper.extractToDirectory(item.getUrl(), targetDirectory.getAbsolutePath());
             Shared.postOnMainThread(() -> {
                 progress.dismiss();
+                new File(item.getUrl()).delete();
                 fileManager.getFileAdapter().initialize();
             });
         });
@@ -219,6 +220,7 @@ public class FileHelper {
             }
             File[] files = file.listFiles();
             return files == null ? 0 : (isShowHidden ? files.length : countFiles(files));
+
         }
         return file.length();
     }

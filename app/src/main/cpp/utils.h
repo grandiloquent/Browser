@@ -405,9 +405,10 @@ JAVA_STATIC_METHOD(CLASS, google, jstring, jstring query_,
 
 JAVA_STATIC_METHOD(CLASS, deleteFileSystem, jboolean,
                    jstring path_) {
-    const char *path = (*env)->GetStringUTFChars(env, path_, 0);
+      const char *path = (*env)->GetStringUTFChars(env, path_, 0);
     int ret;
     if (is_dir(path)) {
+        LOGE("TAG %s",path);
         char nameBuffer[PATH_MAX];
         struct stat statBuffer;
         ret = delete_directory(path, nameBuffer, &statBuffer);

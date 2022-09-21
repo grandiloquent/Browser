@@ -18,10 +18,20 @@ import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import org.apache.commons.io.FileDeleteStrategy;
+import org.apache.commons.io.FileUtils;
+
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.DirectoryIteratorException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,11 +42,14 @@ import euphoria.psycho.browser.app.FloatingService;
 import euphoria.psycho.browser.app.InputService;
 import euphoria.psycho.browser.app.InputServiceHelper;
 import euphoria.psycho.browser.app.LocalFileService;
+import euphoria.psycho.browser.app.NativeHelper;
 import euphoria.psycho.browser.app.WebActivity;
 import euphoria.psycho.share.ContextUtils;
 import euphoria.share.FileShare;
 import euphoria.share.Logger;
 import euphoria.share.PreferenceShare;
+import euphoria.share.StringShare;
+
 // ImageActivity
 public class FileActivity extends AppCompatActivity {
     private static final int REQUEST_PERMISSIONS_CODE = 1 << 1;
@@ -53,6 +66,14 @@ public class FileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+            // adb shell ls -i /storage/emulated/0/Movies/123/搞笑的动物
+            //  ls -liad **/*/**
+            // find /storage/emulated/0/Movies -inum 645051 -exec rm -f {} \;
+
+            // find /storage/emulated/0/Movies/. -size 0 -exec rm {} \;
+            // find /storage/emulated/0/Movies/. -maxdepth 1 -empty -type f -print -delete #-
+
+
         List<String> needPermissions = new ArrayList<>();
         if (!ContextUtils.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)) {
             needPermissions.add(permission.WRITE_EXTERNAL_STORAGE);
@@ -107,6 +128,7 @@ public class FileActivity extends AppCompatActivity {
 //        location_manager.addTestProvider(LocationManager.NETWORK_PROVIDER, false, false, false, false, true, true, true, 1, 1);
 //        location_manager.setTestProviderEnabled(LocationManager.NETWORK_PROVIDER, true);
 //        location_manager.setTestProviderLocation(LocationManager.NETWORK_PROVIDER, fake_location_network);
+
 
     }
 

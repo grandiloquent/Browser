@@ -18,9 +18,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.arthenica.ffmpegkit.FFmpegKit;
-import com.arthenica.ffmpegkit.FFmpegSession;
-import com.arthenica.ffmpegkit.ReturnCode;
+
 
 import java.io.File;
 import java.util.HashSet;
@@ -339,41 +337,41 @@ public class FileManager implements OnMenuItemClickListener,
         ProgressDialog dialog = new ProgressDialog(mActivity);
         dialog.setMessage("正在转化中...");
         dialog.show();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                //  new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
-                // ).getAbsolutePath()
-                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
-                for (FileItem fileItem : getSelectionDelegate().getSelectedItems()) {
-                    String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", fileItem.getUrl(), StringShare.substringAfterLast(fileItem.getUrl(), "/"));
-                    FFmpegSession session = FFmpegKit.execute(arg);
-                    if (ReturnCode.isSuccess(session.getReturnCode())) {
-                        File f = new File(fileItem.getUrl());
-                        File dir = f.getParentFile();
-                        dir = new File(dir, "Recycle");
-                        if (!dir.exists()) {
-                            dir.mkdir();
-                        }
-                        f.renameTo(new File(dir, f.getName()));
-
-                    } else if (ReturnCode.isCancel(session.getReturnCode())) {
-                        // CANCEL
-                    } else {
-                        Log.e("B5aOx2", String.format("run, %s", session.getAllLogsAsString()));
-                        // FAILURE
-                    }
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getSelectionDelegate().clearSelection();
-                        dialog.dismiss();
-                    }
-                });
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                //  new File(mContext.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),
+//                // ).getAbsolutePath()
+//                Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+//                for (FileItem fileItem : getSelectionDelegate().getSelectedItems()) {
+//                    String arg = String.format("-i \"%s\" -c:v mpeg4 \"/storage/FD12-1F1D/Movies/%s\"", fileItem.getUrl(), StringShare.substringAfterLast(fileItem.getUrl(), "/"));
+//                    FFmpegSession session = FFmpegKit.execute(arg);
+//                    if (ReturnCode.isSuccess(session.getReturnCode())) {
+//                        File f = new File(fileItem.getUrl());
+//                        File dir = f.getParentFile();
+//                        dir = new File(dir, "Recycle");
+//                        if (!dir.exists()) {
+//                            dir.mkdir();
+//                        }
+//                        f.renameTo(new File(dir, f.getName()));
+//
+//                    } else if (ReturnCode.isCancel(session.getReturnCode())) {
+//                        // CANCEL
+//                    } else {
+//                        Log.e("B5aOx2", String.format("run, %s", session.getAllLogsAsString()));
+//                        // FAILURE
+//                    }
+//                }
+//
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        getSelectionDelegate().clearSelection();
+//                        dialog.dismiss();
+//                    }
+//                });
+//            }
+//        }).start();
 
     }
 

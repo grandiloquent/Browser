@@ -14,9 +14,7 @@ import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 import android.os.Process;
 
-import com.arthenica.ffmpegkit.FFmpegKit;
-import com.arthenica.ffmpegkit.FFmpegSession;
-import com.arthenica.ffmpegkit.ReturnCode;
+
 
 import java.io.File;
 import java.io.FileFilter;
@@ -71,17 +69,17 @@ public class VideoService extends Service {
     }
 
     private void covertVideo(String source, String destination) {
-        String arg = String.format("-i \"%s\" -c:v mpeg4 \"%s\"", source, destination);
-        FFmpegSession session = FFmpegKit.execute(arg);
-        if (ReturnCode.isSuccess(session.getReturnCode())) {
-            File f = new File(source);
-            File dir = f.getParentFile();
-            dir = new File(dir, "Recycle");
-            if (!dir.exists()) {
-                dir.mkdir();
-            }
-            f.renameTo(new File(dir, f.getName()));
-        }
+//        String arg = String.format("-i \"%s\" -c:v mpeg4 \"%s\"", source, destination);
+//        FFmpegSession session = FFmpegKit.execute(arg);
+//        if (ReturnCode.isSuccess(session.getReturnCode())) {
+//            File f = new File(source);
+//            File dir = f.getParentFile();
+//            dir = new File(dir, "Recycle");
+//            if (!dir.exists()) {
+//                dir.mkdir();
+//            }
+//            f.renameTo(new File(dir, f.getName()));
+//        }
     }
 
     private void covertVideos(String directory) {

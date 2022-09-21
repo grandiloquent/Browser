@@ -195,6 +195,7 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
                 ) {
             continue;
         }
+
         strcpy(filenameOffset, de->d_name);
         ret = lstat(nameBuffer, statBuffer);
         if (ret != 0) {
@@ -204,6 +205,10 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
         if (S_ISDIR(statBuffer->st_mode)) {
             char *newpath = strdup(nameBuffer);
             delete_directory(newpath, nameBuffer, statBuffer);
+            if (strlen(newpath) != strlen("/storage/emulated/0/Movies/ScreenCaptures/搞笑的动物")) {
+                ret = rename(newpath, "/storage/emulated/0/Movies/ScreenCaptures/搞笑的动物/123");
+                LOGE("rename() error on '%s' '%s'\n", newpath, strerror(errno));
+            }
             ret = rmdir(newpath);
             if (ret != 0) {
                 LOGE("rmdir() error on '%s' '%s'\n", newpath, strerror(errno));
@@ -222,6 +227,7 @@ int delete_directory(const char *path, char *nameBuffer, struct stat *statBuffer
             }
         }
     }
+
     closedir(dir);
     return 0;
 }

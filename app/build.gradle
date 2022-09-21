@@ -58,6 +58,9 @@ dependencies {
     implementation 'com.github.piasy:ProgressPieIndicator:1.8.1'
     implementation 'com.github.piasy:GlideImageLoader:1.8.1'
     implementation 'com.github.piasy:GlideImageViewFactory:1.8.1'
-    implementation 'com.arthenica:ffmpeg-kit-full:4.5'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+    //implementation 'com.arthenica:ffmpeg-kit-full:4.5'
 }
 

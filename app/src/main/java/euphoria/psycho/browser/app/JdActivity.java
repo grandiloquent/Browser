@@ -69,7 +69,7 @@ public class JdActivity extends Activity {
                 "                item.parentNode.removeChild(item);\n" +
                 "            } else {\n" +
                 "                var src = element.getAttribute('src');\n" +
-                "                if (!src || !src.endsWith('c5ab4d78f8bf4d90.png')) {\n" +
+                "                if (!src ||( !src.endsWith('9f2f670a546fbd7c.png') && !src.endsWith('c5ab4d78f8bf4d90.png') ) ){\n" +
                 "                    item.style.display = \"none\";\n" +
                 "                    item.parentNode.removeChild(item);\n" +
                 "                }\n" +
